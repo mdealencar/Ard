@@ -1,0 +1,5 @@
+
+# intermediates from the xdsm generator
+*.tex
+*.tikz
+
