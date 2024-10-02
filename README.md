@@ -5,7 +5,7 @@
 ## Name
 
 `windArd` is not a typo in the middle of "windward".
-It is a portmanteau of "wind" and ["ard"](https://en.wikipedia.org/wiki/Ard_\(plough\)), which is a type of simple and lightweight plow used through the single-digit centuries.
+It is a portmanteau of "wind" and ["ard"](https://en.wikipedia.org/wiki/Ard_\(plough\)), which is a type of simple and lightweight plow used through the single-digit centuries to prepare a farm for planting.
 
 ## Goals
 
