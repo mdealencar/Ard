@@ -24,6 +24,6 @@ license_files = LICENSE.txt
 
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages (["."] by default)
-include = ["MFfarm", "gpAEP", "mfAEP"]  # package names should match these glob patterns (["*"] by default)
+include = ["src"]  # package names should match these glob patterns (["*"] by default)
 exclude = ["assets"]  # exclude packages matching these glob patterns (empty by default)
 namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
