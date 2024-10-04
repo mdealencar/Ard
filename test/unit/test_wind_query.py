@@ -27,6 +27,9 @@ class TestWindQuery:
             self.query.get_directions() == dir_q
         ), "specified directions should match"
         assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
+        assert (
+            self.query.N_conditions == size_q[0]
+        ), "internal size tracking should match"
         assert self.query.is_valid()
 
     def test_resetters(self):
@@ -45,6 +48,9 @@ class TestWindQuery:
             self.query.get_directions() == dir_q
         ), "specified directions should match"
         assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
+        assert (
+            self.query.N_conditions == size_q[0]
+        ), "internal size tracking should match"
         assert self.query.is_valid()
 
         # now, let's modify wind condition values
@@ -57,9 +63,12 @@ class TestWindQuery:
         # now direction should have new values, but the query shouldn't be valid
         # and should therefore raise an error
         with pytest.raises(AssertionError):
-          np.all(
-              self.query.get_directions() == dir_q
-          ), "specified directions should match"
+            np.all(
+                self.query.get_directions() == dir_q
+            ), "specified directions should match"
+        assert (
+            self.query.N_conditions is None
+        ), "number of conditions should be ill-defined"
         assert self.query.is_valid() is False, "not valid with different lengths"
 
         # now modify speeds
@@ -68,7 +77,12 @@ class TestWindQuery:
 
         # make sure values are actually set in exactly and the query should be valid
         assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
-        assert np.all(self.query.get_directions() == dir_q), "specified directions should match"
+        assert np.all(
+            self.query.get_directions() == dir_q
+        ), "specified directions should match"
+        assert (
+            self.query.N_conditions == size_q[0]
+        ), "internal size tracking should match"
         assert self.query.is_valid()
 
     def test_winddata(self):
@@ -95,4 +109,7 @@ class TestWindQuery:
         assert np.all(
             np.equal(self.query.get_speeds(), WS.flatten())
         ), "specified speeds should match"
+        assert (
+            self.query.N_conditions == wind_directions.size * wind_speeds.size
+        ), "internal size tracking should match"
         assert self.query.is_valid()

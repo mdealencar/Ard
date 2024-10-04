@@ -15,11 +15,15 @@ class WindQuery:
 
     def set_directions(self, directions):
         self.directions = directions
-        self.N_conditions = None if self.directions.size != self.speeds.size else self.directions.size
+        self.N_conditions = (
+            None if self.directions.size != self.speeds.size else self.directions.size
+        )
 
     def set_speeds(self, speeds):
         self.speeds = speeds
-        self.N_conditions = None if self.directions.size != self.speeds.size else self.directions.size
+        self.N_conditions = (
+            None if self.directions.size != self.speeds.size else self.directions.size
+        )
 
     def get_directions(self):
         assert self.is_valid(), "mismatch in direction/speed vectors"
@@ -60,4 +64,3 @@ class WindQuery:
         wq = WindQuery(wind_directions, wind_speeds)
         assert wq.is_valid()  # make sure it's legit
         return wq  # and ship it
-
