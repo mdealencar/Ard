@@ -21,14 +21,14 @@ class BatchFarmPowerTemplateComponent(om.ExplicitComponent):
 
         # unpack wind query object
         self.wind_query = self.options["wind_query"]
-        self.directions_wind = self.options["wind_query"]["directions"]
-        self.speeds_wind = self.options["wind_query"]["speeds"]
-        self.TIs_wind = (
-            self.options["wind_query"]["TI"]
-            if "TI" in self.options["wind_query"]
-            else 0.06 * np.ones_like(self.wind_query)
-        )
-        self.pmf_wind = self.options["wind_query"]["freq"]  #
+        self.directions_wind = self.options["wind_query"].get_directions()
+        self.speeds_wind = self.options["wind_query"].get_speeds()
+        # self.TIs_wind = (
+        #     self.options["wind_query"]["TI"]
+        #     if "TI" in self.options["wind_query"]
+        #     else 0.06 * np.ones_like(self.wind_query)
+        # )
+        # self.pmf_wind = self.options["wind_query"]["freq"]  #
         self.N_wind_conditions = len(self.pmf_wind)
 
         # set up inputs and outputs

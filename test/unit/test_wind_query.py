@@ -55,9 +55,11 @@ class TestWindQuery:
         self.query.set_directions(dir_q)
 
         # now direction should have new values, but the query shouldn't be valid
-        assert np.all(
-            self.query.get_directions() == dir_q
-        ), "specified directions should match"
+        # and should therefore raise an error
+        with pytest.raises(AssertionError):
+          np.all(
+              self.query.get_directions() == dir_q
+          ), "specified directions should match"
         assert self.query.is_valid() is False, "not valid with different lengths"
 
         # now modify speeds
@@ -66,17 +68,21 @@ class TestWindQuery:
 
         # make sure values are actually set in exactly and the query should be valid
         assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
+        assert np.all(self.query.get_directions() == dir_q), "specified directions should match"
         assert self.query.is_valid()
 
     def test_winddata(self):
         wind_directions = np.array([250, 260, 270])
         wind_speeds = np.array([5, 6, 7, 8, 9, 10])
         ti_table = 0.06
+
+        # generate a wind rose
         wr = floris.WindRose(
             wind_directions=wind_directions,
             wind_speeds=wind_speeds,
             ti_table=ti_table,
         )
+        # meshgrid out into a single data stream
         WS, WD = [V.flatten() for V in np.meshgrid(wind_speeds, wind_directions)]
 
         # override query, building from the FLORIS data obj
