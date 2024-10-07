@@ -61,7 +61,7 @@ class WindQuery:
             wind_speeds=self.speeds,
             turbulence_intensities=0.06*np.ones_like(self.directions),  # default value
         )
-        ts_temp.assign_TI_using_IEC_method()
+        ts_temp.assign_ti_using_IEC_method()
 
         # re-set all the values
         _, _, TIs_new, _, _, _ = ts_temp.unpack()

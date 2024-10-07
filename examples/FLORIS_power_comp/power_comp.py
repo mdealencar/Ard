@@ -16,7 +16,8 @@ import windard.farm_aero_comp.floris as farmaero_floris
 directions = np.linspace(0.0, 360.0, 101)
 speeds = np.linspace(0.0, 30.0, 101)[1:]
 WS, WD = np.meshgrid(speeds, directions)
-wind_query = wq.WindQuery(WD.flatten(), WS.flatten(), TIs=0.06)
+wind_query = wq.WindQuery(WD.flatten(), WS.flatten())
+wind_query.set_TI_using_IEC_method()
 
 # create the farm layout specification
 farm_spec = {}
