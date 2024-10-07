@@ -25,6 +25,8 @@ classifiers = [
 dependencies = [
   "numpy",
   "floris",
+  "wisdem",
+  "openmdao",
 ]
 
 [project.optional-dependencies]

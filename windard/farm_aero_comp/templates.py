@@ -3,7 +3,7 @@ import numpy as np
 import openmdao.api as om
 
 
-class BatchFarmPowerTemplateComponent(om.ExplicitComponent):
+class BatchFarmPowerTemplate(om.ExplicitComponent):
     """
     template component for computing power using a farm aerodynamics model
 
@@ -23,13 +23,12 @@ class BatchFarmPowerTemplateComponent(om.ExplicitComponent):
         self.wind_query = self.options["wind_query"]
         self.directions_wind = self.options["wind_query"].get_directions()
         self.speeds_wind = self.options["wind_query"].get_speeds()
-        # self.TIs_wind = (
-        #     self.options["wind_query"]["TI"]
-        #     if "TI" in self.options["wind_query"]
-        #     else 0.06 * np.ones_like(self.wind_query)
-        # )
-        # self.pmf_wind = self.options["wind_query"]["freq"]  #
-        self.N_wind_conditions = len(self.pmf_wind)
+        self.TIs_wind = (
+            self.options["wind_query"].get_TIs()
+            if self.options["wind_query"].get_TIs()
+            else 0.06 * np.ones_like(self.directions_wind)
+        )
+        self.N_wind_conditions = self.options["wind_query"].N_conditions
 
         # set up inputs and outputs
         self.add_input("x", np.zeros((self.N_turbines,)), units="m")
@@ -55,7 +54,8 @@ class BatchFarmPowerTemplateComponent(om.ExplicitComponent):
         # ... more outputs can be added here
 
     def setup_partials(self):
-        self.declare_partials("*", "*", method="fd")  # default to finite differencing
+        # the default (but not preferred!) derivatives are FDM
+        self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
 
@@ -78,7 +78,7 @@ class FarmAEPTemplateComponent(om.ExplicitComponent):
 
     def initialize(self):
         self.options.declare("modeling_options")
-        self.options.declare("wind_data")  # FLORIS WindDataBase-derived data
+        self.options.declare("wind_rose")  # FLORIS WindRose object
 
     def setup(self):
         # load modeling options
@@ -86,9 +86,9 @@ class FarmAEPTemplateComponent(om.ExplicitComponent):
         self.N_turbines = modeling_options["farm"]["N_turbines"]
 
         # unpack FLORIS wind data object
-        self.wind_data = self.options["wind_data"]
+        self.wind_rose = self.options["wind_rose"]
         self.directions_wind, self.speeds_wind, self.TIs_wind, self.pmf_wind, _, _ = (
-            self.wind_data.unpack()
+            self.wind_rose.unpack()
         )
         self.N_wind_conditions = len(self.pmf_wind)
 
@@ -116,7 +116,8 @@ class FarmAEPTemplateComponent(om.ExplicitComponent):
         # ... more outputs can be added here
 
     def setup_partials(self):
-        self.declare_partials("*", "*", method="fd")  # default to finite differencing
+        # the default (but not preferred!) derivatives are FDM
+        self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
 
