@@ -5,7 +5,8 @@ import floris
 
 import windard.farm_aero_comp.templates as templates
 
-class FLORISFarmComponent():
+
+class FLORISFarmComponent:
     def initialize(self):
         self.options.declare("case_title")
 
@@ -59,9 +60,9 @@ class FLORISFarmComponent():
         CT_turbines = self.fmodel.get_turbine_thrust_coefficients()
         V_turbines = self.fmodel.turbine_average_velocities
         rho_floris = self.fmodel.core.flow_field.air_density
-        A_floris = np.pi*self.fmodel.core.farm.rotor_diameters**2/4
+        A_floris = np.pi * self.fmodel.core.farm.rotor_diameters**2 / 4
 
-        thrust_turbines = CT_turbines*(0.5*rho_floris*A_floris*V_turbines**2)
+        thrust_turbines = CT_turbines * (0.5 * rho_floris * A_floris * V_turbines**2)
         return thrust_turbines.T
 
     def dump_floris_outfile(self, dir_output=None):
