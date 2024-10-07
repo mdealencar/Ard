@@ -87,8 +87,17 @@ print(prob.get_val("batchFLORIS.power_farm", units="GW"))
 plt.contourf(
     WD,
     WS,
-    prob.get_val("batchFLORIS.power_farm", units="GW").reshape(WD.shape),
+    np.max(prob.get_val("batchFLORIS.power_turbines", units="MW"), axis=0).T.reshape(WD.shape),
 )
+plt.colorbar()
+plt.show()
+
+plt.contourf(
+    WD,
+    WS,
+    np.max(prob.get_val("batchFLORIS.thrust_turbines", units="kN"), axis=0).T.reshape(WD.shape),
+)
+plt.colorbar()
 plt.show()
 
 ### FIN!
