@@ -36,10 +36,8 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate):
         self.time_series = floris.TimeSeries(
             wind_directions=np.degrees(np.array(self.wind_query.get_directions())),
             wind_speeds=np.array(self.wind_query.get_speeds()),
-            turbulence_intensities=0.06,  # dummy default for now
+            turbulence_intensities=np.array(self.wind_query.get_TIs()),
         )
-        # use IEC 61400-1 standard for TI
-        self.time_series.assign_ti_using_IEC_method()
 
         # set up and run the floris model
         self.fmodel.set(
@@ -56,5 +54,5 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate):
         self.fmodel.core.to_file(os.path.join(self.dir_floris, "batch.yaml"))
 
         outputs["power_farm"] = self.fmodel.get_farm_power()
-        # outputs["powers_turbines"] = self.fmodel.get_turbine_powers()
+        outputs["power_turbines"] = self.fmodel.get_turbine_powers()
         # outputs["Ct_turbines"] = self.fmodel.get_turbine_thrust_coefficients()

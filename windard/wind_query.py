@@ -1,8 +1,16 @@
 import numpy as np
 from floris.wind_data import WindDataBase
+from floris.wind_data import TimeSeries
 
 
 class WindQuery:
+    """
+    a class for holding queries of the wind conditions
+
+    this class should hold a series of wind conditions for which farm power will
+    be computed
+    """
+
     def __init__(
         self,
         directions=None,
@@ -10,10 +18,16 @@ class WindQuery:
         TIs=None,
     ) -> None:
 
-        self.directions = np.array([]) if directions is None else directions
-        self.speeds = np.array([]) if speeds is None else speeds
-        self.TIs = np.array([]) if TIs is None else TIs
-        self.N_conditions = self.directions.size
+        self.directions = np.array([])
+        self.speeds = np.array([])
+        self.TIs = np.array([])
+
+        if directions is not None:
+            self.set_directions(directions)
+        if speeds is not None:
+            self.set_speeds(speeds)
+        if TIs is not None:
+            self.set_TIs(TIs)
 
     def set_directions(self, directions):
         self.directions = directions
@@ -37,6 +51,24 @@ class WindQuery:
                 TIs.size == self.N_conditions
             ), "mismatch in TI size vs. direction/speed"
         self.TIs = TIs
+
+    def set_TI_using_IEC_method(self):
+        assert self.directions is not None, "directions must be set"
+        assert self.speeds is not None, "speeds must be set"
+        # use a temporary FLORIS time series to get the IEC TIs
+        ts_temp = TimeSeries(
+            wind_directions=self.directions,
+            wind_speeds=self.speeds,
+            turbulence_intensities=0.06*np.ones_like(self.directions),  # default value
+        )
+        ts_temp.assign_TI_using_IEC_method()
+
+        # re-set all the values
+        _, _, TIs_new, _, _, _ = ts_temp.unpack()
+        # directions_new, speeds_new, TIs_new, _, _, _ = ts_temp.unpack()
+        # self.set_directions(directions_new)
+        # self.set_speeds(speeds_new)
+        self.set_TIs(TIs_new)
 
     def get_directions(self):
         assert self.is_valid(), "mismatch in direction/speed vectors"
@@ -73,7 +105,7 @@ class WindQuery:
           - winddata_FLORIS: ... TO DO
         """
 
-        wind_directions, wind_speeds, ti_table, freq_table, _, _ = (
+        wind_directions, wind_speeds, ti_table, _, _, _ = (
             winddata_FLORIS.unpack()
         )
 

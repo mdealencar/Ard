@@ -52,11 +52,9 @@ class BatchFarmPowerTemplate(om.ExplicitComponent):
         self.wind_query = self.options["wind_query"]
         self.directions_wind = self.options["wind_query"].get_directions()
         self.speeds_wind = self.options["wind_query"].get_speeds()
-        self.TIs_wind = (
-            self.options["wind_query"].get_TIs()
-            if self.options["wind_query"].get_TIs()
-            else 0.06 * np.ones_like(self.directions_wind)
-        )
+        if self.options["wind_query"].get_TIs() is None:
+            self.options["wind_query"].set_TI_using_IEC_method()
+        self.TIs_wind = self.options["wind_query"].get_TIs()
         self.N_wind_conditions = self.options["wind_query"].N_conditions
 
         # set up inputs and outputs
