@@ -7,7 +7,36 @@ class BatchFarmPowerTemplate(om.ExplicitComponent):
     """
     template component for computing power using a farm aerodynamics model
 
+    a farm power component, based on this template, will compute the power and
+    thrust for a farm composed of a given rotor type.
 
+    options
+    -------
+        - modeling_options : a modeling options dictionary to specify modeling
+                specifications
+        - wind_query : a WindQuery objects that specifies the wind conditions
+                that are to be computed
+
+    inputs
+    ------
+        - x : a 1D numpy array indicating the x-dimension locations of the
+                turbines, with length N_turbines
+        - y : a 1D numpy array indicating the y-dimension locations of the
+                turbines, with length N_turbines
+        - yaw : a numpy array indicating the yaw angle to drive each turbine to
+                with respect to the ambient wind direction, with length
+                N_turbines
+
+    outputs
+    -------
+        - power_farm : a numpy array of the farm power for each of the wind
+                conditions that have been queried
+        - power_turbines : a numpy array of the farm power for each of the
+                turbines in the farm across all of the conditions that have been
+                queried (N_turbines, N_wind_conditions)
+        - thrust_turbines : a numpy array of the wind turbine thrust for each of
+                the turbines in the farm across all of the conditions that have
+                been queried (N_turbines, N_wind_conditions)
     """
 
     def initialize(self):
@@ -59,6 +88,12 @@ class BatchFarmPowerTemplate(om.ExplicitComponent):
 
     def compute(self, inputs, outputs):
 
+        #############################################
+        #                                           #
+        # IMPLEMENT THE AERODYNAMICS COMPONENT HERE #
+        #                                           #
+        #############################################
+
         raise NotImplementedError(
             "This is an abstract class for a derived class to implement!"
         )
@@ -71,9 +106,37 @@ class BatchFarmPowerTemplate(om.ExplicitComponent):
 
 class FarmAEPTemplateComponent(om.ExplicitComponent):
     """
-    template component for computing AEP using a farm aerodynamics model
+    template component for computing power using a farm aerodynamics model
 
+    a farm power component, based on this template, will compute the power and
+    thrust for a farm composed of a given rotor type.
 
+    options
+    -------
+        - modeling_options : a modeling options dictionary to specify modeling
+                specifications
+        - wind_rose : a FLORIS WindRose object that fully specifies the wind
+                conditions on which a farm is to be evaluated
+
+    inputs
+    ------
+        - x : a 1D numpy array indicating the x-dimension locations of the
+                turbines, with length N_turbines
+        - y : a 1D numpy array indicating the y-dimension locations of the
+                turbines, with length N_turbines
+        - yaw : a numpy array indicating the yaw angle to drive each turbine to
+                with respect to the ambient wind direction, with length
+                N_turbines
+
+    outputs
+    -------
+        - AEP_farm : a float giving the AEP of the farm
+        - power_turbines : a numpy array of the farm power for each of the
+                turbines in the farm across all of the conditions that have been
+                queried on the wind rose (N_turbines, N_wind_conditions)
+        - thrust_turbines : a numpy array of the wind turbine thrust for each of
+                the turbines in the farm across all of the conditions that have
+                been queried on the wind rose (N_turbines, N_wind_conditions)
     """
 
     def initialize(self):
@@ -120,6 +183,12 @@ class FarmAEPTemplateComponent(om.ExplicitComponent):
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
+
+        #############################################
+        #                                           #
+        # IMPLEMENT THE AERODYNAMICS COMPONENT HERE #
+        #                                           #
+        #############################################
 
         raise NotImplementedError(
             "This is an abstract class for a derived class to implement!"
