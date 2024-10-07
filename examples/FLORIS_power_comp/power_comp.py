@@ -25,8 +25,8 @@ farm_spec["xD_farm"], farm_spec["yD_farm"] = [
     7 * v.flatten() for v in np.meshgrid(np.linspace(-2, 2, 5), np.linspace(-2, 2, 5))
 ]
 if False:
-  plt.scatter(farm_spec["xD_farm"], farm_spec["yD_farm"])
-  plt.show()
+    plt.scatter(farm_spec["xD_farm"], farm_spec["yD_farm"])
+    plt.show()
 
 # specify the configuration/specification files to use
 filename_turbine_spec = os.path.abspath(
@@ -66,27 +66,28 @@ modeling_options = {
 # create the OpenMDAO model
 model = om.Group()
 model.add_subsystem(
-  "batchFLORIS",
-  farmaero_floris.FLORISBatchPower(
-    modeling_options=modeling_options,
-    wind_query=wind_query,
-    case_title="letsgo",
-  ),
+    "batchFLORIS",
+    farmaero_floris.FLORISBatchPower(
+        modeling_options=modeling_options,
+        wind_query=wind_query,
+        case_title="letsgo",
+    ),
 )
 
 prob = om.Problem(model)
 prob.setup()
 
-prob.set_val("batchFLORIS.x", 130.0*farm_spec["xD_farm"])
-prob.set_val("batchFLORIS.y", 130.0*farm_spec["yD_farm"])
+prob.set_val("batchFLORIS.x", 130.0 * farm_spec["xD_farm"])
+prob.set_val("batchFLORIS.y", 130.0 * farm_spec["yD_farm"])
 
 prob.run_model()
 
 print(prob.get_val("batchFLORIS.power_farm", units="GW"))
 
 plt.contourf(
-  WD, WS,
-  prob.get_val("batchFLORIS.power_farm", units="GW").reshape(WD.shape),
+    WD,
+    WS,
+    prob.get_val("batchFLORIS.power_farm", units="GW").reshape(WD.shape),
 )
 plt.show()
 

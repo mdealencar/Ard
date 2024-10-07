@@ -59,7 +59,8 @@ class WindQuery:
         ts_temp = TimeSeries(
             wind_directions=self.directions,
             wind_speeds=self.speeds,
-            turbulence_intensities=0.06*np.ones_like(self.directions),  # default value
+            turbulence_intensities=0.06
+            * np.ones_like(self.directions),  # default value
         )
         ts_temp.assign_ti_using_IEC_method()
 
@@ -105,9 +106,7 @@ class WindQuery:
           - winddata_FLORIS: ... TO DO
         """
 
-        wind_directions, wind_speeds, ti_table, _, _, _ = (
-            winddata_FLORIS.unpack()
-        )
+        wind_directions, wind_speeds, ti_table, _, _, _ = winddata_FLORIS.unpack()
 
         # create the wind query for this condition
         wq = WindQuery(wind_directions, wind_speeds, TIs=ti_table)
