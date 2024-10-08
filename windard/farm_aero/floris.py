@@ -3,7 +3,7 @@ import os
 import numpy as np
 import floris
 
-import windard.farm_aero_comp.templates as templates
+import windard.farm_aero.templates as templates
 
 
 class FLORISFarmComponent:
@@ -92,10 +92,10 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
 
         # set up and run the floris model
         self.fmodel.set(
-            layout_x=inputs["x"],
-            layout_y=inputs["y"],
+            layout_x=inputs["x_turbines"],
+            layout_y=inputs["y_turbines"],
             wind_data=self.time_series,
-            yaw_angles=np.array([inputs["yaw"]]),
+            yaw_angles=np.array([inputs["yaw_turbines"]]),
         )
         self.fmodel.set_operation_model("peak-shaving")
 
@@ -132,10 +132,10 @@ class FLORISAEP(templates.FarmAEPTemplate):
 
         # set up and run the floris model
         self.fmodel.set(
-            layout_x=inputs["x"],
-            layout_y=inputs["y"],
+            layout_x=inputs["x_turbines"],
+            layout_y=inputs["y_turbines"],
             wind_data=self.wind_rose,
-            yaw_angles=np.array([inputs["yaw"]]),
+            yaw_angles=np.array([inputs["yaw_turbines"]]),
         )
         self.fmodel.set_operation_model("peak-shaving")
 

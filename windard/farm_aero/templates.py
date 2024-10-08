@@ -14,9 +14,11 @@ class FarmAeroTemplate(om.ExplicitComponent):
         self.N_turbines = self.modeling_options["farm"]["N_turbines"]
 
         # set up inputs and outputs for farm layout
-        self.add_input("x", np.zeros((self.N_turbines,)), units="m")
-        self.add_input("y", np.zeros((self.N_turbines,)), units="m")
-        self.add_input("yaw", np.zeros((self.N_turbines,)), units="deg")
+        self.add_input("x_turbines", np.zeros((self.N_turbines,)), units="m")
+        self.add_input("y_turbines", np.zeros((self.N_turbines,)), units="m")
+        self.add_input(
+            "yaw_turbines", np.zeros((self.N_turbines,)), units="deg",
+        )
 
     def compute(self, inputs, outputs):
 
@@ -47,13 +49,13 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
 
     inputs
     ------
-        - x : a 1D numpy array indicating the x-dimension locations of the
-                turbines, with length N_turbines
-        - y : a 1D numpy array indicating the y-dimension locations of the
-                turbines, with length N_turbines
-        - yaw : a numpy array indicating the yaw angle to drive each turbine to
-                with respect to the ambient wind direction, with length
-                N_turbines
+        - x_turbines : a 1D numpy array indicating the x-dimension locations of
+                the turbines, with length N_turbines
+        - y_turbines : a 1D numpy array indicating the y-dimension locations of
+                the turbines, with length N_turbines
+        - yaw_turbines : a numpy array indicating the yaw angle to drive each
+                turbine to with respect to the ambient wind direction, with
+                length N_turbines
 
     outputs
     -------
@@ -117,8 +119,12 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
 
         # the following should be set
         outputs["power_farm"] = np.zeros((self.N_wind_conditions,))
-        outputs["power_turbines"] = np.zeros((self.N_turbines, self.N_wind_conditions))
-        outputs["thrust_turbines"] = np.zeros((self.N_turbines, self.N_wind_conditions))
+        outputs["power_turbines"] = np.zeros(
+            (self.N_turbines, self.N_wind_conditions)
+        )
+        outputs["thrust_turbines"] = np.zeros(
+            (self.N_turbines, self.N_wind_conditions)
+        )
 
 
 class FarmAEPTemplate(FarmAeroTemplate):

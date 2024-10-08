@@ -12,13 +12,13 @@ It is a portmanteau of "wind" and ["ard"](https://en.wikipedia.org/wiki/Ard_\(pl
 
 The technical goals of `windArd` are to:
 1) allow optimization of wind farm layouts for specific wind resource profiles
-2) target wholistic, system-level optimization objectives
-3) incorporate multi-fidelity analyses to integrate physics-resolving simulation
+1) target wholistic and complex system-level optimization objectives like LCOE and beyond-LCOE metrics
+1) naturally incorporate multi-fidelity analyses to efficiently integrate physics-resolving simulation
 
-As a code, the goal of `windArd` is to be:
-1) modular: choose the parts you want, skip the ones you don't, build yourself the ones we don't have
-2) clean: fully documented, and adhering to best-practices for code development
-3) effective: fully tested and testable at the unit and system level, and built with a derivative-forward approach
+As a piece of software, the goal of `windArd` is to be:
+1) principled: fully documented, and adhering to best-practices for code development
+1) modular and extensible: choose the parts you want, skip the ones you don't, build yourself the ones we don't have
+1) effective: fully tested and testable at the unit and system level, and built with a derivative-forward approach
 
 These will not always be possible, but they are the goal.
 

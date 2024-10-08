@@ -10,7 +10,7 @@ from wisdem.inputs.validation import load_yaml
 
 import windard.utils
 import windard.wind_query as wq
-import windard.farm_aero_comp.floris as farmaero_floris
+import windard.farm_aero.floris as farmaero_floris
 
 # create the wind query
 directions = np.linspace(0.0, 360.0, 101)
@@ -77,8 +77,8 @@ model.add_subsystem(
 prob = om.Problem(model)
 prob.setup()
 
-prob.set_val("batchFLORIS.x", 130.0 * farm_spec["xD_farm"])
-prob.set_val("batchFLORIS.y", 130.0 * farm_spec["yD_farm"])
+prob.set_val("batchFLORIS.x_turbines", 130.0 * farm_spec["xD_farm"])
+prob.set_val("batchFLORIS.y_turbines", 130.0 * farm_spec["yD_farm"])
 
 prob.run_model()
 
