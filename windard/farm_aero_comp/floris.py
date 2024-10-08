@@ -7,6 +7,13 @@ import windard.farm_aero_comp.templates as templates
 
 
 class FLORISFarmComponent:
+    """
+    a second-inherit superclass for FLORIS FarmAero components to share common
+    code
+
+    TO DO
+    """
+
     def initialize(self):
         self.options.declare("case_title")
 
@@ -24,23 +31,7 @@ class FLORISFarmComponent:
 
     def compute(self, inputs):
 
-        # generate the list of conditions for evaluation
-        self.time_series = floris.TimeSeries(
-            wind_directions=np.degrees(np.array(self.wind_query.get_directions())),
-            wind_speeds=np.array(self.wind_query.get_speeds()),
-            turbulence_intensities=np.array(self.wind_query.get_TIs()),
-        )
-
-        # set up and run the floris model
-        self.fmodel.set(
-            layout_x=inputs["x"],
-            layout_y=inputs["y"],
-            wind_data=self.time_series,
-            yaw_angles=np.array([inputs["yaw"]]),
-        )
-        self.fmodel.set_operation_model("peak-shaving")
-
-        self.fmodel.run()
+        raise NotImplementedError("compute must be specialized,")
 
     def setup_partials(self):
         # for FLORIS, no derivatives. use FD because FLORIS is cheap
@@ -73,6 +64,12 @@ class FLORISFarmComponent:
 
 
 class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
+    """
+    a component to compute a batch power estimate using FLORIS
+
+    ...
+    """
+
     def initialize(self):
         super().initialize()  # run super class script first!
         FLORISFarmComponent.initialize(self)  # FLORIS superclass
@@ -86,8 +83,23 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
 
     def compute(self, inputs, outputs):
 
-        # run the FLORIS component
-        FLORISFarmComponent.compute(self, inputs)
+        # generate the list of conditions for evaluation
+        self.time_series = floris.TimeSeries(
+            wind_directions=np.degrees(np.array(self.wind_query.get_directions())),
+            wind_speeds=np.array(self.wind_query.get_speeds()),
+            turbulence_intensities=np.array(self.wind_query.get_TIs()),
+        )
+
+        # set up and run the floris model
+        self.fmodel.set(
+            layout_x=inputs["x"],
+            layout_y=inputs["y"],
+            wind_data=self.time_series,
+            yaw_angles=np.array([inputs["yaw"]]),
+        )
+        self.fmodel.set_operation_model("peak-shaving")
+
+        self.fmodel.run()
 
         # dump the yaml to re-run this case on demand
         FLORISFarmComponent.dump_floris_outfile(self, self.dir_floris)
@@ -99,6 +111,12 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
 
 
 class FLORISAEP(templates.FarmAEPTemplate):
+    """
+    a component to compute an AEP estimate using FLORIS
+
+    ...
+    """
+
     def initialize(self):
         super().initialize()  # run super class script first!
         FLORISFarmComponent.initialize(self)  # add on FLORIS superclass
@@ -112,8 +130,16 @@ class FLORISAEP(templates.FarmAEPTemplate):
 
     def compute(self, inputs, outputs):
 
-        # run the FLORIS component
-        FLORISFarmComponent.compute(self, inputs)
+        # set up and run the floris model
+        self.fmodel.set(
+            layout_x=inputs["x"],
+            layout_y=inputs["y"],
+            wind_data=self.wind_rose,
+            yaw_angles=np.array([inputs["yaw"]]),
+        )
+        self.fmodel.set_operation_model("peak-shaving")
+
+        self.fmodel.run()
 
         # dump the yaml to re-run this case on demand
         FLORISFarmComponent.dump_floris_outfile(self, self.dir_floris)

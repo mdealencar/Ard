@@ -26,6 +26,7 @@ dependencies = [
   "numpy",
   "floris",
   "wisdem",
+  "marmot-agents",
   "openmdao",
 ]
 
