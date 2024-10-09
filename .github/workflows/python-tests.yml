@@ -37,10 +37,10 @@ jobs:
       run: |
         pytest --cov=windArd --cov-fail-under=80 test
 
-    - name: Upload coverage report
-      uses: codecov/codecov-action@v2
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+    # - name: Upload coverage report
+    #   uses: codecov/codecov-action@v2
+    #   with:
+    #     file: ./coverage.xml
+    #     flags: unittests
+    #     name: codecov-umbrella
 
