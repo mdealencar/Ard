@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import openmdao.api as om
 
@@ -149,19 +147,10 @@ class TestFarmAEPTemplate:
             },
         }
 
-        floris_location = floris.__file__.split("floris")[0] + "floris"
-        filename_wind_rose = os.path.join(
-            floris_location,
-            "examples",
-            "inputs",
-            "wind_rose.csv",
-        )
-        self.wr = floris.WindRose.read_csv_long(
-            filename_wind_rose,
-            wd_col="wd",
-            ws_col="ws",
-            freq_col="freq_val",
-            ti_col_or_value=0.06,
+        self.wr = floris.WindRose(
+            wind_directions=np.array([270, 280]),
+            wind_speeds=np.array([6.0, 7.0, 8.0]),
+            ti_table=0.06,
         )
 
         self.model = om.Group()
