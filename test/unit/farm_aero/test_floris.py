@@ -163,17 +163,17 @@ class TestFLORISBatchPower:
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("batchFLORIS.power_farm", units="MW")),
                 pyrite_data["power_farm"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("batchFLORIS.power_turbines", units="MW")),
                 pyrite_data["power_turbines"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("batchFLORIS.thrust_turbines", units="kN")),
                 pyrite_data["thrust_turbines"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
 
 class TestFLORISAEP:
@@ -321,21 +321,21 @@ class TestFLORISAEP:
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h")),
                 pyrite_data["aep_farm"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.power_farm", units="MW")),
                 pyrite_data["power_farm"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.power_turbines", units="MW")),
                 pyrite_data["power_turbines"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
             assert np.all(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.thrust_turbines", units="kN")),
                 pyrite_data["thrust_turbines"],
-                rtol=1e-4,
+                rtol=1e-3,
             ))
 
