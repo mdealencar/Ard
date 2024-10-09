@@ -35,7 +35,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        pytest --cov=windArd test
+        pytest --cov=windArd --cov-fail-under=80 test
 
     - name: Upload coverage report
       uses: codecov/codecov-action@v2
