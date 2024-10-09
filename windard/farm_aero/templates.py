@@ -17,7 +17,9 @@ class FarmAeroTemplate(om.ExplicitComponent):
         self.add_input("x_turbines", np.zeros((self.N_turbines,)), units="m")
         self.add_input("y_turbines", np.zeros((self.N_turbines,)), units="m")
         self.add_input(
-            "yaw_turbines", np.zeros((self.N_turbines,)), units="deg",
+            "yaw_turbines",
+            np.zeros((self.N_turbines,)),
+            units="deg",
         )
 
     def compute(self, inputs, outputs):
@@ -119,12 +121,8 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
 
         # the following should be set
         outputs["power_farm"] = np.zeros((self.N_wind_conditions,))
-        outputs["power_turbines"] = np.zeros(
-            (self.N_turbines, self.N_wind_conditions)
-        )
-        outputs["thrust_turbines"] = np.zeros(
-            (self.N_turbines, self.N_wind_conditions)
-        )
+        outputs["power_turbines"] = np.zeros((self.N_turbines, self.N_wind_conditions))
+        outputs["thrust_turbines"] = np.zeros((self.N_turbines, self.N_wind_conditions))
 
 
 class FarmAEPTemplate(FarmAeroTemplate):

@@ -38,9 +38,7 @@ class GridFarmLayout(templates.LayoutTemplate):
     def compute(self, inputs, outputs):
 
         D_rotor = self.modeling_options["turbine"]["geometry"]["diameter_rotor"]
-        lengthscale_spacing_streamwise = (
-            inputs["spacing_primary"] * D_rotor
-        )
+        lengthscale_spacing_streamwise = inputs["spacing_primary"] * D_rotor
         lengthscale_spacing_spanwise = inputs["spacing_secondary"] * D_rotor
 
         N_square = int(np.sqrt(self.N_turbines))  # floors

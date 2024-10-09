@@ -75,9 +75,9 @@ modeling_options = {
 # create the OpenMDAO model
 model = om.Group()
 model.add_subsystem(
-  "layout",
-  gridfarm.GridFarmLayout(modeling_options=modeling_options),
-  promotes=["*"],
+    "layout",
+    gridfarm.GridFarmLayout(modeling_options=modeling_options),
+    promotes=["*"],
 )
 model.add_subsystem(
     "aepFLORIS",
@@ -86,7 +86,7 @@ model.add_subsystem(
         wind_rose=wind_rose,
         case_title="letsgo",
     ),
-    promotes=["x_turbines","y_turbines"],
+    promotes=["x_turbines", "y_turbines"],
 )
 
 prob = om.Problem(model)
@@ -102,7 +102,7 @@ AEP_vec = np.zeros_like(orientation_vec)
 for idx, angle_orientation in enumerate(orientation_vec):
     prob.set_val("angle_orientation", angle_orientation)
     prob.run_model()
-    AEP_val = float(prob.get_val('aepFLORIS.AEP_farm', units="GW*h")[0])
+    AEP_val = float(prob.get_val("aepFLORIS.AEP_farm", units="GW*h")[0])
     print(f"AEP: {AEP_val}")
     AEP_vec[idx] = AEP_val
 
@@ -113,7 +113,7 @@ prob.set_val("angle_orientation", orientation_vec[np.argmax(AEP_vec)])
 prob.run_model()
 
 WS, WD = np.meshgrid(wind_rose.wind_speeds, wind_rose.wind_directions)
-FREQ = 1000*wind_rose.freq_table
+FREQ = 1000 * wind_rose.freq_table
 
 plt.contourf(
     WD,
@@ -126,7 +126,7 @@ plt.show()
 plt.contourf(
     WD,
     WS,
-    FREQ*8760,
+    FREQ * 8760,
 )
 plt.colorbar()
 plt.show()
@@ -134,7 +134,10 @@ plt.show()
 plt.contourf(
     WD,
     WS,
-    prob.get_val("aepFLORIS.power_farm", units="MW").reshape(WD.shape)*FREQ*8760/1000,
+    prob.get_val("aepFLORIS.power_farm", units="MW").reshape(WD.shape)
+    * FREQ
+    * 8760
+    / 1000,
 )
 plt.colorbar()
 plt.show()
