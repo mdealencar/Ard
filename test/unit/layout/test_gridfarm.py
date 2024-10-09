@@ -1,8 +1,6 @@
 import numpy as np
 import openmdao.api as om
 
-import matplotlib.pyplot as plt
-
 import pytest
 
 import windard.layout.gridfarm as gridfarm
@@ -40,7 +38,7 @@ class TestGridFarm:
         self.prob.setup()
 
     def test_setup(self):
-        # make sure the modeling options has the things we need for the layout
+        # make sure the modeling_options has what we need for the layout
         assert "modeling_options" in [k for k, _ in self.gf.options.items()]
 
         assert "farm" in self.gf.options["modeling_options"].keys()
@@ -182,13 +180,6 @@ class TestGridFarm:
             -np.sin(np.radians(angle_orientation)) * Xs
             + np.cos(np.radians(angle_orientation)) * Ys
         )
-
-        fig, ax = plt.subplots()
-        ax.scatter(Xr.flatten(), Yr.flatten())
-        for idx, (x, y) in enumerate(zip(Xr.flatten(), Yr.flatten())):
-            ax.text(x, y, str(idx), ha="right", va="bottom")
-        ax.axis("square")
-        plt.show()
 
         assert np.all(
             np.isclose(self.prob.get_val("gridfarm.x_turbines"), Xr.flatten())
