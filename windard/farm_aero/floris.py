@@ -48,6 +48,7 @@ class FLORISFarmComponent:
 
     def get_thrust_turbines(self):
         # FLORIS computes the thrust precursors, compute and return thrust
+        # use pure FLORIS to get these values for consistency
         CT_turbines = self.fmodel.get_turbine_thrust_coefficients()
         V_turbines = self.fmodel.turbine_average_velocities
         rho_floris = self.fmodel.core.flow_field.air_density

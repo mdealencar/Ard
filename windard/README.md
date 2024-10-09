@@ -12,16 +12,22 @@ Wind farm layout optimization is a significantly challenging problem for global 
 One strategy for reducing the dimensionality of the design space is the use of layout models.
 `layout` components are for connecting some reduced layout variables to (`x_turbines`, `y_turbines`) variables that explicitly describe the layout of a farm for computing the farm aerodynamics.
 
+The default `layout` component is the grid farm layout defined in `windard/layout/gridfarm.py`, which parameterizes a structured parallelogram-shaped farm in terms of a primary axis, aligned with respect to North by an orientation angle coincident with compass rose angles, with rows spaced along this axis by a constant spacing measured in rotor diameters; and a secondary axis, skewed from orthagonal by a skew angle in the direction of compass angles, with rows spaced along this axis by a constant spacing.
+This results in four parameters, two nondimensional spacing values and two angles.
+
 **tl;dr:** `layout` components map from a simplified parameter set to Cartesian farm coordinates
 
 ## Farm Aero Components (`farm_aero`)
 
-Fundamentally, `farm_aero` components will take in a set of farm layout design variables, in terms of `x_turbines` and `y_turbines` components of turbine locations, and potentially with some control command input, namely `yaw`.
+Fundamentally, `farm_aero` components will take in a set of farm layout design variables, in terms of `x_turbines` and `y_turbines` components of turbine locations, and potentially with some control command input, namely `yaw_turbines`.
 
 In addition to these design variables, the turbine definitions to be used and some (possibly comprehensive) set of wind conditions to be queried will also be provided to a given `farm_aero` component.
 
 The result of a `farm_aero` component will be a power or energy production quantity of interest.
 Typically, these will be a power output estimate for the set of provided conditions or annual energy production estimate for the farm given the wind resource.
+
+The default `farm_aero` component is [NREL's FLORIS tool](https://nrel.github.io/floris), which can be found at `windard/farm_aero/floris.py`.
+We wrap FLORIS to map from `x_turbines`, `y_turbines`, and `yaw_turbines` to turbine powers, turbine thrusts, farm power, and, optionally, farm AEP.
 
 **tl;dr:** `farm_aero` components map from a farm layouts and possibly control settings to some measure of farm power production
 
