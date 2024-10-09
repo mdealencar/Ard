@@ -1,4 +1,5 @@
 import os
+import importlib.util
 
 import numpy as np
 import openmdao.api as om
@@ -151,7 +152,7 @@ class TestFarmAEPTemplate:
 
         self.wr = floris.WindRose.read_csv_long(
             os.path.join(
-                os.path.split(floris.__file__)[0],
+                os.path.split(importlib.util.find_spec("floris").origin)[0],
                 "..",
                 "examples",
                 "inputs",

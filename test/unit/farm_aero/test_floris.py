@@ -9,7 +9,13 @@ class TestFLORISFarmComponent:
         pass
 
 
-class TestFarmAeroFLORIS:
+class TestFLORISBatchPower:
+
+    def setup_method(self):
+        pass
+
+
+class TestFLORISAEP:
 
     def setup_method(self):
         pass
