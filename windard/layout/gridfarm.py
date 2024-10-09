@@ -70,7 +70,7 @@ class GridFarmLayout(templates.LayoutTemplate):
         count_x = count_x.flatten()[: self.N_turbines]
         count_y = count_y.flatten()[: self.N_turbines]
 
-        angle_skew = np.radians(inputs["angle_skew"])
+        angle_skew = -np.radians(inputs["angle_skew"])
         xf_positions = (
             count_x * lengthscale_spacing_streamwise
             + count_y * lengthscale_spacing_spanwise * np.tan(angle_skew)
