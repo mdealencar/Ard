@@ -29,13 +29,11 @@ class LayoutTemplate(om.ExplicitComponent):
         self.add_output(
             "spacing_effective_primary",
             0.0,
-            units="unitless",
             desc="effective spacing in x-dimension for BOS calculation",
         )
         self.add_output(
             "spacing_effective_secondary",
             0.0,
-            units="unitless",
             desc="effective spacing in y-dimension for BOS calculation",
         )
 

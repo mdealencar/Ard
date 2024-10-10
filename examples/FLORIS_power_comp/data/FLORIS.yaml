@@ -25,11 +25,7 @@ solver: # configure the solver for the type of simulation
 farm:
   layout_x: # coordinates for the turbine locations in the x-direction
   - 0.0
-  - 630.0
-  - 1260.0
   layout_y: # coordinates for the turbine locations in the y-direction
-  - 0.0
-  - 0.0
   - 0.0
     # x-direction is typically considered to be the streamwise direction (left,
     # right) when the wind is out of the west. y-direction is typically

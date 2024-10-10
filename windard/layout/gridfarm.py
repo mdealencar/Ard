@@ -30,8 +30,8 @@ class GridFarmLayout(templates.LayoutTemplate):
         super().setup()
 
         # add four-parameter grid farm layout DVs
-        self.add_input("spacing_primary", 7.0, units="unitless")
-        self.add_input("spacing_secondary", 7.0, units="unitless")
+        self.add_input("spacing_primary", 7.0)
+        self.add_input("spacing_secondary", 7.0)
         self.add_input("angle_orientation", 0.0, units="deg")
         self.add_input("angle_skew", 0.0, units="deg")
 

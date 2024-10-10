@@ -31,6 +31,15 @@ We wrap FLORIS to map from `x_turbines`, `y_turbines`, and `yaw_turbines` to tur
 
 **tl;dr:** `farm_aero` components map from a farm layouts and possibly control settings to some measure of farm power production
 
+## Economics and Finance Components (`cost`)
+
+The `cost` components are less formally structured than the components above, but generally take inputs that are consumable stocks or marketable products of a wind system.
+Meanwhile, they give as outputs some measure of the monetary trade value that the wind system can create.
+Complete details are provided in the components in the `windard/cost` folder.
+
+The default `cost` component set are the WISDEM tools given in `windard/cost/windse_wrap.py`, which include WISDEM's `LandBOSSE` module for BOS calculation and WISDEM's `PlantFinance` module for computation of LCOE.
+
+**tl;dr:** `cost` components map from machines and their production of energy to money inputs and outputs
 
 
 <!-- FIN! -->
