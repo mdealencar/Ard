@@ -160,21 +160,21 @@ class TestFLORISBatchPower:
                   "test_floris_batch_pyrite.npz",
               ),
             )
-            assert np.all(np.isclose(
+            assert np.sum(np.isclose(
                 np.array(self.prob.get_val("batchFLORIS.power_farm", units="MW")),
                 pyrite_data["power_farm"],
                 rtol=1e-3,
-            ))
-            assert np.all(np.isclose(
+            )) == self.prob.get_val("batchFLORIS.power_farm", units="MW").size
+            assert np.sum(np.isclose(
                 np.array(self.prob.get_val("batchFLORIS.power_turbines", units="MW")),
                 pyrite_data["power_turbines"],
                 rtol=1e-3,
-            ))
-            assert np.all(np.isclose(
+            )) == self.prob.get_val("batchFLORIS.power_turbines", units="MW").size
+            assert np.sum(np.isclose(
                 np.array(self.prob.get_val("batchFLORIS.thrust_turbines", units="kN")),
                 pyrite_data["thrust_turbines"],
                 rtol=1e-3,
-            ))
+            )) == self.prob.get_val("batchFLORIS.thrust_turbines", units="kN").size
 
 class TestFLORISAEP:
 
