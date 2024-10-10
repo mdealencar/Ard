@@ -322,20 +322,20 @@ class TestFLORISAEP:
                 np.array(self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h")),
                 pyrite_data["aep_farm"],
                 rtol=1e-3,
-            )) == len(self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h"))
+            )) == self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h").size
             assert np.sum(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.power_farm", units="MW")),
                 pyrite_data["power_farm"],
                 rtol=1e-3,
-            )) == len(self.prob.get_val("aepFLORIS.power_farm", units="MW"))
+            )) == self.prob.get_val("aepFLORIS.power_farm", units="MW").size
             assert np.sum(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.power_turbines", units="MW")),
                 pyrite_data["power_turbines"],
                 rtol=1e-3,
-            )) == len(self.prob.get_val("aepFLORIS.power_turbines", units="MW"))
+            )) == self.prob.get_val("aepFLORIS.power_turbines", units="MW").size
             assert np.sum(np.isclose(
                 np.array(self.prob.get_val("aepFLORIS.thrust_turbines", units="kN")),
                 pyrite_data["thrust_turbines"],
                 rtol=1e-3,
-            )) == len(self.prob.get_val("aepFLORIS.thrust_turbines", units="kN"))
+            )) == self.prob.get_val("aepFLORIS.thrust_turbines", units="kN").size
 
