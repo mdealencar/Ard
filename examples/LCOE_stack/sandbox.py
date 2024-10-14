@@ -15,6 +15,192 @@ import windard.layout.gridfarm as gridfarm
 import windard.farm_aero.floris as farmaero_floris
 import windard.cost.wisdem_wrap as cost_wisdem
 
+### BEGIN: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
+
+
+def LandBOSSE_setup_latents(prob, modeling_options):
+
+    # get a map from the component variables to the promotion variables
+    comp2promotion_map = {
+        v[0]: v[-1]["prom_name"]
+        for v in prob.model.list_vars(val=False, out_stream=None)
+    }
+
+    # set latent/non-design inputs to LandBOSSE using values in modeling_options
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.num_turbines"],
+        modeling_options["farm"]["N_turbines"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.turbine_rating_MW"],
+        modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.hub_height_meters"],
+        modeling_options["turbine"]["geometry"]["height_hub"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.wind_shear_exponent"],
+        modeling_options["turbine"]["costs"]["wind_shear_exponent"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.rotor_diameter_m"],
+        modeling_options["turbine"]["geometry"]["diameter_rotor"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.number_of_blades"],
+        modeling_options["turbine"]["geometry"]["num_blades"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.rated_thrust_N"],
+        modeling_options["turbine"]["costs"]["rated_thrust_N"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.gust_velocity_m_per_s"],
+        modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.blade_surface_area"],
+        modeling_options["turbine"]["costs"]["blade_surface_area"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.tower_mass"],
+        modeling_options["turbine"]["costs"]["tower_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.nacelle_mass"],
+        modeling_options["turbine"]["costs"]["nacelle_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.hub_mass"],
+        modeling_options["turbine"]["costs"]["hub_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.blade_mass"],
+        modeling_options["turbine"]["costs"]["blade_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.foundation_height"],
+        modeling_options["turbine"]["costs"]["foundation_height"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.commissioning_pct"],
+        modeling_options["turbine"]["costs"]["commissioning_pct"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.decommissioning_pct"],
+        modeling_options["turbine"]["costs"]["decommissioning_pct"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.trench_len_to_substation_km"],
+        modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.distance_to_interconnect_mi"],
+        modeling_options["turbine"]["costs"]["distance_to_interconnect_mi"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.interconnect_voltage_kV"],
+        modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
+    )
+
+
+def FinanceSE_setup_latents(prob, modeling_options):
+
+    # get a map from the component variables to the promotion variables
+    comp2promotion_map = {
+        v[0]: v[-1]["prom_name"]
+        for v in prob.model.list_vars(val=False, out_stream=None)
+    }
+
+    # inputs to PlantFinanceSE
+    prob.set_val(
+        comp2promotion_map["financese.turbine_number"],
+        int(modeling_options["farm"]["N_turbines"]),
+    )
+    prob.set_val(
+        comp2promotion_map["financese.machine_rating"],
+        modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
+    )
+    prob.set_val(
+        comp2promotion_map["financese.tcc_per_kW"],
+        modeling_options["turbine"]["costs"]["tcc_per_kW"],
+    )
+    prob.set_val(
+        comp2promotion_map["financese.opex_per_kW"],
+        modeling_options["turbine"]["costs"]["opex_per_kW"],
+    )
+
+
+def create_setup_OM_problem(modeling_options):
+    # create the OpenMDAO model
+    model = om.Group()
+    model.add_subsystem(
+        "layout",
+        gridfarm.GridFarmLayout(modeling_options=modeling_options),
+        promotes=["*"],
+    )
+    model.add_subsystem(
+        "aepFLORIS",
+        farmaero_floris.FLORISAEP(
+            modeling_options=modeling_options,
+            wind_rose=wind_rose,
+            case_title="letsgo",
+        ),
+        promotes=["x_turbines", "y_turbines"],
+    )
+    model.add_subsystem(
+        "tcc",
+        cost_wisdem.TurbineCapitalCosts(),
+        promotes_inputs=[
+            "turbine_number",
+            "machine_rating",
+            "tcc_per_kW",
+            "offset_tcc_per_kW",
+        ],
+    )
+    model.add_subsystem(
+        "landbosse",
+        cost_wisdem.LandBOSSE(),
+    )
+    model.add_subsystem(
+        "opex",
+        cost_wisdem.OperatingExpenses(),
+        promotes_inputs=[
+            "turbine_number",
+            "machine_rating",
+            "opex_per_kW",
+        ],
+    )
+    model.connect(
+        "spacing_effective_primary", "landbosse.turbine_spacing_rotor_diameters"
+    )
+    model.connect(
+        "spacing_effective_secondary", "landbosse.row_spacing_rotor_diameters"
+    )
+
+    model.add_subsystem(
+        "financese",
+        cost_wisdem.PlantFinance(),
+        promotes_inputs=[
+            "turbine_number",
+            "machine_rating",
+            "tcc_per_kW",
+            "offset_tcc_per_kW",
+            "opex_per_kW",
+        ],
+    )
+    model.connect("aepFLORIS.AEP_farm", "financese.plant_aep_in")
+    model.connect("landbosse.bos_capex_kW", "financese.bos_per_kW")
+
+    prob = om.Problem(model)
+    prob.setup()
+
+    return model, prob
+
+
+### END: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
+
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG(
     os.path.join(
@@ -66,110 +252,12 @@ modeling_options = {
     },
 }
 
-# create the OpenMDAO model
-model = om.Group()
-model.add_subsystem(
-    "layout",
-    gridfarm.GridFarmLayout(modeling_options=modeling_options),
-    promotes=["*"],
-)
-model.add_subsystem(
-    "aepFLORIS",
-    farmaero_floris.FLORISAEP(
-        modeling_options=modeling_options,
-        wind_rose=wind_rose,
-        case_title="letsgo",
-    ),
-    promotes=["x_turbines", "y_turbines"],
-)
-model.add_subsystem(
-    "tcc",
-    cost_wisdem.TurbineCapitalCosts(),
-    promotes_inputs=["turbine_number", "machine_rating", "tcc_per_kW", "offset_tcc_per_kW",],
-)
-model.add_subsystem(
-    "landbosse",
-    cost_wisdem.LandBOSSE(),
-)
-model.add_subsystem(
-    "opex",
-    cost_wisdem.OperatingExpenses(),
-    promotes_inputs=["turbine_number", "machine_rating", "opex_per_kW",],
-)
-model.connect("spacing_effective_primary", "landbosse.turbine_spacing_rotor_diameters")
-model.connect("spacing_effective_secondary", "landbosse.row_spacing_rotor_diameters")
+# create the OM model and problem
+model, prob = create_setup_OM_problem(modeling_options=modeling_options)
 
-model.add_subsystem(
-    "financese",
-    cost_wisdem.PlantFinance(),
-    promotes_inputs=["turbine_number", "machine_rating", "tcc_per_kW", "offset_tcc_per_kW", "opex_per_kW",]
-)
-model.connect("aepFLORIS.AEP_farm", "financese.plant_aep_in")
-model.connect("landbosse.bos_capex_kW", "financese.bos_per_kW")
-
-prob = om.Problem(model)
-prob.setup()
-
-# set the latent variables for using the cost models
-prob.set_val("landbosse.num_turbines", modeling_options["farm"]["N_turbines"])
-prob.set_val("turbine_number", int(modeling_options["farm"]["N_turbines"]))
-prob.set_val(
-    "landbosse.turbine_rating_MW",
-    modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
-)
-prob.set_val(
-    "machine_rating",
-    modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
-)
-
-# inputs to LandBOSSE
-prob["landbosse.hub_height_meters"] = modeling_options["turbine"]["geometry"][
-    "height_hub"
-]
-prob["landbosse.wind_shear_exponent"] = modeling_options["turbine"]["costs"][
-    "wind_shear_exponent"
-]
-prob["landbosse.rotor_diameter_m"] = modeling_options["turbine"]["geometry"][
-    "diameter_rotor"
-]
-prob["landbosse.number_of_blades"] = modeling_options["turbine"]["geometry"][
-    "num_blades"
-]
-prob["landbosse.rated_thrust_N"] = modeling_options["turbine"]["costs"][
-    "rated_thrust_N"
-]
-prob["landbosse.gust_velocity_m_per_s"] = modeling_options["turbine"]["costs"][
-    "gust_velocity_m_per_s"
-]
-prob["landbosse.blade_surface_area"] = modeling_options["turbine"]["costs"][
-    "blade_surface_area"
-]
-prob["landbosse.tower_mass"] = modeling_options["turbine"]["costs"]["tower_mass"]
-prob["landbosse.nacelle_mass"] = modeling_options["turbine"]["costs"]["nacelle_mass"]
-prob["landbosse.hub_mass"] = modeling_options["turbine"]["costs"]["hub_mass"]
-prob["landbosse.blade_mass"] = modeling_options["turbine"]["costs"]["blade_mass"]
-prob["landbosse.foundation_height"] = modeling_options["turbine"]["costs"][
-    "foundation_height"
-]
-prob["landbosse.commissioning_pct"] = modeling_options["turbine"]["costs"][
-    "commissioning_pct"
-]
-prob["landbosse.decommissioning_pct"] = modeling_options["turbine"]["costs"][
-    "decommissioning_pct"
-]
-prob["landbosse.trench_len_to_substation_km"] = modeling_options["turbine"]["costs"][
-    "trench_len_to_substation_km"
-]
-prob["landbosse.distance_to_interconnect_mi"] = modeling_options["turbine"]["costs"][
-    "distance_to_interconnect_mi"
-]
-prob["landbosse.interconnect_voltage_kV"] = modeling_options["turbine"]["costs"][
-    "interconnect_voltage_kV"
-]
-
-# inputs to PlantFinanceSE
-prob["tcc_per_kW"] = modeling_options["turbine"]["costs"]["tcc_per_kW"]
-prob["opex_per_kW"] = modeling_options["turbine"]["costs"]["opex_per_kW"]
+# setup the latent variables for LandBOSSE and FinanceSE
+LandBOSSE_setup_latents(prob, modeling_options)
+FinanceSE_setup_latents(prob, modeling_options)
 
 # set up the working/design variables
 prob.set_val("spacing_primary", 7.0)
@@ -186,10 +274,13 @@ CapEx_val = float(prob.get_val("tcc.tcc", units="MUSD")[0])
 BOS_val = float(prob.get_val("landbosse.total_capex", units="MUSD")[0])
 OpEx_val = float(prob.get_val("opex.opex", units="MUSD/yr")[0])
 LCOE_val = float(prob.get_val("financese.lcoe", units="USD/MW/h")[0])
-print(f"AEP: {AEP_val:.2f}")
-print(f"ICC: M${CapEx_val+BOS_val:.2f}")
-print(f"\tCapEx: M${CapEx_val:.2f}")
-print(f"\tBOS: M${BOS_val:.2f}")
-print(f"OpEx/yr.: M${OpEx_val:.2f}")
+
+print(f"AEP: {AEP_val:.2f} GWh")
+print(f"ICC: ${CapEx_val+BOS_val:.2f}M")
+print(f"\tCapEx: ${CapEx_val:.2f}M")
+print(f"\tBOS: ${BOS_val:.2f}M")
+print(f"OpEx/yr.: ${OpEx_val:.2f}M")
 print(f"LCOE: ${LCOE_val:.2f}/MWh")
+
+
 # FIN!
