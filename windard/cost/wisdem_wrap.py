@@ -5,14 +5,16 @@ from wisdem.plant_financese.plant_finance import PlantFinance as PlantFinance_or
 from wisdem.landbosse.landbosse_omdao.landbosse import LandBOSSE as LandBOSSE_orig
 from wisdem.inputs.validation import load_yaml
 
+
 # this wrapper should sandbag warnings
 class LandBOSSE(LandBOSSE_orig):
     def setup(self):
-        warnings.filterwarnings('ignore', category=FutureWarning)
+        warnings.filterwarnings("ignore", category=FutureWarning)
         with warnings.catch_warnings():
             return super().setup()
+
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
-        warnings.filterwarnings('ignore', category=FutureWarning)
+        warnings.filterwarnings("ignore", category=FutureWarning)
         with warnings.catch_warnings():
             return super().compute(inputs, outputs, discrete_inputs, discrete_outputs)
 
@@ -20,11 +22,12 @@ class LandBOSSE(LandBOSSE_orig):
 # this wrapper should sandbag warnings
 class PlantFinance(PlantFinance_orig):
     def setup(self):
-        warnings.filterwarnings('ignore', category=FutureWarning)
+        warnings.filterwarnings("ignore", category=FutureWarning)
         with warnings.catch_warnings():
             return super().setup()
+
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
-        warnings.filterwarnings('ignore', category=FutureWarning)
+        warnings.filterwarnings("ignore", category=FutureWarning)
         with warnings.catch_warnings():
             return super().compute(inputs, outputs, discrete_inputs, discrete_outputs)
 
@@ -42,7 +45,7 @@ class TurbineCapitalCosts(om.ExplicitComponent):
         t_rating = inputs["machine_rating"]
         n_turbine = discrete_inputs["turbine_number"]
         tcc_per_kW = inputs["tcc_per_kW"] + inputs["offset_tcc_per_kW"]
-        outputs["tcc"] = n_turbine*tcc_per_kW*t_rating
+        outputs["tcc"] = n_turbine * tcc_per_kW * t_rating
 
 
 class OperatingExpenses(om.ExplicitComponent):
@@ -57,7 +60,7 @@ class OperatingExpenses(om.ExplicitComponent):
         t_rating = inputs["machine_rating"]
         n_turbine = discrete_inputs["turbine_number"]
         opex_per_kW = inputs["opex_per_kW"]
-        outputs["opex"] = n_turbine*opex_per_kW*t_rating
+        outputs["opex"] = n_turbine * opex_per_kW * t_rating
 
 
 # class WindPark(om.Group):

@@ -135,12 +135,12 @@ def FinanceSE_setup_latents(prob, modeling_options):
 def create_setup_OM_problem(modeling_options):
     # create the OpenMDAO model
     model = om.Group()
-    model.add_subsystem(
+    model.add_subsystem(  # layout component
         "layout",
         gridfarm.GridFarmLayout(modeling_options=modeling_options),
         promotes=["*"],
     )
-    model.add_subsystem(
+    model.add_subsystem(  # FLORIS AEP component
         "aepFLORIS",
         farmaero_floris.FLORISAEP(
             modeling_options=modeling_options,
@@ -149,7 +149,7 @@ def create_setup_OM_problem(modeling_options):
         ),
         promotes=["x_turbines", "y_turbines"],
     )
-    model.add_subsystem(
+    model.add_subsystem(  # turbine capital costs component
         "tcc",
         cost_wisdem.TurbineCapitalCosts(),
         promotes_inputs=[
@@ -159,11 +159,11 @@ def create_setup_OM_problem(modeling_options):
             "offset_tcc_per_kW",
         ],
     )
-    model.add_subsystem(
+    model.add_subsystem(  # LandBOSSE component
         "landbosse",
         cost_wisdem.LandBOSSE(),
     )
-    model.add_subsystem(
+    model.add_subsystem(  # operational expenditures component
         "opex",
         cost_wisdem.OperatingExpenses(),
         promotes_inputs=[
@@ -172,14 +172,14 @@ def create_setup_OM_problem(modeling_options):
             "opex_per_kW",
         ],
     )
-    model.connect(
+    model.connect(  # effective primary spacing for BOS
         "spacing_effective_primary", "landbosse.turbine_spacing_rotor_diameters"
     )
-    model.connect(
+    model.connect(  # effective secondary spacing for BOS
         "spacing_effective_secondary", "landbosse.row_spacing_rotor_diameters"
     )
 
-    model.add_subsystem(
+    model.add_subsystem(  # cost metrics component
         "financese",
         cost_wisdem.PlantFinance(),
         promotes_inputs=[
@@ -193,10 +193,12 @@ def create_setup_OM_problem(modeling_options):
     model.connect("aepFLORIS.AEP_farm", "financese.plant_aep_in")
     model.connect("landbosse.bos_capex_kW", "financese.bos_per_kW")
 
+    # build out the problem based on this model
     prob = om.Problem(model)
     prob.setup()
 
-    return model, prob
+    # return the problem
+    return prob
 
 
 ### END: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
@@ -252,21 +254,55 @@ modeling_options = {
     },
 }
 
-# create the OM model and problem
-model, prob = create_setup_OM_problem(modeling_options=modeling_options)
+# create the OM problem
+prob = create_setup_OM_problem(modeling_options=modeling_options)
 
-# setup the latent variables for LandBOSSE and FinanceSE
-LandBOSSE_setup_latents(prob, modeling_options)
-FinanceSE_setup_latents(prob, modeling_options)
+if False:
 
-# set up the working/design variables
-prob.set_val("spacing_primary", 7.0)
-prob.set_val("spacing_secondary", 7.0)
-prob.set_val("angle_orientation", 0.0)
-prob.set_val("angle_skew", 0.0)
+    # setup the latent variables for LandBOSSE and FinanceSE
+    LandBOSSE_setup_latents(prob, modeling_options)
+    FinanceSE_setup_latents(prob, modeling_options)
 
-# run the model
-prob.run_model()
+    # set up the working/design variables
+    prob.set_val("spacing_primary", 7.0)
+    prob.set_val("spacing_secondary", 7.0)
+    prob.set_val("angle_orientation", 0.0)
+    prob.set_val("angle_skew", 0.0)
+
+    # run the model
+    prob.run_model()
+
+else:
+
+    # set up the working/design variables
+    prob.model.add_design_var("spacing_primary", lower=1.0, upper=13.0)
+    prob.model.add_design_var("spacing_secondary", lower=1.0, upper=13.0)
+    prob.model.add_design_var("angle_orientation", lower=-90.0, upper=90.0)
+    prob.model.add_design_var("angle_skew", lower=-90.0, upper=90.0)
+    prob.model.add_objective("financese.lcoe")
+
+    # setup an optimization
+    prob.driver = om.DifferentialEvolutionDriver()
+    prob.driver.options["max_gen"] = 10  # DEBUG!!!!! short
+    prob.driver.options["pop_size"] = 5  # DEBUG!!!!! short
+    # prob.driver.options["Pc"] = 0.5
+    # prob.driver.options["F"] = 0.5
+    prob.driver.options["run_parallel"] = True
+    prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    prob.setup()
+
+    # setup the latent variables for LandBOSSE and FinanceSE
+    LandBOSSE_setup_latents(prob, modeling_options)
+    FinanceSE_setup_latents(prob, modeling_options)
+
+    # set up the working/design variables
+    prob.set_val("spacing_primary", 7.0)
+    prob.set_val("spacing_secondary", 7.0)
+    prob.set_val("angle_orientation", 0.0)
+    prob.set_val("angle_skew", 0.0)
+
+    prob.run_driver()
+
 
 # get and print the AEP
 AEP_val = float(prob.get_val("aepFLORIS.AEP_farm", units="GW*h")[0])

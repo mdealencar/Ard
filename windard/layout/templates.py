@@ -45,3 +45,39 @@ class LayoutTemplate(om.ExplicitComponent):
         raise NotImplementedError(
             "This is an abstract class for a derived class to implement"
         )
+
+
+class LanduseTemplate(om.ExplicitComponent):
+
+    def initialize(self):
+        self.options.declare("modeling_options")
+
+    def setup(self):
+        # load modeling options
+        modeling_options = self.modeling_options = self.options["modeling_options"]
+        self.N_turbines = modeling_options["farm"]["N_turbines"]
+
+        # add inputs that are universal
+        self.add_input(
+            "distance_layback_diameters",
+            0.0,
+            units=None,
+            desc="number of diameters of layback necessary for landuse",
+        )
+
+        # add outputs that are universal
+        self.add_output(
+            "area_tight",
+            0.0,
+            units="km**2",
+            desc="fundamental area of the farm geometry",
+        )
+
+    def setup_partials(self):
+        # default complex step for the layout-landuse tools, since they're often algebraic
+        self.declare_partials("*", "*", method="cs")
+
+    def compute(self):
+        raise NotImplementedError(
+            "This is an abstract class for a derived class to implement"
+        )

@@ -49,3 +49,60 @@ class TestLayoutTemplate:
             self.prob.set_val("x_turbines", x_turbines)
             self.prob.set_val("y_turbines", y_turbines)
             self.prob.run_model()
+
+
+class TestGridFarmLanduse:
+
+    def setup_method(self):
+
+        self.N_turbines = 25
+        self.D_rotor = 130.0
+        self.modeling_options = {
+            "farm": {
+                "N_turbines": self.N_turbines,
+            },
+        }
+
+        self.model = om.Group()
+        self.gf = self.model.add_subsystem(
+            "layout",
+            layout_templates.LayoutTemplate(modeling_options=self.modeling_options),
+            promotes=["*"],
+        )
+        self.lu = self.model.add_subsystem(
+            "landuse",
+            layout_templates.LanduseTemplate(modeling_options=self.modeling_options),
+            promotes=["*"],
+        )
+
+        self.prob = om.Problem(self.model)
+        self.prob.setup()
+
+    def test_setup(self):
+        # make sure the modeling_options has what we need for the layout
+        assert "modeling_options" in [k for k, _ in self.lu.options.items()]
+
+        assert "farm" in self.lu.options["modeling_options"].keys()
+        assert "N_turbines" in self.lu.options["modeling_options"]["farm"].keys()
+
+        # context manager to spike the warning since we aren't running the model yet
+        with pytest.warns(Warning) as warning:
+            # make sure that the outputs in the component match what we planned
+            input_list = [k for k, v in self.lu.list_inputs()]
+            for var_to_check in [
+                "distance_layback_diameters",
+            ]:
+                assert var_to_check in input_list
+
+            # make sure that the outputs in the component match what we planned
+            output_list = [k for k, v in self.lu.list_outputs()]
+            for var_to_check in [
+                "area_tight",
+            ]:
+                assert var_to_check in output_list
+
+    def test_compute(self):
+
+        # make sure that an attempt to compute on the un-specialized class fails
+        with pytest.raises(Exception):
+            self.prob.run_model()
