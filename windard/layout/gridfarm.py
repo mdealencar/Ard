@@ -146,8 +146,8 @@ class GridFarmLanduse(templates.LanduseTemplate):
             max_count_yf = (N_square) / 2
 
         # the side lengths of a parallelopiped oriented with the farm that encloses the farm with layback
-        length_farm_xf = (max_count_xf - min_count_xf) * lengthscale_spacing_streamwise
-        length_farm_yf = (max_count_yf - min_count_yf) * lengthscale_spacing_spanwise
+        length_farm_xf = (max_count_xf - min_count_xf) * lengthscale_spacing_spanwise
+        length_farm_yf = (max_count_yf - min_count_yf) * lengthscale_spacing_streamwise
 
         # the area of a parallelopiped oriented with the farm that encloses the farm with layback
         area_parallelopiped = (length_farm_xf + 2 * lengthscale_layback) * (
@@ -156,14 +156,15 @@ class GridFarmLanduse(templates.LanduseTemplate):
 
         # the side lengths of a square oriented with the farm that encloses the farm with layback
         angle_skew = np.radians(inputs["angle_skew"])
-        length_enclosing_farm_xf = (
-            max_count_xf * lengthscale_spacing_streamwise
-            + max_count_yf * lengthscale_spacing_spanwise * np.abs(np.tan(angle_skew))
+        length_enclosing_farm_xf = length_farm_xf
+        length_enclosing_farm_yf = (
+            max_count_yf * lengthscale_spacing_streamwise
+            + np.abs(max_count_xf) * lengthscale_spacing_spanwise * np.abs(np.tan(angle_skew))
         ) - (
-            min_count_xf * lengthscale_spacing_streamwise
-            + min_count_yf * lengthscale_spacing_spanwise * np.abs(np.tan(angle_skew))
+            min_count_yf * lengthscale_spacing_streamwise
+            - np.abs(min_count_xf) * lengthscale_spacing_spanwise * np.abs(np.tan(angle_skew))
         )
-        length_enclosing_farm_yf = length_farm_yf
+        print("farm frame dims:", length_enclosing_farm_xf, length_enclosing_farm_yf)  # DEBUG!!!!!
 
         # the area of a square oriented with the farm that encloses the farm with layback
         area_enclosingsquare_farmoriented = (
@@ -173,17 +174,17 @@ class GridFarmLanduse(templates.LanduseTemplate):
         # the side lengths of a square oriented with the compass rose that encloses the farm with layback
         angle_orientation = np.radians(inputs["angle_orientation"])
         length_enclosing_farm_x = (
-            np.cos(angle_orientation) * length_enclosing_farm_xf
-            + np.abs(np.sin(angle_orientation)) * length_enclosing_farm_yf
+            np.cos(np.abs(angle_orientation)) * length_enclosing_farm_xf
+            + np.sin(np.abs(angle_orientation)) * length_enclosing_farm_yf
         )
         length_enclosing_farm_y = (
-            np.abs(np.sin(angle_orientation)) * length_enclosing_farm_xf
-            + np.cos(angle_orientation) * length_enclosing_farm_yf
+            np.sin(np.abs(angle_orientation)) * length_enclosing_farm_xf
+            + np.cos(np.abs(angle_orientation)) * length_enclosing_farm_yf
         )
         area_enclosingsquare_compass = (
             length_enclosing_farm_x + 2 * lengthscale_layback
         ) * (length_enclosing_farm_y + 2 * lengthscale_layback)
-
+        print("compass frame dims:", length_enclosing_farm_x, length_enclosing_farm_y)  # DEBUG!!!!!
         outputs["area_tight"] = area_parallelopiped / (1e3) ** 2
         outputs["area_aligned_parcel"] = area_enclosingsquare_farmoriented / (1e3) ** 2
         outputs["area_compass_parcel"] = area_enclosingsquare_compass / (1e3) ** 2
