@@ -1,5 +1,6 @@
 import numpy as np
 import openmdao.api as om
+
 # import matplotlib.pyplot as plt
 
 import pytest
@@ -90,14 +91,19 @@ class TestGridFarm:
             y_turbines = spacing1 * 130.0 * np.arange(-2, 2 + 1, 1)
             X, Y = np.meshgrid(x_turbines, y_turbines)
 
-            assert np.all(np.isclose(self.prob.get_val("gridfarm.x_turbines"), X.flatten()))
-            assert np.all(np.isclose(self.prob.get_val("gridfarm.y_turbines"), Y.flatten()))
+            assert np.all(
+                np.isclose(self.prob.get_val("gridfarm.x_turbines"), X.flatten())
+            )
+            assert np.all(
+                np.isclose(self.prob.get_val("gridfarm.y_turbines"), Y.flatten())
+            )
 
     def test_compute_rotatedfarm(self):
 
         angle_skew = 0.0
         for spacing1, spacing2, angle_orientation in [
-            (3.0, 5.0, 7.5), (7.0, 4.0, -4.5),
+            (3.0, 5.0, 7.5),
+            (7.0, 4.0, -4.5),
         ]:
 
             self.prob.set_val("gridfarm.spacing_primary", spacing1)
@@ -130,7 +136,8 @@ class TestGridFarm:
 
         angle_orientation = 0.0
         for spacing1, spacing2, angle_skew in [
-            (3.0, 5.0, 12.5), (7.0, 4.0, 27.5),
+            (3.0, 5.0, 12.5),
+            (7.0, 4.0, 27.5),
         ]:
 
             self.prob.set_val("gridfarm.spacing_primary", spacing1)
@@ -157,7 +164,8 @@ class TestGridFarm:
     def test_compute_rotatedskewedfarm(self):
 
         for spacing1, spacing2, angle_orientation, angle_skew in [
-            (3.0, 5.0, 7.5, 12.5), (7.0, 4.0, -4.5, 27.5),
+            (3.0, 5.0, 7.5, 12.5),
+            (7.0, 4.0, -4.5, 27.5),
         ]:
 
             self.prob.set_val("gridfarm.spacing_primary", spacing1)
@@ -219,9 +227,9 @@ class TestGridFarmLanduse:
         )
         # BEGIN DEBUG!!!!!
         self.model.add_subsystem(
-          "viz",
-          viz.OutputLayout(modeling_options=self.modeling_options),
-          promotes=["*"],
+            "viz",
+            viz.OutputLayout(modeling_options=self.modeling_options),
+            promotes=["*"],
         )
         # END DEBUG!!!!!
         self.prob = om.Problem(self.model)
@@ -286,20 +294,29 @@ class TestGridFarmLanduse:
                 * self.D_rotor**2
                 / (1000.0) ** 2
             )  # tight area
-            A_skew = A_ref + (np.sqrt(self.N_turbines) - 1)**2*spacing2**2*self.D_rotor**2*np.abs(np.tan(np.radians(0.0))) / (1000.0) ** 2  # skewed area on to primary farm dim
-            A_square = np.abs((x_max - x_min)*(y_max - y_min))  # compass-aligned square
+            A_skew = (
+                A_ref
+                + (np.sqrt(self.N_turbines) - 1) ** 2
+                * spacing2**2
+                * self.D_rotor**2
+                * np.abs(np.tan(np.radians(0.0)))
+                / (1000.0) ** 2
+            )  # skewed area on to primary farm dim
+            A_square = np.abs(
+                (x_max - x_min) * (y_max - y_min)
+            )  # compass-aligned square
 
             # for a square, unskewed, compass-aligned farm all areas are equal
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)
             assert np.isclose(self.prob.get_val("gflu.area_aligned_parcel"), A_skew)
             assert np.isclose(self.prob.get_val("gflu.area_compass_parcel"), A_square)
 
-
     def test_compute_rotatedfarm(self):
 
         angle_skew = 0.0
         for spacing1, spacing2, angle_orientation in [
-            (3.0, 5.0, 7.5), (7.0, 4.0, -4.5),
+            (3.0, 5.0, 7.5),
+            (7.0, 4.0, -4.5),
         ]:
 
             self.prob.set_val("gridfarm.spacing_primary", spacing1)
@@ -321,21 +338,27 @@ class TestGridFarmLanduse:
                 * self.D_rotor**2
                 / (1000.0) ** 2
             )  # tight area
-            A_skew = A_ref + (np.sqrt(self.N_turbines) - 1)**2*spacing2**2*self.D_rotor**2*np.abs(np.tan(np.radians(angle_skew))) / (1000.0) ** 2  # skewed area on to primary farm dim
-            A_square = np.abs((x_max - x_min)*(y_max - y_min))  # compass-aligned square
+            A_skew = (
+                A_ref
+                + (np.sqrt(self.N_turbines) - 1) ** 2
+                * spacing2**2
+                * self.D_rotor**2
+                * np.abs(np.tan(np.radians(angle_skew)))
+                / (1000.0) ** 2
+            )  # skewed area on to primary farm dim
+            A_square = np.abs(
+                (x_max - x_min) * (y_max - y_min)
+            )  # compass-aligned square
 
             # for a rotated, unskewed, compass-aligned farm first 2 areas are equal
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)
             assert np.isclose(self.prob.get_val("gflu.area_aligned_parcel"), A_skew)
             assert np.isclose(self.prob.get_val("gflu.area_compass_parcel"), A_square)
 
-
     def test_compute_skewedfarm(self):
 
         angle_orientation = 0.0
-        for spacing1, spacing2, angle_skew in [
-            (4.0, 5.5, 14.5), (3.0, 6.5, -5.25)
-        ]:
+        for spacing1, spacing2, angle_skew in [(4.0, 5.5, 14.5), (3.0, 6.5, -5.25)]:
 
             self.prob.set_val("gridfarm.spacing_primary", spacing1)
             self.prob.set_val("gridfarm.spacing_secondary", spacing2)
@@ -356,19 +379,28 @@ class TestGridFarmLanduse:
                 * self.D_rotor**2
                 / (1000.0) ** 2
             )  # tight area
-            A_skew = A_ref + (np.sqrt(self.N_turbines) - 1)**2*spacing2**2*self.D_rotor**2*np.abs(np.tan(np.radians(angle_skew))) / (1000.0) ** 2  # skewed area on to primary farm dim
-            A_square = np.abs((x_max - x_min)*(y_max - y_min))  # compass-aligned square
+            A_skew = (
+                A_ref
+                + (np.sqrt(self.N_turbines) - 1) ** 2
+                * spacing2**2
+                * self.D_rotor**2
+                * np.abs(np.tan(np.radians(angle_skew)))
+                / (1000.0) ** 2
+            )  # skewed area on to primary farm dim
+            A_square = np.abs(
+                (x_max - x_min) * (y_max - y_min)
+            )  # compass-aligned square
 
             # for a skewed, compass-aligned farm second and third areas are equal
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)
             assert np.isclose(self.prob.get_val("gflu.area_aligned_parcel"), A_skew)
             assert np.isclose(self.prob.get_val("gflu.area_compass_parcel"), A_square)
 
-
     def test_compute_rotatedskewedfarm(self):
 
         for spacing1, spacing2, angle_orientation, angle_skew in [
-            (3.0, 5.0, 7.5, 12.5), (7.0, 4.0, -4.5, 27.5),
+            (3.0, 5.0, 7.5, 12.5),
+            (7.0, 4.0, -4.5, 27.5),
         ]:
 
             self.prob.set_val("gridfarm.spacing_primary", spacing1)
@@ -390,14 +422,25 @@ class TestGridFarmLanduse:
                 * self.D_rotor**2
                 / (1000.0) ** 2
             )  # tight area
-            A_skew = A_ref + (np.sqrt(self.N_turbines) - 1)**2*spacing2**2*self.D_rotor**2*np.abs(np.tan(np.radians(angle_skew))) / (1000.0) ** 2  # skewed area on to primary farm dim
-            A_square = np.abs((x_max - x_min)*(y_max - y_min))  # compass-aligned square
+            A_skew = (
+                A_ref
+                + (np.sqrt(self.N_turbines) - 1) ** 2
+                * spacing2**2
+                * self.D_rotor**2
+                * np.abs(np.tan(np.radians(angle_skew)))
+                / (1000.0) ** 2
+            )  # skewed area on to primary farm dim
+            A_square = np.abs(
+                (x_max - x_min) * (y_max - y_min)
+            )  # compass-aligned square
             print("reference values:", A_ref, A_skew, A_square)
 
             # for a skewed, compass-aligned farm second and third areas are equal
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)
             assert np.isclose(self.prob.get_val("gflu.area_aligned_parcel"), A_skew)
-            print("comparison:", self.prob.get_val("gflu.area_compass_parcel"), A_square)
+            print(
+                "comparison:", self.prob.get_val("gflu.area_compass_parcel"), A_square
+            )
             print(
                 np.min(self.prob.get_val("gridfarm.x_turbines", units="km")),
                 np.max(self.prob.get_val("gridfarm.x_turbines", units="km")),

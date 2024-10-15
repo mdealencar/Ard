@@ -8,6 +8,7 @@ import floris
 import openmdao.api as om
 
 from wisdem.inputs.validation import load_yaml
+from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
 import windard.utils
 import windard.wind_query as wq
@@ -140,6 +141,11 @@ def create_setup_OM_problem(modeling_options):
         gridfarm.GridFarmLayout(modeling_options=modeling_options),
         promotes=["*"],
     )
+    model.add_subsystem(  # landuse component
+        "landuse",
+        gridfarm.GridFarmLanduse(modeling_options=modeling_options),
+        promotes_inputs=["*"],
+    )
     model.add_subsystem(  # FLORIS AEP component
         "aepFLORIS",
         farmaero_floris.FLORISAEP(
@@ -257,7 +263,7 @@ modeling_options = {
 # create the OM problem
 prob = create_setup_OM_problem(modeling_options=modeling_options)
 
-if False:
+if True:
 
     # setup the latent variables for LandBOSSE and FinanceSE
     LandBOSSE_setup_latents(prob, modeling_options)
@@ -280,15 +286,25 @@ else:
     prob.model.add_design_var("angle_orientation", lower=-90.0, upper=90.0)
     prob.model.add_design_var("angle_skew", lower=-90.0, upper=90.0)
     prob.model.add_objective("financese.lcoe")
+    # prob.model.add_objective("landuse.area_tight")
 
     # setup an optimization
-    prob.driver = om.DifferentialEvolutionDriver()
-    prob.driver.options["max_gen"] = 10  # DEBUG!!!!! short
-    prob.driver.options["pop_size"] = 5  # DEBUG!!!!! short
-    # prob.driver.options["Pc"] = 0.5
-    # prob.driver.options["F"] = 0.5
-    prob.driver.options["run_parallel"] = True
-    prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    if False:
+        prob.driver = om.pyOptSparseDriver(optimizer="SLSQP")
+    elif True:
+        prob.driver = NLoptDriver(optimizer="LN_COBYLA")
+        prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    elif True:
+        prob.driver = om.ScipyOptimizeDriver(optimizer="COBYLA")
+        prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    else:
+        prob.driver = om.DifferentialEvolutionDriver()
+        prob.driver.options["max_gen"] = 10  # DEBUG!!!!! short
+        prob.driver.options["pop_size"] = 5  # DEBUG!!!!! short
+        # prob.driver.options["Pc"] = 0.5
+        # prob.driver.options["F"] = 0.5
+        prob.driver.options["run_parallel"] = True
+        prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
     prob.setup()
 
     # setup the latent variables for LandBOSSE and FinanceSE

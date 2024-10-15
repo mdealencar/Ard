@@ -28,6 +28,7 @@ dependencies = [
   "wisdem",
   "marmot-agents",
   "openmdao",
+  "shapely",
 ]
 
 [project.optional-dependencies]

@@ -159,12 +159,16 @@ class GridFarmLanduse(templates.LanduseTemplate):
         length_enclosing_farm_xf = length_farm_xf
         length_enclosing_farm_yf = (
             max_count_yf * lengthscale_spacing_streamwise
-            + np.abs(max_count_xf) * lengthscale_spacing_spanwise * np.abs(np.tan(angle_skew))
+            + np.abs(max_count_xf)
+            * lengthscale_spacing_spanwise
+            * np.abs(np.tan(angle_skew))
         ) - (
             min_count_yf * lengthscale_spacing_streamwise
-            - np.abs(min_count_xf) * lengthscale_spacing_spanwise * np.abs(np.tan(angle_skew))
+            - np.abs(min_count_xf)
+            * lengthscale_spacing_spanwise
+            * np.abs(np.tan(angle_skew))
         )
-        print("farm frame dims:", length_enclosing_farm_xf, length_enclosing_farm_yf)  # DEBUG!!!!!
+        # print("farm frame dims:", length_enclosing_farm_xf, length_enclosing_farm_yf)  # DEBUG!!!!!
 
         # the area of a square oriented with the farm that encloses the farm with layback
         area_enclosingsquare_farmoriented = (
@@ -184,7 +188,7 @@ class GridFarmLanduse(templates.LanduseTemplate):
         area_enclosingsquare_compass = (
             length_enclosing_farm_x + 2 * lengthscale_layback
         ) * (length_enclosing_farm_y + 2 * lengthscale_layback)
-        print("compass frame dims:", length_enclosing_farm_x, length_enclosing_farm_y)  # DEBUG!!!!!
+        # print("compass frame dims:", length_enclosing_farm_x, length_enclosing_farm_y)  # DEBUG!!!!!
         outputs["area_tight"] = area_parallelopiped / (1e3) ** 2
         outputs["area_aligned_parcel"] = area_enclosingsquare_farmoriented / (1e3) ** 2
         outputs["area_compass_parcel"] = area_enclosingsquare_compass / (1e3) ** 2
