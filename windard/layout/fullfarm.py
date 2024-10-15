@@ -37,6 +37,9 @@ class FullFarmLanduse(templates.LanduseTemplate):
             desc="area of the farm geometry (plus layback)",
         )
 
+    def setup_partials(self):
+        # default complex step for the layout-landuse tools, since they're often algebraic
+        self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
 
@@ -57,4 +60,6 @@ class FullFarmLanduse(templates.LanduseTemplate):
 
         # area tight is equal to the convex hull area for the points in sq. km.
         outputs["area_tight"] = mp.convex_hull.area / 1000**2
-        outputs["area_layback"]  = mp.convex_hull.buffer(lengthscale_layback).area / 1000**2
+        outputs["area_layback"] = (
+            mp.convex_hull.buffer(lengthscale_layback).area / 1000**2
+        )
