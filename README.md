@@ -38,4 +38,22 @@ The aerodynamic solvers result in an evaluation of the farm power for a given la
 These powers, with the "weights" provided by the demux component allow the integration of AEP.
 Finally, the BOS costs can be calculated based on the layout variables, and along with input CapEx and OpEx costs, LCOE can be computed.
 
+## Installation
+
+`windArd` can be installed locally from the source code with `pip` or through a package manager
+from PyPI with `pip` or conda-forge with `conda`.
+For Windows systems, `conda` is required due to constraints in the WISDEM installation system.
+For macOS and Linux, any option is available.
+
+### Local installation from source
+To install locally, first ensure that the source code repository is downloaded and configured
+to the correct version (or branch or commit).
+Then, navigate to the root directory of the source code and run one of the following commands:
+
+```bash
+    pip install .           # Install normally
+    pip install -e .        # Editable install; changes to the source code affect the installation
+    pip install .[dev]      # Developer install; includes dependencies for development
+```
+
 <!-- FIN -->
