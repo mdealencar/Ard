@@ -1,9 +1,16 @@
 
+# Project configuration for windArd
+# TOML spec: https://toml.io/en/v1.0.0
+
 [build-system]
 requires = [
   "setuptools",
 ]
 build-backend = "setuptools.build_meta"
+
+# https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+[tool.setuptools]
+packages = ["windard"]
 
 [project]
 name = "windArd"
@@ -15,13 +22,16 @@ authors = [
 description = "A package for multidisciplinary and/or multifidelity wind farm design"
 readme= "README.md"
 requires-python = ">=3.10"
-# url =
 classifiers = [
-  "Programming Language :: Python :: 3",
-  "Operating System :: OS Independent",
   "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
-# license_files = LICENSE
 dependencies = [
   "numpy",
   "floris",
@@ -30,23 +40,14 @@ dependencies = [
   "openmdao",
   "shapely",
 ]
-
 [project.optional-dependencies]
 dev = [
   "pytest",
   "pytest-cov",
 ]
-
-# [tool.setuptools]
-# py_modules = ["windard"]
-
-[tool.setuptools.packages.find]
-# where = ["."]  # list of folders that contain the packages (["."] by default)
-# include = ["windard"]  # package names should match these glob patterns (["*"] by default)
-exclude = ["assets"]  # exclude packages matching these glob patterns (empty by default)
-# namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
-
-[options]
-# package_dir == tools_cvf
-packages = "windard"
-python_requires = ">= 3.8"
+[project.urls]
+# Homepage = "https://example.com"
+# Documentation = "https://cfrontin.github.io/windArd"
+Repository = "https://github.com/cfrontin/windArd.git"
+Issues = "https://github.com/cfrontin/windArd/issues"
+# Changelog = "https://github.com/cfrontin/windArd/blob/main/CHANGELOG.md"
