@@ -1,7 +1,0 @@
-numpy
-floris
-wisdem
-marmot-agents
-openmdao
-pytest
-pytest-cov
