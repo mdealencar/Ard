@@ -72,7 +72,7 @@ class GridFarmLayout(templates.LayoutTemplate):
         count_x = count_x.flatten()[: self.N_turbines]
         count_y = count_y.flatten()[: self.N_turbines]
 
-        angle_skew = -np.pi/180.0*inputs["angle_skew"]
+        angle_skew = -np.pi / 180.0 * inputs["angle_skew"]
         Bmtx = np.array(
             [
                 [1.0, 0.0],
@@ -83,7 +83,7 @@ class GridFarmLayout(templates.LayoutTemplate):
         xi_positions = count_x * lengthscale_spacing_spanwise
         yi_positions = count_y * lengthscale_spacing_streamwise
 
-        angle_orientation = np.pi/180.0*inputs["angle_orientation"]
+        angle_orientation = np.pi / 180.0 * inputs["angle_orientation"]
         Amtx = np.array(
             [
                 [np.cos(angle_orientation), np.sin(angle_orientation)],
@@ -167,7 +167,7 @@ class GridFarmLanduse(templates.LanduseTemplate):
         )
 
         # the side lengths of a square oriented with the farm that encloses the farm with layback
-        angle_skew = np.pi/180.0*inputs["angle_skew"]
+        angle_skew = np.pi / 180.0 * inputs["angle_skew"]
         length_enclosing_farm_xf = length_farm_xf
         length_enclosing_farm_yf = (
             max_count_yf * lengthscale_spacing_streamwise
@@ -187,57 +187,66 @@ class GridFarmLanduse(templates.LanduseTemplate):
         ) * (length_enclosing_farm_yf + 2 * lengthscale_layback)
 
         # the side lengths of a square oriented with the compass rose that encloses the farm with layback
-        angle_orientation = np.pi/180.0*inputs["angle_orientation"]
+        angle_orientation = np.pi / 180.0 * inputs["angle_orientation"]
         A_x = (
-            + max_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
+            +max_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
             + max_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation)
-            - (max_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))*np.tan(angle_skew)
+            - (max_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))
+            * np.tan(angle_skew)
         )
         A_y = (
-            + max_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
+            +max_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
             - max_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation)
-            - (max_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))*np.tan(angle_skew)
+            - (max_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))
+            * np.tan(angle_skew)
         )
         B_x = (
-            + min_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
+            +min_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
             + max_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation)
-            - (max_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))*np.tan(angle_skew)
+            - (max_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))
+            * np.tan(angle_skew)
         )
         B_y = (
-            + min_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
+            +min_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
             - max_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation)
-            - (max_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))*np.tan(angle_skew)
+            - (max_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))
+            * np.tan(angle_skew)
         )
         C_x = (
             min_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
             + min_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation)
-            - (min_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))*np.tan(angle_skew)
+            - (min_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))
+            * np.tan(angle_skew)
         )
         C_y = (
             min_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
             - min_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation)
-            - (min_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))*np.tan(angle_skew)
+            - (min_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))
+            * np.tan(angle_skew)
         )
         D_x = (
-            - min_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
+            -min_count_yf * lengthscale_spacing_streamwise * np.sin(angle_orientation)
             + min_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation)
-            - (min_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))*np.tan(angle_skew)
+            - (min_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation))
+            * np.tan(angle_skew)
         )
         D_y = (
-            - min_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
+            -min_count_yf * lengthscale_spacing_streamwise * np.cos(angle_orientation)
             - min_count_xf * lengthscale_spacing_spanwise * np.sin(angle_orientation)
-            - (min_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))*np.tan(angle_skew)
+            - (min_count_xf * lengthscale_spacing_spanwise * np.cos(angle_orientation))
+            * np.tan(angle_skew)
         )
 
-        length_enclosing_farm_x = np.max([A_x, B_x, C_x, D_x]) - np.min([A_x, B_x, C_x, D_x])
-        length_enclosing_farm_y = np.max([A_y, B_y, C_y, D_y]) - np.min([A_y, B_y, C_y, D_y])
+        length_enclosing_farm_x = np.max([A_x, B_x, C_x, D_x]) - np.min(
+            [A_x, B_x, C_x, D_x]
+        )
+        length_enclosing_farm_y = np.max([A_y, B_y, C_y, D_y]) - np.min(
+            [A_y, B_y, C_y, D_y]
+        )
 
         area_enclosingsquare_compass = (
             length_enclosing_farm_x + 2 * lengthscale_layback
-        ) * (
-            length_enclosing_farm_y + 2 * lengthscale_layback
-        )
+        ) * (length_enclosing_farm_y + 2 * lengthscale_layback)
         outputs["area_tight"] = area_parallelopiped / (1e3) ** 2
         outputs["area_aligned_parcel"] = area_enclosingsquare_farmoriented / (1e3) ** 2
         outputs["area_compass_parcel"] = area_enclosingsquare_compass / (1e3) ** 2
-

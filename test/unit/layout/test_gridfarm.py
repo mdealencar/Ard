@@ -422,4 +422,3 @@ class TestGridFarmLanduse:
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)
             assert np.isclose(self.prob.get_val("gflu.area_aligned_parcel"), A_skew)
             assert np.isclose(self.prob.get_val("gflu.area_compass_parcel"), A_square)
-

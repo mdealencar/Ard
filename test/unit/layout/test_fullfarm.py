@@ -59,7 +59,7 @@ class TestFullFarmLanduse:
     def test_layout_circle(self):
 
         # demo layout: 10D radius circle
-        THETA = np.linspace(0, 2 * np.pi, 25+1)[:-1]
+        THETA = np.linspace(0, 2 * np.pi, 25 + 1)[:-1]
         X, Y = [
             10.0 * self.D_rotor * np.sin(THETA),
             10.0 * self.D_rotor * np.cos(THETA),

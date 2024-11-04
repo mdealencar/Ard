@@ -157,7 +157,9 @@ def create_setup_OM_problem(modeling_options):
         # promotes=["AEP_farm"],
         promotes=["x_turbines", "y_turbines", "AEP_farm"],
     )
-    group_layout2aep.approx_totals(method="fd", step=1e-3, form="central", step_calc="rel_avg")
+    group_layout2aep.approx_totals(
+        method="fd", step=1e-3, form="central", step_calc="rel_avg"
+    )
     model.add_subsystem(
         "layout2aep",
         group_layout2aep,
@@ -354,7 +356,6 @@ else:
     # prob.check_totals()  # DEBUG!!!!!
 
     prob.run_driver()
-
 
 
 # get and print the AEP
