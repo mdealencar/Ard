@@ -136,24 +136,40 @@ def FinanceSE_setup_latents(prob, modeling_options):
 def create_setup_OM_problem(modeling_options):
     # create the OpenMDAO model
     model = om.Group()
-    model.add_subsystem(  # layout component
+    group_layout2aep = om.Group()
+    group_layout2aep.add_subsystem(  # layout component
         "layout",
         gridfarm.GridFarmLayout(modeling_options=modeling_options),
         promotes=["*"],
     )
-    model.add_subsystem(  # landuse component
+    group_layout2aep.add_subsystem(  # landuse component
         "landuse",
         gridfarm.GridFarmLanduse(modeling_options=modeling_options),
         promotes_inputs=["*"],
     )
-    model.add_subsystem(  # FLORIS AEP component
+    group_layout2aep.add_subsystem(  # FLORIS AEP component
         "aepFLORIS",
         farmaero_floris.FLORISAEP(
             modeling_options=modeling_options,
             wind_rose=wind_rose,
             case_title="letsgo",
         ),
-        promotes=["x_turbines", "y_turbines"],
+        # promotes=["AEP_farm"],
+        promotes=["x_turbines", "y_turbines", "AEP_farm"],
+    )
+    group_layout2aep.approx_totals(method="fd", step=1e-3, form="central", step_calc="rel_avg")
+    model.add_subsystem(
+        "layout2aep",
+        group_layout2aep,
+        promotes=[
+            "angle_orientation",
+            "angle_skew",
+            "spacing_primary",
+            "spacing_secondary",
+            "spacing_effective_primary",
+            "spacing_effective_secondary",
+            "AEP_farm",
+        ],
     )
     model.add_subsystem(  # turbine capital costs component
         "tcc",
@@ -196,7 +212,7 @@ def create_setup_OM_problem(modeling_options):
             "opex_per_kW",
         ],
     )
-    model.connect("aepFLORIS.AEP_farm", "financese.plant_aep_in")
+    model.connect("AEP_farm", "financese.plant_aep_in")
     model.connect("landbosse.bos_capex_kW", "financese.bos_per_kW")
 
     # build out the problem based on this model
@@ -263,7 +279,7 @@ modeling_options = {
 # create the OM problem
 prob = create_setup_OM_problem(modeling_options=modeling_options)
 
-if True:
+if False:
 
     # setup the latent variables for LandBOSSE and FinanceSE
     LandBOSSE_setup_latents(prob, modeling_options)
@@ -291,11 +307,17 @@ else:
     # setup an optimization
     if False:
         prob.driver = om.pyOptSparseDriver(optimizer="SLSQP")
-    elif True:
+    elif False:
         prob.driver = NLoptDriver(optimizer="LN_COBYLA")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
     elif True:
+        prob.driver = NLoptDriver(optimizer="LD_SLSQP")
+        prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    elif False:
         prob.driver = om.ScipyOptimizeDriver(optimizer="COBYLA")
+        prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    elif True:
+        prob.driver = om.ScipyOptimizeDriver(optimizer="SLSQP")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
     else:
         prob.driver = om.DifferentialEvolutionDriver()
@@ -305,6 +327,16 @@ else:
         # prob.driver.options["F"] = 0.5
         prob.driver.options["run_parallel"] = True
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+    # prob.driver.recording_options["includes"] = ["*"]
+    prob.driver.recording_options["record_objectives"] = True
+    prob.driver.recording_options["record_constraints"] = True
+    prob.driver.recording_options["record_desvars"] = True
+    # prob.driver.recording_options["record_inputs"] = True
+    # prob.driver.recording_options["record_outputs"] = True
+    prob.driver.recording_options["record_residuals"] = True
+
+    prob.driver.add_recorder(om.SqliteRecorder("case.sql"))
+
     prob.setup()
 
     # setup the latent variables for LandBOSSE and FinanceSE
@@ -317,11 +349,16 @@ else:
     prob.set_val("angle_orientation", 0.0)
     prob.set_val("angle_skew", 0.0)
 
+    # prob.run_model()  # DEBUG!!!!!
+    # prob.check_partials(excludes=["layout2aep.aepFLORIS"])  # DEBUG!!!!!
+    # prob.check_totals()  # DEBUG!!!!!
+
     prob.run_driver()
 
 
+
 # get and print the AEP
-AEP_val = float(prob.get_val("aepFLORIS.AEP_farm", units="GW*h")[0])
+AEP_val = float(prob.get_val("AEP_farm", units="GW*h")[0])
 CapEx_val = float(prob.get_val("tcc.tcc", units="MUSD")[0])
 BOS_val = float(prob.get_val("landbosse.total_capex", units="MUSD")[0])
 OpEx_val = float(prob.get_val("opex.opex", units="MUSD/yr")[0])

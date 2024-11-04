@@ -13,6 +13,20 @@ class LandBOSSE(LandBOSSE_orig):
         with warnings.catch_warnings():
             return super().setup()
 
+    def setup_partials(self):
+        # finite difference WISDEM tools for gradients
+        self.declare_partials(
+            [
+                "turbine_spacing_rotor_diameters",
+                "row_spacing_rotor_diameters",
+            ],
+            [
+                "bos_capex_kW",
+                "total_capex",
+            ],
+            method="fd",
+        )
+
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         warnings.filterwarnings("ignore", category=FutureWarning)
         with warnings.catch_warnings():
@@ -40,6 +54,10 @@ class TurbineCapitalCosts(om.ExplicitComponent):
         self.add_discrete_input("turbine_number", 0)
         self.add_output("tcc", 0.0, units="USD")
 
+    def setup_partials(self):
+        # complex step for simple gradients
+        self.declare_partials("*", "*", method="cs")
+
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         # Unpack parameters
         t_rating = inputs["machine_rating"]
@@ -54,6 +72,10 @@ class OperatingExpenses(om.ExplicitComponent):
         self.add_input("opex_per_kW", 0.0, units="USD/kW/yr")
         self.add_discrete_input("turbine_number", 0)
         self.add_output("opex", 0.0, units="USD/yr")
+
+    def setup_partials(self):
+        # complex step for simple gradients
+        self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         # Unpack parameters

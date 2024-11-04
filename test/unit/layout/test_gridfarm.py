@@ -1,12 +1,9 @@
 import numpy as np
 import openmdao.api as om
 
-# import matplotlib.pyplot as plt
-
 import pytest
 
 import windard.layout.gridfarm as gridfarm
-import windard.viz.plot_layout as viz
 
 
 class TestGridFarm:
@@ -30,13 +27,6 @@ class TestGridFarm:
             gridfarm.GridFarmLayout(modeling_options=self.modeling_options),
             promotes=["*"],
         )
-        # # BEGIN DEBUG!!!!!
-        # self.model.add_subsystem(
-        #   "viz",
-        #   viz.OutputLayout(modeling_options=self.modeling_options),
-        #   promotes=["*"],
-        # )
-        # # END DEBUG!!!!!
         self.prob = om.Problem(self.model)
         self.prob.setup()
 
@@ -89,7 +79,7 @@ class TestGridFarm:
 
             x_turbines = spacing2 * 130.0 * np.arange(-2, 2 + 1, 1)
             y_turbines = spacing1 * 130.0 * np.arange(-2, 2 + 1, 1)
-            X, Y = np.meshgrid(x_turbines, y_turbines)
+            Y, X = np.meshgrid(y_turbines, x_turbines)
 
             assert np.all(
                 np.isclose(self.prob.get_val("gridfarm.x_turbines"), X.flatten())
@@ -115,7 +105,7 @@ class TestGridFarm:
 
             x_turbines = spacing2 * 130.0 * np.arange(-2, 2 + 1, 1)
             y_turbines = spacing1 * 130.0 * np.arange(-2, 2 + 1, 1)
-            X, Y = np.meshgrid(x_turbines, y_turbines)
+            Y, X = np.meshgrid(y_turbines, x_turbines)
             Xr = (
                 np.cos(np.radians(angle_orientation)) * X
                 + np.sin(np.radians(angle_orientation)) * Y
@@ -149,16 +139,16 @@ class TestGridFarm:
 
             x_turbines = spacing2 * 130.0 * np.arange(-2, 2 + 1, 1)
             y_turbines = spacing1 * 130.0 * np.arange(-2, 2 + 1, 1)
-            X, Y = np.meshgrid(x_turbines, y_turbines)
-            Xr, Yr = X, Y
-            Xs = Xr
-            Ys = Yr - Xr * np.tan(np.radians(angle_skew))
+            Y, X = np.meshgrid(y_turbines, x_turbines)
+            Xs = X
+            Ys = X * np.tan(-np.radians(angle_skew)) + Y
+            Xr, Yr = Xs, Ys
 
             assert np.all(
-                np.isclose(self.prob.get_val("gridfarm.x_turbines"), Xs.flatten())
+                np.isclose(self.prob.get_val("gridfarm.x_turbines"), Xr.flatten())
             )
             assert np.all(
-                np.isclose(self.prob.get_val("gridfarm.y_turbines"), Ys.flatten())
+                np.isclose(self.prob.get_val("gridfarm.y_turbines"), Yr.flatten())
             )
 
     def test_compute_rotatedskewedfarm(self):
@@ -177,7 +167,7 @@ class TestGridFarm:
 
             x_turbines = spacing2 * 130.0 * np.arange(-2, 2 + 1, 1)
             y_turbines = spacing1 * 130.0 * np.arange(-2, 2 + 1, 1)
-            X, Y = np.meshgrid(x_turbines, y_turbines)
+            Y, X = np.meshgrid(y_turbines, x_turbines)
             Xs = X
             Ys = -np.tan(np.radians(angle_skew)) * X + Y
             Xr = (
@@ -225,13 +215,6 @@ class TestGridFarmLanduse:
             gridfarm.GridFarmLanduse(modeling_options=self.modeling_options),
             promotes=["*"],
         )
-        # BEGIN DEBUG!!!!!
-        self.model.add_subsystem(
-            "viz",
-            viz.OutputLayout(modeling_options=self.modeling_options),
-            promotes=["*"],
-        )
-        # END DEBUG!!!!!
         self.prob = om.Problem(self.model)
         self.prob.setup()
 
@@ -438,16 +421,5 @@ class TestGridFarmLanduse:
             # for a skewed, compass-aligned farm second and third areas are equal
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)
             assert np.isclose(self.prob.get_val("gflu.area_aligned_parcel"), A_skew)
-            print(
-                "comparison:", self.prob.get_val("gflu.area_compass_parcel"), A_square
-            )
-            print(
-                np.min(self.prob.get_val("gridfarm.x_turbines", units="km")),
-                np.max(self.prob.get_val("gridfarm.x_turbines", units="km")),
-            )
-            print(
-                np.min(self.prob.get_val("gridfarm.y_turbines", units="km")),
-                np.max(self.prob.get_val("gridfarm.y_turbines", units="km")),
-            )
-            # plt.show()
             assert np.isclose(self.prob.get_val("gflu.area_compass_parcel"), A_square)
+

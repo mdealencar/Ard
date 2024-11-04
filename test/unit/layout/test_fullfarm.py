@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import pytest
 
 import windard.layout.fullfarm as fullfarm
-import windard.viz.plot_layout as viz
 
 
 class TestFullFarmLanduse:
@@ -32,13 +31,6 @@ class TestFullFarmLanduse:
             fullfarm.FullFarmLanduse(modeling_options=self.modeling_options),
             promotes=["*"],
         )
-        # BEGIN DEBUG!!!!!
-        self.model.add_subsystem(
-            "viz",
-            viz.OutputLayout(modeling_options=self.modeling_options),
-            promotes=["*"],
-        )
-        # END DEBUG!!!!!
         self.prob = om.Problem(self.model)
         self.prob.setup()
 
@@ -67,7 +59,7 @@ class TestFullFarmLanduse:
     def test_layout_circle(self):
 
         # demo layout: 10D radius circle
-        THETA = np.linspace(0, 2 * np.pi, 25)
+        THETA = np.linspace(0, 2 * np.pi, 25+1)[:-1]
         X, Y = [
             10.0 * self.D_rotor * np.sin(THETA),
             10.0 * self.D_rotor * np.cos(THETA),
