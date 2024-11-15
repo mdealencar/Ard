@@ -76,7 +76,7 @@ class GridFarmLayout(templates.LayoutTemplate):
         Bmtx = np.array(
             [
                 [1.0, 0.0],
-                [np.tan(float(angle_skew)), 1.0],
+                [np.tan(float(angle_skew[0])), 1.0],
             ]
         ).squeeze()
 

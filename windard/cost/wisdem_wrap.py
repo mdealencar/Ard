@@ -85,85 +85,116 @@ class OperatingExpenses(om.ExplicitComponent):
         outputs["opex"] = n_turbine * opex_per_kW * t_rating
 
 
-# class WindPark(om.Group):
-#     # Openmdao group to run the cost analysis of a wind park
-#     def setup(self):
-#
-#         costs_ivc = self.add_subsystem("costs", om.IndepVarComp())
-#         costs_ivc.add_discrete_output(
-#             "turbine_number", val=0, desc="Number of turbines at plant"
-#         )
-#         costs_ivc.add_output(
-#             "turbine_rating", val=0.0, units="W", desc="Rating of the turbine."
-#         )
-#         costs_ivc.add_output(
-#             "plant_aep",
-#             val=0.0,
-#             units="W*h",
-#             desc="Annual energy production of the plant.",
-#         )
-#
-#         # self.add_subsystem("farm_aep", FarmAEP())
-#         self.add_subsystem("landbosse", LandBOSSE())
-#         self.add_subsystem("financese", PlantFinance())
-#
-#         self.connect("landbosse.bos_capex_kW", "financese.bos_per_kW")
-#         self.connect(
-#             "costs.turbine_number",
-#             ["landbosse.num_turbines", "financese.turbine_number"],
-#         )
-#         self.connect(
-#             "costs.turbine_rating",
-#             ["landbosse.turbine_rating_MW", "financese.machine_rating"],
-#         )
-#         self.connect("costs.plant_aep", "financese.plant_aep_in")
-#         # self.connect("farm_aep.aep", "financese.plant_aep_in")
+def LandBOSSE_setup_latents(prob, modeling_options):
+
+    # get a map from the component variables to the promotion variables
+    comp2promotion_map = {
+        v[0]: v[-1]["prom_name"]
+        for v in prob.model.list_vars(val=False, out_stream=None)
+    }
+
+    # set latent/non-design inputs to LandBOSSE using values in modeling_options
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.num_turbines"],
+        modeling_options["farm"]["N_turbines"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.turbine_rating_MW"],
+        modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.hub_height_meters"],
+        modeling_options["turbine"]["geometry"]["height_hub"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.wind_shear_exponent"],
+        modeling_options["turbine"]["costs"]["wind_shear_exponent"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.rotor_diameter_m"],
+        modeling_options["turbine"]["geometry"]["diameter_rotor"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.number_of_blades"],
+        modeling_options["turbine"]["geometry"]["num_blades"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.rated_thrust_N"],
+        modeling_options["turbine"]["costs"]["rated_thrust_N"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.gust_velocity_m_per_s"],
+        modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.blade_surface_area"],
+        modeling_options["turbine"]["costs"]["blade_surface_area"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.tower_mass"],
+        modeling_options["turbine"]["costs"]["tower_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.nacelle_mass"],
+        modeling_options["turbine"]["costs"]["nacelle_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.hub_mass"],
+        modeling_options["turbine"]["costs"]["hub_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.blade_mass"],
+        modeling_options["turbine"]["costs"]["blade_mass"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.foundation_height"],
+        modeling_options["turbine"]["costs"]["foundation_height"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.commissioning_pct"],
+        modeling_options["turbine"]["costs"]["commissioning_pct"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.decommissioning_pct"],
+        modeling_options["turbine"]["costs"]["decommissioning_pct"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.trench_len_to_substation_km"],
+        modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.distance_to_interconnect_mi"],
+        modeling_options["turbine"]["costs"]["distance_to_interconnect_mi"],
+    )
+    prob.set_val(
+        comp2promotion_map["landbosse.landbosse.interconnect_voltage_kV"],
+        modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
+    )
 
 
-# def initialize_park_prob(park_opt, path2yaml):
-#
-#     yaml_inputs = load_yaml(path2yaml)
-#
-#     # Common inputs
-#     park_opt["costs.turbine_number"] = yaml_inputs["turbine_number"]
-#     park_opt["costs.turbine_rating"] = yaml_inputs["turbine_rating"]
-#     park_opt["costs.plant_aep"] = yaml_inputs["turbine_aep"] * (
-#         park_opt["costs.turbine_number"] * 0.85
-#     )
-#
-#     # Inputs to LandBOSSE
-#     park_opt["landbosse.hub_height_meters"] = yaml_inputs["hub_height_meters"]
-#     park_opt["landbosse.wind_shear_exponent"] = yaml_inputs["wind_shear_exponent"]
-#     park_opt["landbosse.rotor_diameter_m"] = yaml_inputs["rotor_diameter_m"]
-#     park_opt["landbosse.number_of_blades"] = yaml_inputs["number_of_blades"]
-#     park_opt["landbosse.rated_thrust_N"] = yaml_inputs["rated_thrust_N"]
-#     park_opt["landbosse.gust_velocity_m_per_s"] = yaml_inputs["gust_velocity_m_per_s"]
-#     park_opt["landbosse.blade_surface_area"] = yaml_inputs["blade_surface_area"]
-#     park_opt["landbosse.tower_mass"] = yaml_inputs["tower_mass"]
-#     park_opt["landbosse.nacelle_mass"] = yaml_inputs["nacelle_mass"]
-#     park_opt["landbosse.hub_mass"] = yaml_inputs["hub_mass"]
-#     park_opt["landbosse.blade_mass"] = yaml_inputs["blade_mass"]
-#     park_opt["landbosse.foundation_height"] = yaml_inputs["foundation_height"]
-#     park_opt["landbosse.turbine_spacing_rotor_diameters"] = yaml_inputs[
-#         "turbine_spacing_rotor_diameters"
-#     ]
-#     park_opt["landbosse.row_spacing_rotor_diameters"] = yaml_inputs[
-#         "row_spacing_rotor_diameters"
-#     ]
-#     park_opt["landbosse.commissioning_pct"] = yaml_inputs["commissioning_pct"]
-#     park_opt["landbosse.decommissioning_pct"] = yaml_inputs["decommissioning_pct"]
-#     park_opt["landbosse.trench_len_to_substation_km"] = yaml_inputs[
-#         "trench_len_to_substation_km"
-#     ]
-#     park_opt["landbosse.distance_to_interconnect_mi"] = yaml_inputs[
-#         "distance_to_interconnect_mi"
-#     ]
-#     park_opt["landbosse.interconnect_voltage_kV"] = yaml_inputs[
-#         "interconnect_voltage_kV"
-#     ]
-#
-#     # Inputs to PlantFinanceSE
-#     park_opt["financese.tcc_per_kW"] = yaml_inputs["tcc_per_kW"]
-#     park_opt["financese.opex_per_kW"] = yaml_inputs["opex_per_kW"]
-#
-#     return park_opt
+def FinanceSE_setup_latents(prob, modeling_options):
+
+    # get a map from the component variables to the promotion variables
+    comp2promotion_map = {
+        v[0]: v[-1]["prom_name"]
+        for v in prob.model.list_vars(val=False, out_stream=None)
+    }
+
+    # inputs to PlantFinanceSE
+    prob.set_val(
+        comp2promotion_map["financese.turbine_number"],
+        int(modeling_options["farm"]["N_turbines"]),
+    )
+    prob.set_val(
+        comp2promotion_map["financese.machine_rating"],
+        modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
+    )
+    prob.set_val(
+        comp2promotion_map["financese.tcc_per_kW"],
+        modeling_options["turbine"]["costs"]["tcc_per_kW"],
+    )
+    prob.set_val(
+        comp2promotion_map["financese.opex_per_kW"],
+        modeling_options["turbine"]["costs"]["opex_per_kW"],
+    )
+

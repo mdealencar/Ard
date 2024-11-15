@@ -12,218 +12,12 @@ from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
 import windard.utils
 import windard.wind_query as wq
-import windard.layout.gridfarm as gridfarm
-import windard.farm_aero.floris as farmaero_floris
+import windard.glue.prototype as glue
 import windard.cost.wisdem_wrap as cost_wisdem
 
 ### BEGIN: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
 
-
-def LandBOSSE_setup_latents(prob, modeling_options):
-
-    # get a map from the component variables to the promotion variables
-    comp2promotion_map = {
-        v[0]: v[-1]["prom_name"]
-        for v in prob.model.list_vars(val=False, out_stream=None)
-    }
-
-    # set latent/non-design inputs to LandBOSSE using values in modeling_options
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.num_turbines"],
-        modeling_options["farm"]["N_turbines"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.turbine_rating_MW"],
-        modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.hub_height_meters"],
-        modeling_options["turbine"]["geometry"]["height_hub"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.wind_shear_exponent"],
-        modeling_options["turbine"]["costs"]["wind_shear_exponent"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.rotor_diameter_m"],
-        modeling_options["turbine"]["geometry"]["diameter_rotor"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.number_of_blades"],
-        modeling_options["turbine"]["geometry"]["num_blades"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.rated_thrust_N"],
-        modeling_options["turbine"]["costs"]["rated_thrust_N"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.gust_velocity_m_per_s"],
-        modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.blade_surface_area"],
-        modeling_options["turbine"]["costs"]["blade_surface_area"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.tower_mass"],
-        modeling_options["turbine"]["costs"]["tower_mass"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.nacelle_mass"],
-        modeling_options["turbine"]["costs"]["nacelle_mass"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.hub_mass"],
-        modeling_options["turbine"]["costs"]["hub_mass"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.blade_mass"],
-        modeling_options["turbine"]["costs"]["blade_mass"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.foundation_height"],
-        modeling_options["turbine"]["costs"]["foundation_height"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.commissioning_pct"],
-        modeling_options["turbine"]["costs"]["commissioning_pct"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.decommissioning_pct"],
-        modeling_options["turbine"]["costs"]["decommissioning_pct"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.trench_len_to_substation_km"],
-        modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.distance_to_interconnect_mi"],
-        modeling_options["turbine"]["costs"]["distance_to_interconnect_mi"],
-    )
-    prob.set_val(
-        comp2promotion_map["landbosse.landbosse.interconnect_voltage_kV"],
-        modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
-    )
-
-
-def FinanceSE_setup_latents(prob, modeling_options):
-
-    # get a map from the component variables to the promotion variables
-    comp2promotion_map = {
-        v[0]: v[-1]["prom_name"]
-        for v in prob.model.list_vars(val=False, out_stream=None)
-    }
-
-    # inputs to PlantFinanceSE
-    prob.set_val(
-        comp2promotion_map["financese.turbine_number"],
-        int(modeling_options["farm"]["N_turbines"]),
-    )
-    prob.set_val(
-        comp2promotion_map["financese.machine_rating"],
-        modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
-    )
-    prob.set_val(
-        comp2promotion_map["financese.tcc_per_kW"],
-        modeling_options["turbine"]["costs"]["tcc_per_kW"],
-    )
-    prob.set_val(
-        comp2promotion_map["financese.opex_per_kW"],
-        modeling_options["turbine"]["costs"]["opex_per_kW"],
-    )
-
-
-def create_setup_OM_problem(modeling_options):
-    # create the OpenMDAO model
-    model = om.Group()
-    group_layout2aep = om.Group()
-    group_layout2aep.add_subsystem(  # layout component
-        "layout",
-        gridfarm.GridFarmLayout(modeling_options=modeling_options),
-        promotes=["*"],
-    )
-    group_layout2aep.add_subsystem(  # landuse component
-        "landuse",
-        gridfarm.GridFarmLanduse(modeling_options=modeling_options),
-        promotes_inputs=["*"],
-    )
-    group_layout2aep.add_subsystem(  # FLORIS AEP component
-        "aepFLORIS",
-        farmaero_floris.FLORISAEP(
-            modeling_options=modeling_options,
-            wind_rose=wind_rose,
-            case_title="letsgo",
-        ),
-        # promotes=["AEP_farm"],
-        promotes=["x_turbines", "y_turbines", "AEP_farm"],
-    )
-    group_layout2aep.approx_totals(
-        method="fd", step=1e-3, form="central", step_calc="rel_avg"
-    )
-    model.add_subsystem(
-        "layout2aep",
-        group_layout2aep,
-        promotes=[
-            "angle_orientation",
-            "angle_skew",
-            "spacing_primary",
-            "spacing_secondary",
-            "spacing_effective_primary",
-            "spacing_effective_secondary",
-            "AEP_farm",
-        ],
-    )
-    model.add_subsystem(  # turbine capital costs component
-        "tcc",
-        cost_wisdem.TurbineCapitalCosts(),
-        promotes_inputs=[
-            "turbine_number",
-            "machine_rating",
-            "tcc_per_kW",
-            "offset_tcc_per_kW",
-        ],
-    )
-    model.add_subsystem(  # LandBOSSE component
-        "landbosse",
-        cost_wisdem.LandBOSSE(),
-    )
-    model.add_subsystem(  # operational expenditures component
-        "opex",
-        cost_wisdem.OperatingExpenses(),
-        promotes_inputs=[
-            "turbine_number",
-            "machine_rating",
-            "opex_per_kW",
-        ],
-    )
-    model.connect(  # effective primary spacing for BOS
-        "spacing_effective_primary", "landbosse.turbine_spacing_rotor_diameters"
-    )
-    model.connect(  # effective secondary spacing for BOS
-        "spacing_effective_secondary", "landbosse.row_spacing_rotor_diameters"
-    )
-
-    model.add_subsystem(  # cost metrics component
-        "financese",
-        cost_wisdem.PlantFinance(),
-        promotes_inputs=[
-            "turbine_number",
-            "machine_rating",
-            "tcc_per_kW",
-            "offset_tcc_per_kW",
-            "opex_per_kW",
-        ],
-    )
-    model.connect("AEP_farm", "financese.plant_aep_in")
-    model.connect("landbosse.bos_capex_kW", "financese.bos_per_kW")
-
-    # build out the problem based on this model
-    prob = om.Problem(model)
-    prob.setup()
-
-    # return the problem
-    return prob
-
+# empty!
 
 ### END: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
 
@@ -279,7 +73,7 @@ modeling_options = {
 }
 
 # create the OM problem
-prob = create_setup_OM_problem(modeling_options=modeling_options)
+prob = glue.create_setup_OM_problem(modeling_options=modeling_options, wind_rose=wind_rose)
 
 if False:
 
@@ -342,8 +136,8 @@ else:
     prob.setup()
 
     # setup the latent variables for LandBOSSE and FinanceSE
-    LandBOSSE_setup_latents(prob, modeling_options)
-    FinanceSE_setup_latents(prob, modeling_options)
+    cost_wisdem.LandBOSSE_setup_latents(prob, modeling_options)
+    cost_wisdem.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables
     prob.set_val("spacing_primary", 7.0)
