@@ -73,7 +73,9 @@ modeling_options = {
 }
 
 # create the OM problem
-prob = glue.create_setup_OM_problem(modeling_options=modeling_options, wind_rose=wind_rose)
+prob = glue.create_setup_OM_problem(
+    modeling_options=modeling_options, wind_rose=wind_rose
+)
 
 if False:
 

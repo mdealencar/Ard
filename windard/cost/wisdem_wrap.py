@@ -197,4 +197,3 @@ def FinanceSE_setup_latents(prob, modeling_options):
         comp2promotion_map["financese.opex_per_kW"],
         modeling_options["turbine"]["costs"]["opex_per_kW"],
     )
-

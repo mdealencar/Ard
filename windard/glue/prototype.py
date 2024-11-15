@@ -7,16 +7,22 @@ import windard.cost.wisdem_wrap as cost_wisdem
 
 def create_setup_OM_problem(
     modeling_options,
-    wind_rose = None,
-    aero_backend = "FLORIS",
-    layout_type = "gridfarm",
+    wind_rose=None,
+    aero_backend="FLORIS",
+    layout_type="gridfarm",
 ):
     if layout_type != "gridfarm":
-        raise NotImplementedError(f"layout type {layout_type} is not implemented yet. -cfrontin")
+        raise NotImplementedError(
+            f"layout type {layout_type} is not implemented yet. -cfrontin"
+        )
     if aero_backend != "FLORIS":
-        raise NotImplementedError(f"aerodynamic backend {aero_backend} is not implemented yet. -cfrontin")
+        raise NotImplementedError(
+            f"aerodynamic backend {aero_backend} is not implemented yet. -cfrontin"
+        )
     if wind_rose is None:
-        raise NotImplementedError("this wind rose configuration is not implemented. -cfrontin")
+        raise NotImplementedError(
+            "this wind rose configuration is not implemented. -cfrontin"
+        )
 
     # create the OpenMDAO model
     model = om.Group()
@@ -41,7 +47,9 @@ def create_setup_OM_problem(
         # promotes=["AEP_farm"],
         promotes=["x_turbines", "y_turbines", "AEP_farm"],
     )
-    group_layout2aep.approx_totals(method="fd", step=1e-3, form="central", step_calc="rel_avg")
+    group_layout2aep.approx_totals(
+        method="fd", step=1e-3, form="central", step_calc="rel_avg"
+    )
     model.add_subsystem(
         "layout2aep",
         group_layout2aep,
@@ -105,4 +113,3 @@ def create_setup_OM_problem(
 
     # return the problem
     return prob
-
