@@ -47,7 +47,7 @@ dev = [
 ]
 [project.urls]
 # Homepage = "https://example.com"
-# Documentation = "https://cfrontin.github.io/windArd"
-Repository = "https://github.com/cfrontin/windArd.git"
-Issues = "https://github.com/cfrontin/windArd/issues"
-# Changelog = "https://github.com/cfrontin/windArd/blob/main/CHANGELOG.md"
+# Documentation = "https://wisdem.github.io/windArd"
+Repository = "https://github.com/wisdem/windArd.git"
+Issues = "https://github.com/wisdem/windArd/issues"
+# Changelog = "https://github.com/wisdem/windArd/blob/main/CHANGELOG.md"
