@@ -45,6 +45,10 @@ dev = [
   "pytest",
   "pytest-cov",
 ]
+docs = [
+  "jupyter-book",
+  "sphinx-book-theme",
+]
 [project.urls]
 # Homepage = "https://example.com"
 # Documentation = "https://wisdem.github.io/windArd"
