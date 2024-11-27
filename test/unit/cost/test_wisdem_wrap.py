@@ -58,9 +58,9 @@ class TestLandBOSSE:
                 "N_turbines": 25,
             },
             "turbine": data_turbine,
-            "FLORIS": {
-                "filename_tool_config": filename_floris_config,
-            },
+            # "FLORIS": {
+            #     "filename_tool_config": filename_floris_config,
+            # },
         }
 
         # create an OM model and problem

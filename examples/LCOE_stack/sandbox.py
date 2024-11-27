@@ -1,5 +1,5 @@
 import os
-
+from pathlib import Path
 import numpy as np
 
 import floris
@@ -19,40 +19,17 @@ import ard.cost.wisdem_wrap as cost_wisdem
 ### END: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
 
 # create the wind query
-wind_rose_wrg = floris.wind_data.WindRoseWRG(
-    os.path.join(
-        os.path.split(floris.__file__)[0],
-        "..",
-        "examples",
-        "examples_wind_resource_grid",
-        "wrg_example.wrg",
-    )
-)
+wind_rose_wrg = floris.wind_data.WindRoseWRG("wrg_example.wrg")
 wind_rose_wrg.set_wd_step(1.0)
 wind_rose_wrg.set_wind_speeds(np.arange(0, 30, 0.5)[1:])
 wind_rose = wind_rose_wrg.get_wind_rose_at_point(0.0, 0.0)
 wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
 # specify the configuration/specification files to use
-filename_turbine_spec = os.path.abspath(
-    os.path.join(
-        "data",
-        "turbine_spec_IEA-3p4-130-RWT.yaml",
-    )
-)  # toolset generalized turbine specification
-filename_turbine_FLORIS = os.path.abspath(
-    os.path.join(
-        "data",
-        "FLORIS_turbine_library",
-        "IEA-3p4-130-RWT.yaml",
-    )
-)  # toolset generalized turbine specification
-filename_floris_config = os.path.abspath(
-    os.path.join(
-        "data",
-        "FLORIS.yaml",
-    )
-)  # default FLORIS config for the project
+filename_turbine_spec = Path("FLORIS_power_comp/data/turbine_spec_IEA-3p4-130-RWT.yaml")                # toolset generalized turbine specification
+# filename_turbine_FLORIS = Path("FLORIS_power_comp/data/FLORIS_turbine_library/IEA-3p4-130-RWT.yaml")    # toolset generalized turbine specification
+# filename_floris_config = Path("FLORIS_power_comp/data/FLORIS.yaml")                                     # default FLORIS config for the project
+
 # create a FLORIS yaml to conform to the config/spec files above
 data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec) #, filename_turbine_FLORIS)
 # load the turbine specification
@@ -64,9 +41,9 @@ modeling_options = {
         "N_turbines": 25,
     },
     "turbine": data_turbine,
-    "FLORIS": {
-        "filename_tool_config": filename_floris_config,
-    },
+    # "FLORIS": {
+    #     "filename_tool_config": filename_floris_config,
+    # },
 }
 
 # create the OM problem

@@ -19,11 +19,12 @@ class FLORISFarmComponent:
 
     def setup(self):
 
-        # get the tool configuration file
-        self.tool_config = self.modeling_options["FLORIS"]["filename_tool_config"]
-
         # set up FLORIS
-        self.fmodel = floris.FlorisModel(self.tool_config)
+        self.fmodel = floris.FlorisModel("defaults")
+        self.fmodel.set(
+            wind_shear=0.585,
+            turbine_type=[self.modeling_options["turbine"]]
+        )
 
         self.case_title = self.options["case_title"]
         self.dir_floris = os.path.join("case_files", self.case_title, "floris_inputs")

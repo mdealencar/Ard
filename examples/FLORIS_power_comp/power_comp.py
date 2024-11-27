@@ -55,9 +55,9 @@ modeling_options = {
         "N_turbines": len(farm_spec["xD_farm"]),
     },
     "turbine": data_turbine,
-    "FLORIS": {
-        "filename_tool_config": filename_floris_config,
-    },
+    # "FLORIS": {
+    #     "filename_tool_config": filename_floris_config,
+    # },
 }
 
 # create the OpenMDAO model
