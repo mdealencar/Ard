@@ -1,13 +1,10 @@
 import os
-import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 import floris
 import openmdao.api as om
 
-from wisdem.inputs.validation import load_yaml
 from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
 import ard.utils
@@ -57,9 +54,9 @@ filename_floris_config = os.path.abspath(
     )
 )  # default FLORIS config for the project
 # create a FLORIS yaml to conform to the config/spec files above
-ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
+data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec) #, filename_turbine_FLORIS)
 # load the turbine specification
-data_turbine = load_yaml(filename_turbine_spec)
+# data_turbine = load_yaml(filename_turbine_spec)
 
 # set up the modeling options
 modeling_options = {

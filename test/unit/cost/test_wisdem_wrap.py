@@ -3,8 +3,6 @@ import os
 import numpy as np
 import openmdao.api as om
 
-from wisdem.inputs.validation import load_yaml
-
 import ard
 import ard.layout.gridfarm as gridfarm
 import ard.cost.wisdem_wrap as wcost
@@ -48,11 +46,11 @@ class TestLandBOSSE:
             )
         )  # default FLORIS config for the project
         # create a FLORIS yaml to conform to the config/spec files above
-        ard.utils.create_FLORIS_yamlfile(
+        data_turbine = ard.utils.create_FLORIS_yamlfile(
             filename_turbine_spec, filename_turbine_FLORIS
         )
         # load the turbine specification
-        data_turbine = load_yaml(filename_turbine_spec)
+        # data_turbine = load_yaml(filename_turbine_spec)
 
         # set up the modeling options
         self.modeling_options = {

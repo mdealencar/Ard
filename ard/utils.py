@@ -1,13 +1,15 @@
+import copy
 import os
 import yaml
 
 import numpy as np
 
 
+# def create_floris_turbine(
 def create_FLORIS_yamlfile(
     filename_turbine_spec,
-    filename_turbine_FLORIS,
-):
+    filename_turbine_FLORIS = None,
+) -> dict:
 
     # load generic spec
     with open(filename_turbine_spec, "r") as file_turbine_spec:
@@ -55,8 +57,9 @@ def create_FLORIS_yamlfile(
         "thrust_coefficient": pt_raw[2],
     }
 
-    # write FLORIS config file
-    with open(filename_turbine_FLORIS, "w") as file_turbine_FLORIS:
-        yaml.safe_dump(turbine_FLORIS, file_turbine_FLORIS)
+    # If an export filename is given, write it out
+    if filename_turbine_FLORIS is not None:
+        with open(filename_turbine_FLORIS, "w") as file_turbine_FLORIS:
+            yaml.safe_dump(turbine_FLORIS, file_turbine_FLORIS)
 
-    return filename_turbine_FLORIS
+    return copy.deepcopy(turbine_FLORIS)
