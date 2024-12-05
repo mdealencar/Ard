@@ -4,7 +4,7 @@ import openmdao.api as om
 
 import pytest
 
-import windard.viz.plot_layout as plot_layout
+import ard.viz.plot_layout as plot_layout
 
 
 class TestPlotLayout:

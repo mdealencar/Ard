@@ -28,13 +28,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install .[dev]
 
-    - name: Install windArd
+    - name: Install Ard
       run: |
         pip install .[dev]
 
     - name: Run tests with coverage
       run: |
-        pytest --cov=windard --cov-fail-under=80 test
+        pytest --cov=ard --cov-fail-under=80 test
 
     # - name: Upload coverage report
     #   uses: codecov/codecov-action@v2

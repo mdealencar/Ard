@@ -1,8 +1,8 @@
 import openmdao.api as om
 
-import windard.layout.gridfarm as gridfarm
-import windard.farm_aero.floris as farmaero_floris
-import windard.cost.wisdem_wrap as cost_wisdem
+import ard.layout.gridfarm as gridfarm
+import ard.farm_aero.floris as farmaero_floris
+import ard.cost.wisdem_wrap as cost_wisdem
 
 
 def create_setup_OM_problem(

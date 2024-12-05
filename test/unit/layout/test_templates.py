@@ -3,7 +3,7 @@ import openmdao.api as om
 
 import pytest
 
-import windard.layout.templates as layout_templates
+import ard.layout.templates as layout_templates
 
 
 class TestLayoutTemplate:

@@ -1,7 +1,7 @@
 
 # Testing
 
-In `windArd/test` we aim to have a broad and comprehensive testing suite.
+In `ard/test` we aim to have a broad and comprehensive testing suite.
 The goal is to divide tests into `unit`- and `system`- level tests, with corresponding subdirectories here to test, respectively, individual components and collections of components, in order to verify that the pieces are working as expected.
 
 Two paradigms of testing are used herein:

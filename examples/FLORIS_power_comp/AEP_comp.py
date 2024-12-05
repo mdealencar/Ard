@@ -8,10 +8,10 @@ import openmdao.api as om
 
 from wisdem.inputs.validation import load_yaml
 
-import windard.utils
-import windard.wind_query as wq
-import windard.layout.gridfarm as gridfarm
-import windard.farm_aero.floris as farmaero_floris
+import ard.utils
+import ard.wind_query as wq
+import ard.layout.gridfarm as gridfarm
+import ard.farm_aero.floris as farmaero_floris
 
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG(
@@ -57,7 +57,7 @@ filename_floris_config = os.path.abspath(
     )
 )  # default FLORIS config for the project
 # create a FLORIS yaml to conform to the config/spec files above
-windard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
+ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
 # load the turbine specification
 data_turbine = load_yaml(filename_turbine_spec)
 

@@ -1,6 +1,6 @@
 import numpy as np
 
-import windard.layout.templates as templates
+import ard.layout.templates as templates
 
 
 class GridFarmLayout(templates.LayoutTemplate):

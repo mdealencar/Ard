@@ -1,6 +1,6 @@
 import pytest
 
-import windard.utils as utils
+import ard.utils as utils
 
 
 class TestUtils:

@@ -1,21 +1,22 @@
 
-# windArd
+# Ard
 
-`windArd` is an optimization suite for multi-disciplinary optimization of wind farms.
+`Ard` is an optimization suite for multi-disciplinary optimization of wind farms.
 
 ## Name
 
-`windArd` is not a typo in the middle of "windward".
+# TODO
+`Ard` is not a typo in the middle of "windward".
 It is a portmanteau of "wind" and ["ard"](https://en.wikipedia.org/wiki/Ard_\(plough\)), which is a type of simple and lightweight plow used through the single-digit centuries to prepare a farm for planting.
 
 ## Goals
 
-The technical goals of `windArd` are to:
+The technical goals of `Ard` are to:
 1) allow optimization of wind farm layouts for specific wind resource profiles
 1) target wholistic and complex system-level optimization objectives like LCOE and beyond-LCOE metrics
 1) naturally incorporate multi-fidelity analyses to efficiently integrate physics-resolving simulation
 
-As a piece of software, the goal of `windArd` is to be:
+As a piece of software, the goal of `Ard` is to be:
 1) principled: fully documented, and adhering to best-practices for code development
 1) modular and extensible: choose the parts you want, skip the ones you don't, build yourself the ones we don't have
 1) effective: fully tested and testable at the unit and system level, and built with a derivative-forward approach
@@ -24,9 +25,9 @@ These will not always be possible, but they are the goal.
 
 ## Prototype design problem
 
-In the following figure, we have a prototype case for windArd:
+In the following figure, we have a prototype case for Ard:
 
-![`windArd` demonstration image](/assets/windard_xdsm/windard_xdsm.png)
+![`Ard` demonstration image](/assets/ard_xdsm/ard_xdsm.png)
 
 This example shows the variable interactions for an LCOE minimization problem for a farm with a structured layout that can be parametrized by two spacing lengths and two angles.
 The problem is also set up to be constrained by the amount of area that is occupied by a wind farm, which can be calculated using the layout parameters.
@@ -40,7 +41,7 @@ Finally, the BOS costs can be calculated based on the layout variables, and alon
 
 ## Installation
 
-`windArd` can be installed locally from the source code with `pip` or through a package manager
+`Ard` can be installed locally from the source code with `pip` or through a package manager
 from PyPI with `pip` or conda-forge with `conda`.
 For Windows systems, `conda` is required due to constraints in the WISDEM installation system.
 For macOS and Linux, any option is available.

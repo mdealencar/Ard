@@ -1,6 +1,6 @@
 # ########################################################################### #
 #                                                                             #
-# an XDSM diagram builder for the baseline windArd architecture               #
+# an XDSM diagram builder for the baseline Ard architecture               #
 #                                                                             #
 # ########################################################################### #
 
@@ -137,6 +137,6 @@ xmodel.add_output("aep", r"\mathrm{AEP}", side=RIGHT)
 xmodel.add_output("lcoe", r"\mathrm{LCOE}", side=RIGHT)
 
 # output the result!
-xmodel.write("windard_xdsm")
+xmodel.write("ard_xdsm")
 
 ### FIN!

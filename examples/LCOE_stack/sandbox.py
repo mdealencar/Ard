@@ -10,10 +10,10 @@ import openmdao.api as om
 from wisdem.inputs.validation import load_yaml
 from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
-import windard.utils
-import windard.wind_query as wq
-import windard.glue.prototype as glue
-import windard.cost.wisdem_wrap as cost_wisdem
+import ard.utils
+import ard.wind_query as wq
+import ard.glue.prototype as glue
+import ard.cost.wisdem_wrap as cost_wisdem
 
 ### BEGIN: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
 
@@ -57,7 +57,7 @@ filename_floris_config = os.path.abspath(
     )
 )  # default FLORIS config for the project
 # create a FLORIS yaml to conform to the config/spec files above
-windard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
+ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
 # load the turbine specification
 data_turbine = load_yaml(filename_turbine_spec)
 

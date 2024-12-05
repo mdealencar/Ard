@@ -3,7 +3,7 @@ import openmdao.api as om
 
 import pytest
 
-import windard.layout.gridfarm as gridfarm
+import ard.layout.gridfarm as gridfarm
 
 
 class TestGridFarm:

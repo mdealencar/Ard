@@ -4,7 +4,7 @@ import openmdao.api as om
 from shapely import length
 import shapely.geometry as sg
 
-import windard.layout.templates as templates
+import ard.layout.templates as templates
 
 
 class FullFarmLanduse(templates.LanduseTemplate):

@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.random as rng
-import windard.wind_query as wq
+import ard.wind_query as wq
 import floris
 
 import pytest

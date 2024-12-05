@@ -5,8 +5,8 @@ import floris
 
 import pytest
 
-import windard.wind_query as wq
-import windard.farm_aero.templates as templates
+import ard.wind_query as wq
+import ard.farm_aero.templates as templates
 
 
 class TestFarmAeroTemplate:

@@ -5,10 +5,10 @@ import openmdao.api as om
 
 from wisdem.inputs.validation import load_yaml
 
-import windard
-import windard.layout.gridfarm as gridfarm
-import windard.cost.wisdem_wrap as wcost
-import windard.glue.prototype as glue
+import ard
+import ard.layout.gridfarm as gridfarm
+import ard.cost.wisdem_wrap as wcost
+import ard.glue.prototype as glue
 
 
 class TestLandBOSSE:
@@ -18,7 +18,7 @@ class TestLandBOSSE:
         # specify the configuration/specification files to use
         filename_turbine_spec = os.path.abspath(
             os.path.join(
-                os.path.split(windard.__file__)[0],
+                os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
                 "LCOE_stack",
@@ -28,7 +28,7 @@ class TestLandBOSSE:
         )  # toolset generalized turbine specification
         filename_turbine_FLORIS = os.path.abspath(
             os.path.join(
-                os.path.split(windard.__file__)[0],
+                os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
                 "LCOE_stack",
@@ -39,7 +39,7 @@ class TestLandBOSSE:
         )  # toolset generalized turbine specification
         filename_floris_config = os.path.abspath(
             os.path.join(
-                os.path.split(windard.__file__)[0],
+                os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
                 "LCOE_stack",
@@ -48,7 +48,7 @@ class TestLandBOSSE:
             )
         )  # default FLORIS config for the project
         # create a FLORIS yaml to conform to the config/spec files above
-        windard.utils.create_FLORIS_yamlfile(
+        ard.utils.create_FLORIS_yamlfile(
             filename_turbine_spec, filename_turbine_FLORIS
         )
         # load the turbine specification

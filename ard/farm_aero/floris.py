@@ -3,7 +3,7 @@ import os
 import numpy as np
 import floris
 
-import windard.farm_aero.templates as templates
+import ard.farm_aero.templates as templates
 
 
 class FLORISFarmComponent:

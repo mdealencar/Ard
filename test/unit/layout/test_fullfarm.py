@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 import pytest
 
-import windard.layout.fullfarm as fullfarm
+import ard.layout.fullfarm as fullfarm
 
 
 class TestFullFarmLanduse:

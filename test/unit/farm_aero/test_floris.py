@@ -9,9 +9,9 @@ import floris
 
 from wisdem.inputs.validation import load_yaml
 
-import windard.utils
-import windard.wind_query as wq
-import windard.farm_aero.floris as farmaero_floris
+import ard.utils
+import ard.wind_query as wq
+import ard.farm_aero.floris as farmaero_floris
 
 
 class TestFLORISFarmComponent:
@@ -41,7 +41,7 @@ class TestFLORISBatchPower:
         # specify the configuration/specification files to use
         filename_turbine_spec = os.path.abspath(
             os.path.join(
-                windard.__path__[0],
+                ard.__path__[0],
                 "..",
                 "examples",
                 "FLORIS_power_comp",
@@ -51,7 +51,7 @@ class TestFLORISBatchPower:
         )  # toolset generalized turbine specification
         filename_turbine_FLORIS = os.path.abspath(
             os.path.join(
-                windard.__path__[0],
+                ard.__path__[0],
                 "..",
                 "examples",
                 "FLORIS_power_comp",
@@ -61,7 +61,7 @@ class TestFLORISBatchPower:
         )  # toolset generalized turbine specification
         filename_floris_config = os.path.abspath(
             os.path.join(
-                windard.__path__[0],
+                ard.__path__[0],
                 "..",
                 "examples",
                 "FLORIS_power_comp",
@@ -70,7 +70,7 @@ class TestFLORISBatchPower:
             )
         )  # default FLORIS config for the project
         # create a FLORIS yaml to conform to the config/spec files above
-        windard.utils.create_FLORIS_yamlfile(
+        ard.utils.create_FLORIS_yamlfile(
             filename_turbine_spec, filename_turbine_FLORIS
         )
         # load the turbine specification
@@ -229,7 +229,7 @@ class TestFLORISAEP:
         # specify the configuration/specification files to use
         filename_turbine_spec = os.path.abspath(
             os.path.join(
-                windard.__path__[0],
+                ard.__path__[0],
                 "..",
                 "examples",
                 "FLORIS_power_comp",
@@ -239,7 +239,7 @@ class TestFLORISAEP:
         )  # toolset generalized turbine specification
         filename_turbine_FLORIS = os.path.abspath(
             os.path.join(
-                windard.__path__[0],
+                ard.__path__[0],
                 "..",
                 "examples",
                 "FLORIS_power_comp",
@@ -249,7 +249,7 @@ class TestFLORISAEP:
         )  # toolset generalized turbine specification
         filename_floris_config = os.path.abspath(
             os.path.join(
-                windard.__path__[0],
+                ard.__path__[0],
                 "..",
                 "examples",
                 "FLORIS_power_comp",
@@ -258,7 +258,7 @@ class TestFLORISAEP:
             )
         )  # default FLORIS config for the project
         # create a FLORIS yaml to conform to the config/spec files above
-        windard.utils.create_FLORIS_yamlfile(
+        ard.utils.create_FLORIS_yamlfile(
             filename_turbine_spec, filename_turbine_FLORIS
         )
         # load the turbine specification
