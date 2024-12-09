@@ -46,6 +46,7 @@ dev = [
   "pytest-cov",
 ]
 docs = [
+  "pyxdsm",
   "jupyter-book",
   "sphinx-book-theme",
 ]
