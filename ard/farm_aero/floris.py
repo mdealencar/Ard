@@ -25,6 +25,7 @@ class FLORISFarmComponent:
             wind_shear=0.585,
             turbine_type=[self.modeling_options["turbine"]]
         )
+        self.fmodel.assign_hub_height_to_ref_height()
 
         self.case_title = self.options["case_title"]
         self.dir_floris = os.path.join("case_files", self.case_title, "floris_inputs")
