@@ -46,9 +46,7 @@ class TestLandBOSSE:
             )
         )  # default FLORIS config for the project
         # create a FLORIS yaml to conform to the config/spec files above
-        ard.utils.create_FLORIS_yamlfile(
-            filename_turbine_spec, filename_turbine_FLORIS
-        )
+        ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
         # load the turbine specification
         data_turbine = load_yaml(filename_turbine_spec)
 
