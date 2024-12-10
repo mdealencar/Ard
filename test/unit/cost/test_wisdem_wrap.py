@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import openmdao.api as om
-
 from wisdem.inputs.validation import load_yaml
 
 import ard
@@ -26,27 +25,7 @@ class TestLandBOSSE:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
-        filename_turbine_FLORIS = os.path.abspath(
-            os.path.join(
-                os.path.split(ard.__file__)[0],
-                "..",
-                "examples",
-                "data",
-                "FLORIS_turbine_library",
-                "IEA-3p4-130-RWT.yaml",
-            )
-        )  # toolset generalized turbine specification
-        filename_floris_config = os.path.abspath(
-            os.path.join(
-                os.path.split(ard.__file__)[0],
-                "..",
-                "examples",
-                "data",
-                "FLORIS.yaml",
-            )
-        )  # default FLORIS config for the project
-        # create a FLORIS yaml to conform to the config/spec files above
-        ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
+
         # load the turbine specification
         data_turbine = load_yaml(filename_turbine_spec)
 
@@ -56,9 +35,6 @@ class TestLandBOSSE:
                 "N_turbines": 25,
             },
             "turbine": data_turbine,
-            "FLORIS": {
-                "filename_tool_config": filename_floris_config,
-            },
         }
 
         # create an OM model and problem
