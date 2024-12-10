@@ -22,6 +22,7 @@ class FLORISFarmComponent:
         # set up FLORIS
         self.fmodel = floris.FlorisModel("defaults")
         self.fmodel.set(
+            wind_shear=self.modeling_options.get("wind_shear", 0.585),
             turbine_type=[self.modeling_options["turbine"]]
         )
         self.fmodel.assign_hub_height_to_ref_height()
