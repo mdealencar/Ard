@@ -6,6 +6,7 @@ import openmdao.api as om
 from wisdem.inputs.validation import load_yaml
 
 import ard
+import ard.utils
 import ard.layout.gridfarm as gridfarm
 import ard.cost.wisdem_wrap as wcost
 import ard.glue.prototype as glue
