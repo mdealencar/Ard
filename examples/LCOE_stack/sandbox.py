@@ -1,4 +1,4 @@
-import os
+
 from pathlib import Path
 import numpy as np
 
@@ -12,11 +12,6 @@ import ard.wind_query as wq
 import ard.glue.prototype as glue
 import ard.cost.wisdem_wrap as cost_wisdem
 
-### BEGIN: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
-
-# empty!
-
-### END: THINGS TO EVENTUALLY OUTSOURCE TO SHARED FUNCTIONS
 
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG("wrg_example.wrg")
@@ -27,13 +22,9 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
 # specify the configuration/specification files to use
 filename_turbine_spec = Path("FLORIS_power_comp/data/turbine_spec_IEA-3p4-130-RWT.yaml")                # toolset generalized turbine specification
-# filename_turbine_FLORIS = Path("FLORIS_power_comp/data/FLORIS_turbine_library/IEA-3p4-130-RWT.yaml")    # toolset generalized turbine specification
-# filename_floris_config = Path("FLORIS_power_comp/data/FLORIS.yaml")                                     # default FLORIS config for the project
 
 # create a FLORIS yaml to conform to the config/spec files above
-data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec) #, filename_turbine_FLORIS)
-# load the turbine specification
-# data_turbine = load_yaml(filename_turbine_spec)
+data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
 
 # set up the modeling options
 modeling_options = {
@@ -41,9 +32,6 @@ modeling_options = {
         "N_turbines": 25,
     },
     "turbine": data_turbine,
-    # "FLORIS": {
-    #     "filename_tool_config": filename_floris_config,
-    # },
 }
 
 # create the OM problem
@@ -141,6 +129,3 @@ print(f"\tCapEx: ${CapEx_val:.2f}M")
 print(f"\tBOS: ${BOS_val:.2f}M")
 print(f"OpEx/yr.: ${OpEx_val:.2f}M")
 print(f"LCOE: ${LCOE_val:.2f}/MWh")
-
-
-# FIN!
