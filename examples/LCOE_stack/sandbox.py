@@ -39,12 +39,14 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 # specify the configuration/specification files to use
 filename_turbine_spec = os.path.abspath(
     os.path.join(
+        "..",
         "data",
         "turbine_spec_IEA-3p4-130-RWT.yaml",
     )
 )  # toolset generalized turbine specification
 filename_turbine_FLORIS = os.path.abspath(
     os.path.join(
+        "..",
         "data",
         "FLORIS_turbine_library",
         "IEA-3p4-130-RWT.yaml",
@@ -52,6 +54,7 @@ filename_turbine_FLORIS = os.path.abspath(
 )  # toolset generalized turbine specification
 filename_floris_config = os.path.abspath(
     os.path.join(
+        "..",
         "data",
         "FLORIS.yaml",
     )
@@ -77,11 +80,11 @@ prob = glue.create_setup_OM_problem(
     modeling_options=modeling_options, wind_rose=wind_rose
 )
 
-if False:
+if True:
 
     # setup the latent variables for LandBOSSE and FinanceSE
-    LandBOSSE_setup_latents(prob, modeling_options)
-    FinanceSE_setup_latents(prob, modeling_options)
+    cost_wisdem.LandBOSSE_setup_latents(prob, modeling_options)
+    cost_wisdem.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables
     prob.set_val("spacing_primary", 7.0)
