@@ -56,7 +56,7 @@ class FullFarmLanduse(templates.LanduseTemplate):
 
         # create a laybacked geometry
         D_rotor = self.modeling_options["turbine"]["geometry"]["diameter_rotor"]
-        lengthscale_layback = float(inputs["distance_layback_diameters"] * D_rotor)
+        lengthscale_layback = float(inputs["distance_layback_diameters"][0] * D_rotor)
 
         # area tight is equal to the convex hull area for the points in sq. km.
         outputs["area_tight"] = mp.convex_hull.area / 1000**2

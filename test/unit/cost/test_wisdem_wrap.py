@@ -21,7 +21,6 @@ class TestLandBOSSE:
                 os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
-                "LCOE_stack",
                 "data",
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
@@ -31,7 +30,6 @@ class TestLandBOSSE:
                 os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
-                "LCOE_stack",
                 "data",
                 "FLORIS_turbine_library",
                 "IEA-3p4-130-RWT.yaml",
@@ -42,7 +40,6 @@ class TestLandBOSSE:
                 os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
-                "LCOE_stack",
                 "data",
                 "FLORIS.yaml",
             )

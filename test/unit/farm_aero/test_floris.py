@@ -109,26 +109,23 @@ class TestFLORISBatchPower:
         assert "farm" in self.FLORIS.options["modeling_options"].keys()
         assert "N_turbines" in self.FLORIS.options["modeling_options"]["farm"].keys()
 
-        # context manager to spike the warning since we aren't running the model yet
-        with pytest.warns(Warning) as warning:
+        # make sure that the inputs in the component match what we planned
+        input_list = [k for k, v in self.FLORIS.list_inputs(val=False)]
+        for var_to_check in [
+            "x_turbines",
+            "y_turbines",
+            "yaw_turbines",
+        ]:
+            assert var_to_check in input_list
 
-            # make sure that the inputs in the component match what we planned
-            input_list = [k for k, v in self.FLORIS.list_inputs()]
-            for var_to_check in [
-                "x_turbines",
-                "y_turbines",
-                "yaw_turbines",
-            ]:
-                assert var_to_check in input_list
-
-            # make sure that the outputs in the component match what we planned
-            output_list = [k for k, v in self.FLORIS.list_outputs()]
-            for var_to_check in [
-                "power_farm",
-                "power_turbines",
-                "thrust_turbines",
-            ]:
-                assert var_to_check in output_list
+        # make sure that the outputs in the component match what we planned
+        output_list = [k for k, v in self.FLORIS.list_outputs(val=False)]
+        for var_to_check in [
+            "power_farm",
+            "power_turbines",
+            "thrust_turbines",
+        ]:
+            assert var_to_check in output_list
 
     def test_compute_pyrite(self):
 
@@ -298,7 +295,7 @@ class TestFLORISAEP:
         assert "N_turbines" in self.FLORIS.options["modeling_options"]["farm"].keys()
 
         # make sure that the inputs in the component match what we planned
-        input_list = [k for k, v in self.FLORIS.list_inputs()]
+        input_list = [k for k, v in self.FLORIS.list_inputs(val=False)]
         for var_to_check in [
             "x_turbines",
             "y_turbines",
@@ -307,7 +304,7 @@ class TestFLORISAEP:
             assert var_to_check in input_list
 
         # make sure that the outputs in the component match what we planned
-        output_list = [k for k, v in self.FLORIS.list_outputs()]
+        output_list = [k for k, v in self.FLORIS.list_outputs(val=False)]
         for var_to_check in [
             "AEP_farm",
             "power_farm",

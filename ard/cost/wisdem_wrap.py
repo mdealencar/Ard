@@ -10,6 +10,7 @@ from wisdem.inputs.validation import load_yaml
 class LandBOSSE(LandBOSSE_orig):
     def setup(self):
         warnings.filterwarnings("ignore", category=FutureWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().setup()
 
@@ -29,6 +30,7 @@ class LandBOSSE(LandBOSSE_orig):
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         warnings.filterwarnings("ignore", category=FutureWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().compute(inputs, outputs, discrete_inputs, discrete_outputs)
 
@@ -37,11 +39,13 @@ class LandBOSSE(LandBOSSE_orig):
 class PlantFinance(PlantFinance_orig):
     def setup(self):
         warnings.filterwarnings("ignore", category=FutureWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().setup()
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         warnings.filterwarnings("ignore", category=FutureWarning)
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().compute(inputs, outputs, discrete_inputs, discrete_outputs)
 
