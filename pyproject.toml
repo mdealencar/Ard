@@ -35,13 +35,14 @@ classifiers = [
 dependencies = [
   "numpy",
   "floris",
-  "wisdem",
+  "wisdem==3.17.0",
   "marmot-agents",
   "openmdao",
   "shapely",
 ]
 [project.optional-dependencies]
 dev = [
+  "black",
   "pytest",
   "pytest-cov",
 ]

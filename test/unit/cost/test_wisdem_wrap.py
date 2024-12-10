@@ -4,6 +4,7 @@ import numpy as np
 import openmdao.api as om
 
 import ard
+import ard.utils
 import ard.layout.gridfarm as gridfarm
 import ard.cost.wisdem_wrap as wcost
 import ard.glue.prototype as glue
@@ -19,36 +20,31 @@ class TestLandBOSSE:
                 os.path.split(ard.__file__)[0],
                 "..",
                 "examples",
-                "LCOE_stack",
                 "data",
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
-        filename_turbine_FLORIS = os.path.abspath(
-            os.path.join(
-                os.path.split(ard.__file__)[0],
-                "..",
-                "examples",
-                "LCOE_stack",
-                "data",
-                "FLORIS_turbine_library",
-                "IEA-3p4-130-RWT.yaml",
-            )
-        )  # toolset generalized turbine specification
-        filename_floris_config = os.path.abspath(
-            os.path.join(
-                os.path.split(ard.__file__)[0],
-                "..",
-                "examples",
-                "LCOE_stack",
-                "data",
-                "FLORIS.yaml",
-            )
-        )  # default FLORIS config for the project
+        # filename_turbine_FLORIS = os.path.abspath(
+        #     os.path.join(
+        #         os.path.split(ard.__file__)[0],
+        #         "..",
+        #         "examples",
+        #         "data",
+        #         "FLORIS_turbine_library",
+        #         "IEA-3p4-130-RWT.yaml",
+        #     )
+        # )  # toolset generalized turbine specification
+        # filename_floris_config = os.path.abspath(
+        #     os.path.join(
+        #         os.path.split(ard.__file__)[0],
+        #         "..",
+        #         "examples",
+        #         "data",
+        #         "FLORIS.yaml",
+        #     )
+        # )  # default FLORIS config for the project
         # create a FLORIS yaml to conform to the config/spec files above
-        data_turbine = ard.utils.create_FLORIS_yamlfile(
-            filename_turbine_spec, filename_turbine_FLORIS
-        )
+        data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
         # load the turbine specification
         # data_turbine = load_yaml(filename_turbine_spec)
 
