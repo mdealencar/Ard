@@ -11,9 +11,6 @@ build-backend = "setuptools.build_meta"
 # https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
 [tool.setuptools]
 packages = ["ard"]
-dependency_links = [
-  "https://github.com/rafmudaf/floris.git@defaults_init#egg=floris"
-]
 
 [project]
 name = "Ard"
