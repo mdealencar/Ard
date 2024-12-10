@@ -80,7 +80,7 @@ prob = glue.create_setup_OM_problem(
     modeling_options=modeling_options, wind_rose=wind_rose
 )
 
-if True:
+if False:
 
     # setup the latent variables for LandBOSSE and FinanceSE
     cost_wisdem.LandBOSSE_setup_latents(prob, modeling_options)
@@ -108,7 +108,7 @@ else:
     # setup an optimization
     if False:
         prob.driver = om.pyOptSparseDriver(optimizer="SLSQP")
-    elif False:
+    elif True:
         prob.driver = NLoptDriver(optimizer="LN_COBYLA")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
     elif True:
