@@ -44,7 +44,6 @@ class TestFLORISBatchPower:
                 ard.__path__[0],
                 "..",
                 "examples",
-                "FLORIS_power_comp",
                 "data",
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
@@ -54,7 +53,6 @@ class TestFLORISBatchPower:
                 ard.__path__[0],
                 "..",
                 "examples",
-                "FLORIS_power_comp",
                 "data",
                 "FLORISturbine_IEA-3p4-130-RWT.yaml",
             )
@@ -64,7 +62,6 @@ class TestFLORISBatchPower:
                 ard.__path__[0],
                 "..",
                 "examples",
-                "FLORIS_power_comp",
                 "data",
                 "FLORIS.yaml",
             )
@@ -229,7 +226,6 @@ class TestFLORISAEP:
                 ard.__path__[0],
                 "..",
                 "examples",
-                "FLORIS_power_comp",
                 "data",
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
@@ -239,7 +235,6 @@ class TestFLORISAEP:
                 ard.__path__[0],
                 "..",
                 "examples",
-                "FLORIS_power_comp",
                 "data",
                 "FLORISturbine_IEA-3p4-130-RWT.yaml",
             )
@@ -249,7 +244,6 @@ class TestFLORISAEP:
                 ard.__path__[0],
                 "..",
                 "examples",
-                "FLORIS_power_comp",
                 "data",
                 "FLORIS.yaml",
             )

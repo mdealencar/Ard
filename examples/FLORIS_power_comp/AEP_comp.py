@@ -40,18 +40,21 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 # specify the configuration/specification files to use
 filename_turbine_spec = os.path.abspath(
     os.path.join(
+        "..",
         "data",
         "turbine_spec_IEA-3p4-130-RWT.yaml",
     )
 )  # toolset generalized turbine specification
 filename_turbine_FLORIS = os.path.abspath(
     os.path.join(
+        "..",
         "data",
         "FLORISturbine_IEA-3p4-130-RWT.yaml",
     )
 )  # toolset generalized turbine specification
 filename_floris_config = os.path.abspath(
     os.path.join(
+        "..",
         "data",
         "FLORIS.yaml",
     )
