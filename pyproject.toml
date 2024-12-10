@@ -11,6 +11,9 @@ build-backend = "setuptools.build_meta"
 # https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
 [tool.setuptools]
 packages = ["ard"]
+dependency_links = [
+  "https://github.com/rafmudaf/floris.git@defaults_init#egg=floris"
+]
 
 [project]
 name = "Ard"
@@ -34,7 +37,8 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
-  "floris>=4.2.1",
+  # "floris>=4.2.1",
+  "floris @ git+https://github.com/rafmudaf/floris.git@defaults_init#egg=floris",
   "wisdem==3.17.0",
   "marmot-agents",
   "openmdao",
