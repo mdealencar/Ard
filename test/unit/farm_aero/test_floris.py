@@ -3,11 +3,7 @@ import os
 import numpy as np
 import openmdao.api as om
 
-import pytest
-
 import floris
-
-from wisdem.inputs.validation import load_yaml
 
 import ard.utils
 import ard.wind_query as wq
@@ -48,28 +44,9 @@ class TestFLORISBatchPower:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
-        filename_turbine_FLORIS = os.path.abspath(
-            os.path.join(
-                ard.__path__[0],
-                "..",
-                "examples",
-                "data",
-                "FLORISturbine_IEA-3p4-130-RWT.yaml",
-            )
-        )  # toolset generalized turbine specification
-        filename_floris_config = os.path.abspath(
-            os.path.join(
-                ard.__path__[0],
-                "..",
-                "examples",
-                "data",
-                "FLORIS.yaml",
-            )
-        )  # default FLORIS config for the project
+
         # create a FLORIS yaml to conform to the config/spec files above
-        ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
-        # load the turbine specification
-        data_turbine = load_yaml(filename_turbine_spec)
+        data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
 
         # set up the modeling options
         modeling_options = {
@@ -77,9 +54,6 @@ class TestFLORISBatchPower:
                 "N_turbines": len(farm_spec["xD_farm"]),
             },
             "turbine": data_turbine,
-            "FLORIS": {
-                "filename_tool_config": filename_floris_config,
-            },
         }
 
         # create the OpenMDAO model
@@ -204,7 +178,6 @@ class TestFLORISAEP:
         # create the wind query
         directions = np.linspace(0.0, 360.0, 21)
         speeds = np.linspace(0.0, 30.0, 21)[1:]
-        WS, WD = np.meshgrid(speeds, directions)
         wind_rose = floris.WindRose(
             wind_directions=directions,
             wind_speeds=speeds,
@@ -228,28 +201,9 @@ class TestFLORISAEP:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
-        filename_turbine_FLORIS = os.path.abspath(
-            os.path.join(
-                ard.__path__[0],
-                "..",
-                "examples",
-                "data",
-                "FLORISturbine_IEA-3p4-130-RWT.yaml",
-            )
-        )  # toolset generalized turbine specification
-        filename_floris_config = os.path.abspath(
-            os.path.join(
-                ard.__path__[0],
-                "..",
-                "examples",
-                "data",
-                "FLORIS.yaml",
-            )
-        )  # default FLORIS config for the project
+
         # create a FLORIS yaml to conform to the config/spec files above
-        ard.utils.create_FLORIS_yamlfile(filename_turbine_spec, filename_turbine_FLORIS)
-        # load the turbine specification
-        data_turbine = load_yaml(filename_turbine_spec)
+        data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
 
         # set up the modeling options
         modeling_options = {
@@ -257,9 +211,6 @@ class TestFLORISAEP:
                 "N_turbines": len(farm_spec["xD_farm"]),
             },
             "turbine": data_turbine,
-            "FLORIS": {
-                "filename_tool_config": filename_floris_config,
-            },
         }
 
         # create the OpenMDAO model
