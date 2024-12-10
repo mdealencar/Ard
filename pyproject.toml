@@ -34,7 +34,7 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
-  "floris",
+  "floris>=4.2.1",
   "wisdem==3.17.0",
   "marmot-agents",
   "openmdao",
