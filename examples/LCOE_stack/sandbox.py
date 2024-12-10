@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import numpy as np
 
@@ -21,7 +20,9 @@ wind_rose = wind_rose_wrg.get_wind_rose_at_point(0.0, 0.0)
 wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
 # specify the configuration/specification files to use
-filename_turbine_spec = Path("../data/turbine_spec_IEA-3p4-130-RWT.yaml")                # toolset generalized turbine specification
+filename_turbine_spec = Path(
+    "../data/turbine_spec_IEA-3p4-130-RWT.yaml"
+)  # toolset generalized turbine specification
 
 # create a FLORIS yaml to conform to the config/spec files above
 data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)

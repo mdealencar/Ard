@@ -8,7 +8,7 @@ import numpy as np
 # def create_floris_turbine(
 def create_FLORIS_yamlfile(
     filename_turbine_spec,
-    filename_turbine_FLORIS = None,
+    filename_turbine_FLORIS=None,
 ) -> dict:
 
     # load generic spec
