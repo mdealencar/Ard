@@ -72,6 +72,7 @@ else:
     elif True:
         prob.driver = NLoptDriver(optimizer="LN_COBYLA")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
+        prob.driver.options[""]
     elif True:
         prob.driver = NLoptDriver(optimizer="LD_SLSQP")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
