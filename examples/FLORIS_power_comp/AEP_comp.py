@@ -17,7 +17,9 @@ import ard.farm_aero.floris as farmaero_floris
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG(
     pathlib.Path(
-        "..", "data", "wrg_example.wrg",
+        "..",
+        "data",
+        "wrg_example.wrg",
     )
 )
 wind_rose_wrg.set_wd_step(1.0)
@@ -36,7 +38,9 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
 # specify the configuration/specification files to use
 filename_turbine_spec = pathlib.Path(
-    "..", "data", "turbine_spec_IEA-3p4-130-RWT.yaml",
+    "..",
+    "data",
+    "turbine_spec_IEA-3p4-130-RWT.yaml",
 )  # toolset generalized turbine specification
 data_turbine_spec = load_yaml(filename_turbine_spec)
 
