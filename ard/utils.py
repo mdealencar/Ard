@@ -7,7 +7,7 @@ import numpy as np
 
 
 # def create_floris_turbine(
-def create_FLORIS_yamlfile(
+def create_FLORIS_turbine(
     input_turbine_spec=None,
     filename_turbine_FLORIS=None,
 ) -> dict:
