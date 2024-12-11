@@ -1,4 +1,4 @@
-import os
+import pathlib
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,11 +26,10 @@ if False:
     plt.show()
 
 # specify the configuration/specification files to use
-filename_turbine_spec = os.path.abspath(
-    os.path.join(
-        "data",
-        "turbine_spec_IEA-3p4-130-RWT.yaml",
-    )
+filename_turbine_spec = pathlib.Path(
+    "..",
+    "data",
+    "turbine_spec_IEA-3p4-130-RWT.yaml",
 )  # toolset generalized turbine specification
 
 # create a FLORIS yaml to conform to the config/spec files above

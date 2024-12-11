@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,12 +14,8 @@ import ard.farm_aero.floris as farmaero_floris
 
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG(
-    os.path.join(
-        os.path.split(floris.__file__)[0],
-        "..",
-        "examples",
-        "examples_wind_resource_grid",
-        "wrg_example.wrg",
+    pathlib.Path(
+        "..", "data", "wrg_example.wrg",
     )
 )
 wind_rose_wrg.set_wd_step(1.0)
@@ -36,12 +33,8 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 #     plt.show()
 
 # specify the configuration/specification files to use
-filename_turbine_spec = os.path.abspath(
-    os.path.join(
-        "..",
-        "data",
-        "turbine_spec_IEA-3p4-130-RWT.yaml",
-    )
+filename_turbine_spec = pathlib.Path(
+    "..", "data", "turbine_spec_IEA-3p4-130-RWT.yaml",
 )  # toolset generalized turbine specification
 
 # create a FLORIS yaml to conform to the config/spec files above
