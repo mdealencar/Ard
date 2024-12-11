@@ -1,12 +1,24 @@
 import copy
-import os
 import pathlib
 import yaml
 
 import numpy as np
 
+from wisdem.inputs.validation import load_yaml
 
-# def create_floris_turbine(
+def load_turbine_spec(
+    filename_turbine_spec,
+):
+    print(type(filename_turbine_spec))  # DEBUG!!!!!
+    filename_turbine_spec = pathlib.Path(filename_turbine_spec)
+    print(type(filename_turbine_spec))  # DEBUG!!!!!
+    dir_turbine_spec = filename_turbine_spec.parent
+    turbine_spec = load_yaml(filename_turbine_spec)
+    filename_powercurve = dir_turbine_spec / turbine_spec["performance_data_ccblade"]["power_thrust_csv"]
+    turbine_spec["performance_data_ccblade"]["power_thrust_csv"] = filename_powercurve
+
+    return turbine_spec
+
 def create_FLORIS_turbine(
     input_turbine_spec=None,
     filename_turbine_FLORIS=None,
@@ -14,8 +26,7 @@ def create_FLORIS_turbine(
 
     if isinstance(input_turbine_spec, (str, pathlib.Path)):
         with open(input_turbine_spec, "r") as file_turbine_spec:
-            turbine_spec = yaml.safe_load(file_turbine_spec)
-        turbine_spec["description"]["filename"] = input_turbine_spec
+            turbine_spec = load_turbine_spec(file_turbine_spec)
     elif type(input_turbine_spec) == dict:
         turbine_spec = input_turbine_spec
     else:
@@ -25,17 +36,7 @@ def create_FLORIS_turbine(
         )
 
     # load speed/power/thrust file
-    print(os.path.split(turbine_spec["description"]["filename"])[0])  # DEBUG!!!!!
-    print(
-        os.path.join(
-            os.path.split(turbine_spec["description"]["filename"])[0],
-            turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
-        )
-    )
-    filename_power_thrust = os.path.join(
-        os.path.split(turbine_spec["description"]["filename"])[0],
-        turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
-    )
+    filename_power_thrust = turbine_spec["performance_data_ccblade"]["power_thrust_csv"]
     pt_raw = np.genfromtxt(filename_power_thrust, delimiter=",").T.tolist()
 
     # create FLORIS config dict
