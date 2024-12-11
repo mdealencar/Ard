@@ -4,8 +4,10 @@ import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
 
-import floris
 import openmdao.api as om
+
+import floris
+from wisdem.inputs.validation import load_yaml
 
 import ard.utils
 import ard.wind_query as wq
@@ -36,6 +38,7 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 filename_turbine_spec = pathlib.Path(
     "..", "data", "turbine_spec_IEA-3p4-130-RWT.yaml",
 )  # toolset generalized turbine specification
+data_turbine_spec = load_yaml(filename_turbine_spec)
 
 # create a FLORIS yaml to conform to the config/spec files above
 data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
@@ -45,7 +48,7 @@ modeling_options = {
     "farm": {
         "N_turbines": 25,
     },
-    "turbine": data_turbine,
+    "turbine": data_turbine_spec,
 }
 
 # create the OpenMDAO model
