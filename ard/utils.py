@@ -6,6 +6,7 @@ import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
+
 def load_turbine_spec(
     filename_turbine_spec,
 ):
@@ -14,10 +15,13 @@ def load_turbine_spec(
     print(type(filename_turbine_spec))  # DEBUG!!!!!
     dir_turbine_spec = filename_turbine_spec.parent
     turbine_spec = load_yaml(filename_turbine_spec)
-    filename_powercurve = dir_turbine_spec / turbine_spec["performance_data_ccblade"]["power_thrust_csv"]
+    filename_powercurve = (
+        dir_turbine_spec / turbine_spec["performance_data_ccblade"]["power_thrust_csv"]
+    )
     turbine_spec["performance_data_ccblade"]["power_thrust_csv"] = filename_powercurve
 
     return turbine_spec
+
 
 def create_FLORIS_turbine(
     input_turbine_spec=None,
