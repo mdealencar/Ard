@@ -4,6 +4,7 @@ import numpy as np
 import openmdao.api as om
 
 import floris
+from wisdem.inputs.validation import load_yaml
 
 import ard.utils
 import ard.wind_query as wq
@@ -44,6 +45,7 @@ class TestFLORISBatchPower:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
+        data_turbine_spec = load_yaml(filename_turbine_spec)
 
         # create a FLORIS yaml to conform to the config/spec files above
         data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
@@ -53,7 +55,7 @@ class TestFLORISBatchPower:
             "farm": {
                 "N_turbines": len(farm_spec["xD_farm"]),
             },
-            "turbine": data_turbine,
+            "turbine": data_turbine_spec,
         }
 
         # create the OpenMDAO model
@@ -201,6 +203,7 @@ class TestFLORISAEP:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
+        data_turbine_spec = load_yaml(filename_turbine_spec)
 
         # create a FLORIS yaml to conform to the config/spec files above
         data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
@@ -210,7 +213,7 @@ class TestFLORISAEP:
             "farm": {
                 "N_turbines": len(farm_spec["xD_farm"]),
             },
-            "turbine": data_turbine,
+            "turbine": data_turbine_spec,
         }
 
         # create the OpenMDAO model
