@@ -1,6 +1,5 @@
 description:
   name: IEA-3.4-130-RWT
-  filename: /Users/cfrontin/codes/Ard/examples/data/turbine_spec_IEA-3p4-130-RWT.yaml
 geometry:
   height_hub: 110.0 # m
   diameter_rotor: 130.0 # m

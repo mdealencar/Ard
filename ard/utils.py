@@ -15,7 +15,7 @@ def create_FLORIS_yamlfile(
     if isinstance(input_turbine_spec, (str, pathlib.Path)):
         with open(input_turbine_spec, "r") as file_turbine_spec:
             turbine_spec = yaml.safe_load(file_turbine_spec)
-            turbine_spec["description"]["filename"] = input_turbine_spec
+        turbine_spec["description"]["filename"] = input_turbine_spec
     elif type(input_turbine_spec) == dict:
         turbine_spec = input_turbine_spec
     else:
@@ -25,6 +25,11 @@ def create_FLORIS_yamlfile(
         )
 
     # load speed/power/thrust file
+    print(os.path.split(turbine_spec["description"]["filename"])[0])  # DEBUG!!!!!
+    print(os.path.join(
+        os.path.split(turbine_spec["description"]["filename"])[0],
+        turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
+    ))
     filename_power_thrust = os.path.join(
         os.path.split(turbine_spec["description"]["filename"])[0],
         turbine_spec["performance_data_ccblade"]["power_thrust_csv"],

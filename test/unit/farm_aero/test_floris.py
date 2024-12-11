@@ -46,6 +46,7 @@ class TestFLORISBatchPower:
             )
         )  # toolset generalized turbine specification
         data_turbine_spec = load_yaml(filename_turbine_spec)
+        data_turbine_spec["description"]["filename"] = filename_turbine_spec
 
         # create a FLORIS yaml to conform to the config/spec files above
         data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
@@ -204,6 +205,7 @@ class TestFLORISAEP:
             )
         )  # toolset generalized turbine specification
         data_turbine_spec = load_yaml(filename_turbine_spec)
+        data_turbine_spec["description"]["filename"] = filename_turbine_spec
 
         # create a FLORIS yaml to conform to the config/spec files above
         data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
