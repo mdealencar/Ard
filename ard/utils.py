@@ -15,6 +15,7 @@ def create_FLORIS_yamlfile(
     if isinstance(input_turbine_spec, (str, pathlib.Path)):
         with open(input_turbine_spec, "r") as file_turbine_spec:
             turbine_spec = yaml.safe_load(file_turbine_spec)
+            turbine_spec["description"]["filename"] = input_turbine_spec
     elif type(input_turbine_spec) == dict:
         turbine_spec = input_turbine_spec
     else:
