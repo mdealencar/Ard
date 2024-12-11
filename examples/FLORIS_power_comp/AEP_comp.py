@@ -1,10 +1,12 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-import floris
 import openmdao.api as om
+
+import floris
 
 import ard.utils
 import ard.wind_query as wq
@@ -13,11 +15,9 @@ import ard.farm_aero.floris as farmaero_floris
 
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG(
-    os.path.join(
-        os.path.split(floris.__file__)[0],
+    Path(
         "..",
-        "examples",
-        "examples_wind_resource_grid",
+        "data",
         "wrg_example.wrg",
     )
 )
@@ -36,23 +36,19 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 #     plt.show()
 
 # specify the configuration/specification files to use
-filename_turbine_spec = os.path.abspath(
-    os.path.join(
-        "..",
-        "data",
-        "turbine_spec_IEA-3p4-130-RWT.yaml",
-    )
+filename_turbine_spec = Path(
+    "..",
+    "data",
+    "turbine_spec_IEA-3p4-130-RWT.yaml",
 )  # toolset generalized turbine specification
-
-# create a FLORIS yaml to conform to the config/spec files above
-data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
+data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
 # set up the modeling options
 modeling_options = {
     "farm": {
         "N_turbines": 25,
     },
-    "turbine": data_turbine,
+    "turbine": data_turbine_spec,
 }
 
 # create the OpenMDAO model

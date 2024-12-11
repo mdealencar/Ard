@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import openmdao.api as om
-from wisdem.inputs.validation import load_yaml
 
 import ard
 import ard.utils
@@ -27,7 +26,7 @@ class TestLandBOSSE:
         )  # toolset generalized turbine specification
 
         # load the turbine specification
-        data_turbine = load_yaml(filename_turbine_spec)
+        data_turbine = ard.utils.load_turbine_spec(filename_turbine_spec)
 
         # set up the modeling options
         self.modeling_options = {

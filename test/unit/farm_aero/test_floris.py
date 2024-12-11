@@ -44,16 +44,14 @@ class TestFLORISBatchPower:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
-
-        # create a FLORIS yaml to conform to the config/spec files above
-        data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
+        data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
         # set up the modeling options
         modeling_options = {
             "farm": {
                 "N_turbines": len(farm_spec["xD_farm"]),
             },
-            "turbine": data_turbine,
+            "turbine": data_turbine_spec,
         }
 
         # create the OpenMDAO model
@@ -201,16 +199,14 @@ class TestFLORISAEP:
                 "turbine_spec_IEA-3p4-130-RWT.yaml",
             )
         )  # toolset generalized turbine specification
-
-        # create a FLORIS yaml to conform to the config/spec files above
-        data_turbine = ard.utils.create_FLORIS_yamlfile(filename_turbine_spec)
+        data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
         # set up the modeling options
         modeling_options = {
             "farm": {
                 "N_turbines": len(farm_spec["xD_farm"]),
             },
-            "turbine": data_turbine,
+            "turbine": data_turbine_spec,
         }
 
         # create the OpenMDAO model

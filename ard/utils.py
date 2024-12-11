@@ -1,25 +1,44 @@
 import copy
-import os
+from pathlib import Path
 import yaml
 
 import numpy as np
 
+from wisdem.inputs.validation import load_yaml
 
-# def create_floris_turbine(
-def create_FLORIS_yamlfile(
+
+def load_turbine_spec(
     filename_turbine_spec,
+):
+    filename_turbine_spec = Path(filename_turbine_spec)
+    dir_turbine_spec = filename_turbine_spec.parent
+    turbine_spec = load_yaml(filename_turbine_spec)
+    filename_powercurve = (
+        dir_turbine_spec / turbine_spec["performance_data_ccblade"]["power_thrust_csv"]
+    )
+    turbine_spec["performance_data_ccblade"]["power_thrust_csv"] = filename_powercurve
+
+    return turbine_spec
+
+
+def create_FLORIS_turbine(
+    input_turbine_spec=None,
     filename_turbine_FLORIS=None,
 ) -> dict:
 
-    # load generic spec
-    with open(filename_turbine_spec, "r") as file_turbine_spec:
-        turbine_spec = yaml.safe_load(file_turbine_spec)
+    if isinstance(input_turbine_spec, (str, Path)):
+        with open(input_turbine_spec, "r") as file_turbine_spec:
+            turbine_spec = load_turbine_spec(file_turbine_spec)
+    elif type(input_turbine_spec) == dict:
+        turbine_spec = input_turbine_spec
+    else:
+        raise TypeError(
+            "create_FLORIS_yamlfile requires either a dict input or a filename input.\n"
+            + f"recieved a {type(input_turbine_spec)}"
+        )
 
     # load speed/power/thrust file
-    filename_power_thrust = os.path.join(
-        os.path.split(os.path.abspath(filename_turbine_spec))[0],
-        turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
-    )
+    filename_power_thrust = turbine_spec["performance_data_ccblade"]["power_thrust_csv"]
     pt_raw = np.genfromtxt(filename_power_thrust, delimiter=",").T.tolist()
 
     # create FLORIS config dict

@@ -3,6 +3,7 @@ import os
 import numpy as np
 import floris
 
+import ard.utils
 import ard.farm_aero.templates as templates
 
 
@@ -23,7 +24,9 @@ class FLORISFarmComponent:
         self.fmodel = floris.FlorisModel("defaults")
         self.fmodel.set(
             wind_shear=self.modeling_options.get("wind_shear", 0.585),
-            turbine_type=[self.modeling_options["turbine"]],
+            turbine_type=[
+                ard.utils.create_FLORIS_turbine(self.modeling_options["turbine"])
+            ],
         )
         self.fmodel.assign_hub_height_to_ref_height()
 

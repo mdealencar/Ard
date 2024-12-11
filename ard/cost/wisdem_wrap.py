@@ -3,7 +3,6 @@ import warnings
 import openmdao.api as om
 from wisdem.plant_financese.plant_finance import PlantFinance as PlantFinance_orig
 from wisdem.landbosse.landbosse_omdao.landbosse import LandBOSSE as LandBOSSE_orig
-from wisdem.inputs.validation import load_yaml
 
 
 # this wrapper should sandbag warnings
