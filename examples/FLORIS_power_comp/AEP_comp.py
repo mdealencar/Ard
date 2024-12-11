@@ -1,5 +1,5 @@
 import os
-import pathlib
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,7 +15,7 @@ import ard.farm_aero.floris as farmaero_floris
 
 # create the wind query
 wind_rose_wrg = floris.wind_data.WindRoseWRG(
-    pathlib.Path(
+    Path(
         "..",
         "data",
         "wrg_example.wrg",
@@ -36,7 +36,7 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 #     plt.show()
 
 # specify the configuration/specification files to use
-filename_turbine_spec = pathlib.Path(
+filename_turbine_spec = Path(
     "..",
     "data",
     "turbine_spec_IEA-3p4-130-RWT.yaml",

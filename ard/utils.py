@@ -1,5 +1,5 @@
 import copy
-import pathlib
+from pathlib import Path
 import yaml
 
 import numpy as np
@@ -10,9 +10,7 @@ from wisdem.inputs.validation import load_yaml
 def load_turbine_spec(
     filename_turbine_spec,
 ):
-    print(type(filename_turbine_spec))  # DEBUG!!!!!
-    filename_turbine_spec = pathlib.Path(filename_turbine_spec)
-    print(type(filename_turbine_spec))  # DEBUG!!!!!
+    filename_turbine_spec = Path(filename_turbine_spec)
     dir_turbine_spec = filename_turbine_spec.parent
     turbine_spec = load_yaml(filename_turbine_spec)
     filename_powercurve = (
@@ -28,7 +26,7 @@ def create_FLORIS_turbine(
     filename_turbine_FLORIS=None,
 ) -> dict:
 
-    if isinstance(input_turbine_spec, (str, pathlib.Path)):
+    if isinstance(input_turbine_spec, (str, Path)):
         with open(input_turbine_spec, "r") as file_turbine_spec:
             turbine_spec = load_turbine_spec(file_turbine_spec)
     elif type(input_turbine_spec) == dict:

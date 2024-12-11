@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +26,7 @@ if False:
     plt.show()
 
 # specify the configuration/specification files to use
-filename_turbine_spec = pathlib.Path(
+filename_turbine_spec = Path(
     "..",
     "data",
     "turbine_spec_IEA-3p4-130-RWT.yaml",
