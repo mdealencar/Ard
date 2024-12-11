@@ -26,12 +26,10 @@ def create_FLORIS_turbine(
 
     # load speed/power/thrust file
     print(os.path.split(turbine_spec["description"]["filename"])[0])  # DEBUG!!!!!
-    print(
-        os.path.join(
-            os.path.split(turbine_spec["description"]["filename"])[0],
-            turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
-        )
-    )
+    print(os.path.join(
+        os.path.split(turbine_spec["description"]["filename"])[0],
+        turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
+    ))
     filename_power_thrust = os.path.join(
         os.path.split(turbine_spec["description"]["filename"])[0],
         turbine_spec["performance_data_ccblade"]["power_thrust_csv"],
