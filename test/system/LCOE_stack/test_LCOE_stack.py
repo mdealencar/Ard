@@ -8,6 +8,7 @@ import openmdao.api as om
 from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
 import ard
+import ard.test_utils
 import ard.utils
 import ard.wind_query as wq
 import ard.glue.prototype as glue
@@ -70,11 +71,21 @@ class TestLCOEstack:
         # run the model
         self.prob.run_model()
 
-        # get and print the AEP
-        AEP_val = float(self.prob.get_val("AEP_farm", units="GW*h")[0])
-        CapEx_val = float(self.prob.get_val("tcc.tcc", units="MUSD")[0])
-        BOS_val = float(self.prob.get_val("landbosse.total_capex", units="MUSD")[0])
-        OpEx_val = float(self.prob.get_val("opex.opex", units="MUSD/yr")[0])
-        LCOE_val = float(self.prob.get_val("financese.lcoe", units="USD/MW/h")[0])
+        # collapse the test result data
+        test_data = {
+            "AEP_val": float(self.prob.get_val("AEP_farm", units="GW*h")[0]),
+            "CapEx_val": float(self.prob.get_val("tcc.tcc", units="MUSD")[0]),
+            "BOS_val": float(self.prob.get_val("landbosse.total_capex", units="MUSD")[0]),
+            "OpEx_val": float(self.prob.get_val("opex.opex", units="MUSD/yr")[0]),
+            "LCOE_val": float(self.prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
+        }
 
-        #
+        # check the data against a pyrite file
+        ard.test_utils.pyrite_validator(
+            test_data,
+            "test_LCOE_stack_pyrite.npz",
+            # rewrite=True,  # uncomment to write new pyrite file
+            rtol_val=5e-3,
+        )
+
+#
