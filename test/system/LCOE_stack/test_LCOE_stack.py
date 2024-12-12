@@ -75,7 +75,9 @@ class TestLCOEstack:
         test_data = {
             "AEP_val": float(self.prob.get_val("AEP_farm", units="GW*h")[0]),
             "CapEx_val": float(self.prob.get_val("tcc.tcc", units="MUSD")[0]),
-            "BOS_val": float(self.prob.get_val("landbosse.total_capex", units="MUSD")[0]),
+            "BOS_val": float(
+                self.prob.get_val("landbosse.total_capex", units="MUSD")[0]
+            ),
             "OpEx_val": float(self.prob.get_val("opex.opex", units="MUSD/yr")[0]),
             "LCOE_val": float(self.prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
         }
@@ -87,5 +89,6 @@ class TestLCOEstack:
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
+
 
 #
