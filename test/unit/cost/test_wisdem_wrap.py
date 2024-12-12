@@ -81,7 +81,7 @@ class TestLandBOSSE:
             "bos_capex_kW": self.prob.get_val("landbosse.bos_capex_kW", units="USD/kW"),
             "total_capex": self.prob.get_val("landbosse.total_capex", units="MUSD"),
         }
-                # validate data against pyrite file
+        # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
             fn_pyrite,

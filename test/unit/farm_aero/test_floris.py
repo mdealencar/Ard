@@ -111,16 +111,22 @@ class TestFLORISBatchPower:
         # collect data to validate
         validation_data = {
             "power_farm": self.prob.get_val("batchFLORIS.power_farm", units="MW"),
-            "power_turbines": self.prob.get_val("batchFLORIS.power_turbines", units="MW"),
-            "thrust_turbines": self.prob.get_val("batchFLORIS.thrust_turbines", units="kN"),
+            "power_turbines": self.prob.get_val(
+                "batchFLORIS.power_turbines", units="MW"
+            ),
+            "thrust_turbines": self.prob.get_val(
+                "batchFLORIS.thrust_turbines", units="kN"
+            ),
         }
         # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             validation_data,
-            Path(os.path.join(
-                os.path.split(__file__)[0],
-                "test_floris_batch_pyrite.npz",
-            )),
+            Path(
+                os.path.join(
+                    os.path.split(__file__)[0],
+                    "test_floris_batch_pyrite.npz",
+                )
+            ),
             rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )
@@ -224,15 +230,19 @@ class TestFLORISAEP:
             "aep_farm": self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h"),
             "power_farm": self.prob.get_val("aepFLORIS.power_farm", units="MW"),
             "power_turbines": self.prob.get_val("aepFLORIS.power_turbines", units="MW"),
-            "thrust_turbines": self.prob.get_val("aepFLORIS.thrust_turbines", units="kN"),
+            "thrust_turbines": self.prob.get_val(
+                "aepFLORIS.thrust_turbines", units="kN"
+            ),
         }
         # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            Path(os.path.join(
-                os.path.split(__file__)[0],
-                "test_floris_aep_pyrite.npz",
-            )),
+            Path(
+                os.path.join(
+                    os.path.split(__file__)[0],
+                    "test_floris_aep_pyrite.npz",
+                )
+            ),
             rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )
