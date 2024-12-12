@@ -416,7 +416,6 @@ class TestGridFarmLanduse:
             A_square = np.abs(
                 (x_max - x_min) * (y_max - y_min)
             )  # compass-aligned square
-            print("reference values:", A_ref, A_skew, A_square)
 
             # for a skewed, compass-aligned farm second and third areas are equal
             assert np.isclose(self.prob.get_val("gflu.area_tight"), A_ref)

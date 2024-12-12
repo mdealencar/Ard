@@ -1,10 +1,12 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import openmdao.api as om
 
 import ard
 import ard.utils
+import ard.test_utils
 import ard.layout.gridfarm as gridfarm
 import ard.cost.wisdem_wrap as wcost
 import ard.glue.prototype as glue
@@ -70,35 +72,22 @@ class TestLandBOSSE:
 
         self.prob.run_model()
 
-        ### BEGIN: I THINK THIS SHOULD BE A BROADLY SHARED FUNCTION
+        # use a file of pyrite-standard data to validate against
         fn_pyrite = os.path.join(
             os.path.split(__file__)[0],
             "test_wisdem_wrap_baseline_farm.npz",
         )
-        if False:  # set to True to write new pyrite value file
-            # create pyrite file
-            print(f"writing new pyrite file in {fn_pyrite}")
-            np.savez(
-                fn_pyrite,
-                bos_capex_kW=np.array(
-                    self.prob.get_val("landbosse.bos_capex_kW", units="USD/kW")
-                ),
-                total_capex=np.array(
-                    self.prob.get_val("landbosse.total_capex", units="MUSD")
-                ),
-            )
-            assert False
-        else:
-            pyrite_data = np.load(fn_pyrite)
-            assert np.isclose(
-                pyrite_data["bos_capex_kW"],
-                self.prob.get_val("landbosse.bos_capex_kW", units="USD/kW"),
-            )
-            assert np.isclose(
-                pyrite_data["total_capex"],
-                self.prob.get_val("landbosse.total_capex", units="MUSD"),
-            )
-        ### END: I THINK THIS SHOULD BE A BROADLY SHARED FUNCTION
+        test_data = {
+            "bos_capex_kW": self.prob.get_val("landbosse.bos_capex_kW", units="USD/kW"),
+            "total_capex": self.prob.get_val("landbosse.total_capex", units="MUSD"),
+        }
+                # validate data against pyrite file
+        ard.test_utils.pyrite_validator(
+            test_data,
+            fn_pyrite,
+            rtol_val=5e-3,
+            # rewrite=True,  # uncomment to write new pyrite file
+        )
 
 
 class TestPlantFinance:
