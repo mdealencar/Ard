@@ -1,14 +1,16 @@
-name: Python Unit Tests with Coverage
+name: Python System Tests with Coverage
 
 on:
   push:
     branches:
       - main
       - develop
+      - system_testing
   pull_request:
     branches:
       - main
       - develop
+      - system_testing
 
 jobs:
   test:
@@ -32,7 +34,7 @@ jobs:
       run: |
         pip install .[dev]
 
-    - name: Run tests with coverage
+    - name: Run system tests with coverage
       run: |
         pytest --cov=ard --cov-fail-under=50 test/system
         # pytest --cov=ard --cov-fail-under=80 test/system

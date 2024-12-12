@@ -34,7 +34,7 @@ jobs:
       run: |
         pip install .[dev]
 
-    - name: Run tests with coverage
+    - name: Run unit tests with coverage
       run: |
         pytest --cov=ard --cov-fail-under=80 test/unit
 
