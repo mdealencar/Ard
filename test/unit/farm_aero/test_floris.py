@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import openmdao.api as om
@@ -6,6 +7,7 @@ import openmdao.api as om
 import floris
 
 import ard.utils
+import ard.test_utils
 import ard.wind_query as wq
 import ard.farm_aero.floris as farmaero_floris
 
@@ -106,67 +108,28 @@ class TestFLORISBatchPower:
 
         self.prob.run_model()
 
-        if False:  # set to True to write new pyrite value file
-            # create pyrite file
-            np.savez(
-                os.path.join(
-                    os.path.split(__file__)[0],
-                    "test_floris_batch_pyrite",
-                ),
-                power_farm=np.array(
-                    self.prob.get_val("batchFLORIS.power_farm", units="MW")
-                ),
-                power_turbines=np.array(
-                    self.prob.get_val("batchFLORIS.power_turbines", units="MW")
-                ),
-                thrust_turbines=np.array(
-                    self.prob.get_val("batchFLORIS.thrust_turbines", units="kN")
-                ),
-            )
-            assert False
-        else:
-            pyrite_data = np.load(
+        # collect data to validate
+        validation_data = {
+            "power_farm": self.prob.get_val("batchFLORIS.power_farm", units="MW"),
+            "power_turbines": self.prob.get_val(
+                "batchFLORIS.power_turbines", units="MW"
+            ),
+            "thrust_turbines": self.prob.get_val(
+                "batchFLORIS.thrust_turbines", units="kN"
+            ),
+        }
+        # validate data against pyrite file
+        ard.test_utils.pyrite_validator(
+            validation_data,
+            Path(
                 os.path.join(
                     os.path.split(__file__)[0],
                     "test_floris_batch_pyrite.npz",
-                ),
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(
-                            self.prob.get_val("batchFLORIS.power_farm", units="MW")
-                        ),
-                        pyrite_data["power_farm"],
-                        rtol=5e-3,
-                    )
                 )
-                == self.prob.get_val("batchFLORIS.power_farm", units="MW").size
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(
-                            self.prob.get_val("batchFLORIS.power_turbines", units="MW")
-                        ),
-                        pyrite_data["power_turbines"],
-                        rtol=5e-3,
-                    )
-                )
-                == self.prob.get_val("batchFLORIS.power_turbines", units="MW").size
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(
-                            self.prob.get_val("batchFLORIS.thrust_turbines", units="kN")
-                        ),
-                        pyrite_data["thrust_turbines"],
-                        rtol=5e-3,
-                    )
-                )
-                == self.prob.get_val("batchFLORIS.thrust_turbines", units="kN").size
-            )
+            ),
+            rtol_val=5e-3,
+            # rewrite=True,  # uncomment to write new pyrite file
+        )
 
 
 class TestFLORISAEP:
@@ -262,75 +225,24 @@ class TestFLORISAEP:
 
         self.prob.run_model()
 
-        if False:  # set to True to write new pyrite value file
-            # create pyrite file
-            np.savez(
-                os.path.join(
-                    os.path.split(__file__)[0],
-                    "test_floris_aep_pyrite",
-                ),
-                aep_farm=np.array(
-                    self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h")
-                ),
-                power_farm=np.array(
-                    self.prob.get_val("aepFLORIS.power_farm", units="MW")
-                ),
-                power_turbines=np.array(
-                    self.prob.get_val("aepFLORIS.power_turbines", units="MW")
-                ),
-                thrust_turbines=np.array(
-                    self.prob.get_val("aepFLORIS.thrust_turbines", units="kN")
-                ),
-            )
-            assert False
-        else:
-            pyrite_data = np.load(
+        # collect data to validate
+        test_data = {
+            "aep_farm": self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h"),
+            "power_farm": self.prob.get_val("aepFLORIS.power_farm", units="MW"),
+            "power_turbines": self.prob.get_val("aepFLORIS.power_turbines", units="MW"),
+            "thrust_turbines": self.prob.get_val(
+                "aepFLORIS.thrust_turbines", units="kN"
+            ),
+        }
+        # validate data against pyrite file
+        ard.test_utils.pyrite_validator(
+            test_data,
+            Path(
                 os.path.join(
                     os.path.split(__file__)[0],
                     "test_floris_aep_pyrite.npz",
-                ),
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h")),
-                        pyrite_data["aep_farm"],
-                        rtol=5e-3,
-                    )
                 )
-                == self.prob.get_val("aepFLORIS.AEP_farm", units="GW*h").size
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(self.prob.get_val("aepFLORIS.power_farm", units="MW")),
-                        pyrite_data["power_farm"],
-                        rtol=5e-3,
-                    )
-                )
-                == self.prob.get_val("aepFLORIS.power_farm", units="MW").size
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(
-                            self.prob.get_val("aepFLORIS.power_turbines", units="MW")
-                        ),
-                        pyrite_data["power_turbines"],
-                        rtol=5e-3,
-                    )
-                )
-                == self.prob.get_val("aepFLORIS.power_turbines", units="MW").size
-            )
-            assert (
-                np.sum(
-                    np.isclose(
-                        np.array(
-                            self.prob.get_val("aepFLORIS.thrust_turbines", units="kN")
-                        ),
-                        pyrite_data["thrust_turbines"],
-                        rtol=5e-3,
-                    )
-                )
-                == self.prob.get_val("aepFLORIS.thrust_turbines", units="kN").size
-            )
+            ),
+            rtol_val=5e-3,
+            # rewrite=True,  # uncomment to write new pyrite file
+        )
