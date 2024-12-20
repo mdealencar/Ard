@@ -5,15 +5,26 @@ from wisdem.plant_financese.plant_finance import PlantFinance as PlantFinance_or
 from wisdem.landbosse.landbosse_omdao.landbosse import LandBOSSE as LandBOSSE_orig
 
 
-# this wrapper should sandbag warnings
 class LandBOSSE(LandBOSSE_orig):
+    """
+    Wrapper for WISDEM's LandBOSSE BOS calculators.
+
+    A thin wrapper of `wisdem.landbosse.landbosse_omdao.landbosse.LandBOSSE`
+    that traps warning messages that are recognized not to be issues.
+
+    See: https://github.com/WISDEM/LandBOSSE
+    """
+
     def setup(self):
+        """Setup of OM component."""
         warnings.filterwarnings("ignore", category=FutureWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().setup()
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
+
         # finite difference WISDEM tools for gradients
         self.declare_partials(
             [
@@ -28,21 +39,32 @@ class LandBOSSE(LandBOSSE_orig):
         )
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
+        """Computation for the OM compoent."""
         warnings.filterwarnings("ignore", category=FutureWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().compute(inputs, outputs, discrete_inputs, discrete_outputs)
 
 
-# this wrapper should sandbag warnings
 class PlantFinance(PlantFinance_orig):
+    """
+    Wrapper for WISDEM's PlantFinanceSE calculators.
+
+    A thin wrapper of `wisdem.plant_financese.plant_finance.PlantFinance` that
+    traps warning messages that are recognized not to be issues.
+
+    See: https://github.com/WISDEM/WISDEM/tree/master/wisdem/plant_financese
+    """
+
     def setup(self):
+        """Setup of OM component."""
         warnings.filterwarnings("ignore", category=FutureWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
             return super().setup()
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
+        """Computation for the OM compoent."""
         warnings.filterwarnings("ignore", category=FutureWarning)
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         with warnings.catch_warnings():
@@ -50,7 +72,31 @@ class PlantFinance(PlantFinance_orig):
 
 
 class TurbineCapitalCosts(om.ExplicitComponent):
+    """
+    A simple component to compute the turbine capital costs.
+
+    Inputs
+    ------
+    machine_rating : float
+        rating of the wind turbine in kW
+    tcc_per_kW : float
+        turbine capital costs per kW (as output from WISDEM tools)
+    offset_tcc_per_kW : float
+        additional tcc per kW (offset)
+
+    Discrete Inputs
+    ---------------
+    turbine_number : int
+        number of turbines in the farm
+
+    Outputs
+    -------
+    tcc : float
+        turbine capital costs in USD
+    """
+
     def setup(self):
+        """Setup of OM component."""
         self.add_input("machine_rating", 0.0, units="kW")
         self.add_input("tcc_per_kW", 0.0, units="USD/kW")
         self.add_input("offset_tcc_per_kW", 0.0, units="USD/kW")
@@ -58,10 +104,12 @@ class TurbineCapitalCosts(om.ExplicitComponent):
         self.add_output("tcc", 0.0, units="USD")
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
         # complex step for simple gradients
         self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
+        """Computation for the OM compoent."""
         # Unpack parameters
         t_rating = inputs["machine_rating"]
         n_turbine = discrete_inputs["turbine_number"]
@@ -70,17 +118,43 @@ class TurbineCapitalCosts(om.ExplicitComponent):
 
 
 class OperatingExpenses(om.ExplicitComponent):
+    """
+    A simple component to compute the operating costs.
+
+    Inputs
+    ------
+    machine_rating : float
+        rating of the wind turbine in kW
+    opex_per_kW : float
+        annual operating and maintenance costs per kW (as output from WISDEM
+        tools)
+
+    Discrete Inputs
+    ---------------
+    turbine_number : int
+        number of turbines in the farm
+
+    Outputs
+    -------
+    opex : float
+        annual operating and maintenance costs in USD
+    """
+
+
     def setup(self):
+        """Setup of OM component."""
         self.add_input("machine_rating", 0.0, units="kW")
         self.add_input("opex_per_kW", 0.0, units="USD/kW/yr")
         self.add_discrete_input("turbine_number", 0)
         self.add_output("opex", 0.0, units="USD/yr")
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
         # complex step for simple gradients
         self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
+        """Computation for the OM compoent."""
         # Unpack parameters
         t_rating = inputs["machine_rating"]
         n_turbine = discrete_inputs["turbine_number"]
@@ -89,6 +163,17 @@ class OperatingExpenses(om.ExplicitComponent):
 
 
 def LandBOSSE_setup_latents(prob, modeling_options):
+    """
+    A function to set up the LandBOSSE latent variables using modeling options.
+
+    Parameters
+    ----------
+    prob : openmdao.api.Problem
+        an OpenMDAO problem for which we want to setup the LandBOSSE latent
+        variables
+    modeling_options : dict
+        a modeling options dictionary
+    """
 
     # get a map from the component variables to the promotion variables
     comp2promotion_map = {
@@ -176,6 +261,17 @@ def LandBOSSE_setup_latents(prob, modeling_options):
 
 
 def FinanceSE_setup_latents(prob, modeling_options):
+    """
+    A function to set up the FinanceSE latent variables using modeling options.
+
+    Parameters
+    ----------
+    prob : openmdao.api.Problem
+        an OpenMDAO problem for which we want to setup the LandBOSSE latent
+        variables
+    modeling_options : dict
+        a modeling options dictionary
+    """
 
     # get a map from the component variables to the promotion variables
     comp2promotion_map = {
