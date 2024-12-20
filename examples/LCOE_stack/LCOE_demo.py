@@ -40,7 +40,7 @@ prob = glue.create_setup_OM_problem(
     wind_rose=wind_rose,
 )
 
-if False:
+if False:  # set true to run one-shot analysis
 
     # setup the latent variables for LandBOSSE and FinanceSE
     cost_wisdem.LandBOSSE_setup_latents(prob, modeling_options)
@@ -66,22 +66,23 @@ else:
     # prob.model.add_objective("landuse.area_tight")
 
     # setup an optimization
-    if False:
+    if False:  # for SLSQP from pyoptsparse
         prob.driver = om.pyOptSparseDriver(optimizer="SLSQP")
-    elif True:
+    elif True:  # use COBYLA from NLopt via WISDEM
         prob.driver = NLoptDriver(optimizer="LN_COBYLA")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
-        prob.driver.options[""]
-    elif True:
+        prob.driver.options["maxiter"] = 25
+    elif True:  # use SLSQP from NLopt via WISDEM
         prob.driver = NLoptDriver(optimizer="LD_SLSQP")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
-    elif False:
+    elif False:  # use COBYLA from scipy
         prob.driver = om.ScipyOptimizeDriver(optimizer="COBYLA")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
-    elif True:
+    elif True:  # use SLSQP from scipy
         prob.driver = om.ScipyOptimizeDriver(optimizer="SLSQP")
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
-    else:
+    else:  # use Differential Evolution from OpenMDAO
+        # this didn't really work
         prob.driver = om.DifferentialEvolutionDriver()
         prob.driver.options["max_gen"] = 10  # DEBUG!!!!! short
         prob.driver.options["pop_size"] = 5  # DEBUG!!!!! short
@@ -89,16 +90,15 @@ else:
         # prob.driver.options["F"] = 0.5
         prob.driver.options["run_parallel"] = True
         prob.driver.options["debug_print"] = ["desvars", "nl_cons", "ln_cons", "objs"]
-    # prob.driver.recording_options["includes"] = ["*"]
+
+    # set up the recorder
     prob.driver.recording_options["record_objectives"] = True
     prob.driver.recording_options["record_constraints"] = True
     prob.driver.recording_options["record_desvars"] = True
-    # prob.driver.recording_options["record_inputs"] = True
-    # prob.driver.recording_options["record_outputs"] = True
     prob.driver.recording_options["record_residuals"] = True
-
     prob.driver.add_recorder(om.SqliteRecorder("case.sql"))
 
+    # setup the problem
     prob.setup()
 
     # setup the latent variables for LandBOSSE and FinanceSE
@@ -111,12 +111,8 @@ else:
     prob.set_val("angle_orientation", 0.0)
     prob.set_val("angle_skew", 0.0)
 
-    # prob.run_model()  # DEBUG!!!!!
-    # prob.check_partials(excludes=["layout2aep.aepFLORIS"])  # DEBUG!!!!!
-    # prob.check_totals()  # DEBUG!!!!!
-
+    # run the optimization driver
     prob.run_driver()
-
 
 # get and print the AEP
 AEP_val = float(prob.get_val("AEP_farm", units="GW*h")[0])
