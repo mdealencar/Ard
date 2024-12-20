@@ -140,7 +140,6 @@ class OperatingExpenses(om.ExplicitComponent):
         annual operating and maintenance costs in USD
     """
 
-
     def setup(self):
         """Setup of OM component."""
         self.add_input("machine_rating", 0.0, units="kW")

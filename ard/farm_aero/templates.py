@@ -4,11 +4,40 @@ import openmdao.api as om
 
 
 class FarmAeroTemplate(om.ExplicitComponent):
+    """
+    Template component for using a farm aerodynamics model.
+
+    A farm aerodynamics component, based on this template, will compute the
+    aerodynamics for a farm with some layout and yaw configuration.
+
+    Options
+    -------
+    modeling_options : dict
+        a modeling options dictionary
+
+    Inputs
+    ------
+    x_turbines : np.ndarray
+        a 1D numpy array indicating the x-dimension locations of the turbines,
+        with length `N_turbines`
+    y_turbines : np.ndarray
+        a 1D numpy array indicating the y-dimension locations of the turbines,
+        with length `N_turbines`
+    yaw_turbines : np.ndarray
+        a numpy array indicating the yaw angle to drive each turbine to with
+        respect to the ambient wind direction, with length `N_turbines`
+
+    Outputs
+    -------
+    None
+    """
 
     def initialize(self):
+        """Initialization of OM component."""
         self.options.declare("modeling_options")
 
     def setup(self):
+        """Setup of OM component."""
         # load modeling options
         self.modeling_options = self.options["modeling_options"]
         self.N_turbines = self.modeling_options["farm"]["N_turbines"]
@@ -23,6 +52,11 @@ class FarmAeroTemplate(om.ExplicitComponent):
         )
 
     def compute(self, inputs, outputs):
+        """
+        Computation for the OM compoent.
+
+        For a template class this is not implemented and raises an error!
+        """
 
         #############################################
         #                                           #
@@ -37,47 +71,56 @@ class FarmAeroTemplate(om.ExplicitComponent):
 
 class BatchFarmPowerTemplate(FarmAeroTemplate):
     """
-    template component for computing power using a farm aerodynamics model
+    Template component for computing power using a farm aerodynamics model.
 
-    a farm power component, based on this template, will compute the power and
+    A farm power component, based on this template, will compute the power and
     thrust for a farm composed of a given rotor type.
 
-    options
+    Options
     -------
-        - modeling_options : a modeling options dictionary to specify modeling
-                specifications
-        - wind_query : a WindQuery objects that specifies the wind conditions
-                that are to be computed
+    modeling_options : dict
+        a modeling options dictionary (inherited from FarmAeroTemplate)
+    wind_query : floris.wind_data.WindRose
+        a WindQuery objects that specifies the wind conditions that are to be
+        computed
 
-    inputs
+    Inputs
     ------
-        - x_turbines : a 1D numpy array indicating the x-dimension locations of
-                the turbines, with length N_turbines
-        - y_turbines : a 1D numpy array indicating the y-dimension locations of
-                the turbines, with length N_turbines
-        - yaw_turbines : a numpy array indicating the yaw angle to drive each
-                turbine to with respect to the ambient wind direction, with
-                length N_turbines
+    x_turbines : np.ndarray
+        a 1D numpy array indicating the x-dimension locations of the turbines,
+        with length `N_turbines` (inherited from FarmAeroTemplate)
+    y_turbines : np.ndarray
+        a 1D numpy array indicating the y-dimension locations of the turbines,
+        with length `N_turbines` (inherited from FarmAeroTemplate)
+    yaw_turbines : np.ndarray
+        a numpy array indicating the yaw angle to drive each turbine to with
+        respect to the ambient wind direction, with length `N_turbines`
+        (inherited from FarmAeroTemplate)
 
-    outputs
+    Outputs
     -------
-        - power_farm : a numpy array of the farm power for each of the wind
-                conditions that have been queried
-        - power_turbines : a numpy array of the farm power for each of the
-                turbines in the farm across all of the conditions that have been
-                queried (N_turbines, N_wind_conditions)
-        - thrust_turbines : a numpy array of the wind turbine thrust for each of
-                the turbines in the farm across all of the conditions that have
-                been queried (N_turbines, N_wind_conditions)
+    power_farm : np.ndarray
+        an array of the farm power for each of the wind conditions that have
+        been queried
+    power_turbines : np.ndarray
+        an array of the farm power for each of the turbines in the farm across
+        all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`)
+    thrust_turbines : np.ndarray
+        an array of the wind turbine thrust for each of the turbines in the farm
+        across all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`)
     """
 
     def initialize(self):
+        """Initialization of OM component."""
         super().initialize()
 
         # farm power wind conditions query (not necessarily a full wind rose)
         self.options.declare("wind_query")
 
     def setup(self):
+        """Setup of OM component."""
         super().setup()
 
         # unpack wind query object
@@ -109,10 +152,16 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
         )
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
         # the default (but not preferred!) derivatives are FDM
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
+        """
+        Computation for the OM compoent.
+
+        For a template class this is not implemented and raises an error!
+        """
         super().compute(inputs, outputs)
 
         raise NotImplementedError(
@@ -127,46 +176,58 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
 
 class FarmAEPTemplate(FarmAeroTemplate):
     """
-    template component for computing power using a farm aerodynamics model
+    A template component for computing power using a farm aerodynamics model.
 
-    a farm power component, based on this template, will compute the power and
+    A farm power component, based on this template, will compute the power and
     thrust for a farm composed of a given rotor type.
 
-    options
+    Options
     -------
-        - modeling_options : a modeling options dictionary to specify modeling
-                specifications
-        - wind_rose : a FLORIS WindRose object that fully specifies the wind
-                conditions on which a farm is to be evaluated
+    modeling_options : dict
+        a modeling options dictionary (inherited from FarmAeroTemplate)
+    wind_rose : floris.wind_data.WindRose
+        a FLORIS WindRose object that fully specifies the wind conditions on
+        which a farm is to be evaluated
 
-    inputs
+    Inputs
     ------
-        - x : a 1D numpy array indicating the x-dimension locations of the
-                turbines, with length N_turbines
-        - y : a 1D numpy array indicating the y-dimension locations of the
-                turbines, with length N_turbines
-        - yaw : a numpy array indicating the yaw angle to drive each turbine to
-                with respect to the ambient wind direction, with length
-                N_turbines
+    x_turbines : np.ndarray
+        a 1D numpy array indicating the x-dimension locations of the turbines,
+        with length `N_turbines` (inherited from FarmAeroTemplate)
+    y_turbines : np.ndarray
+        a 1D numpy array indicating the y-dimension locations of the turbines,
+        with length `N_turbines` (inherited from FarmAeroTemplate)
+    yaw_turbines : np.ndarray
+        a numpy array indicating the yaw angle to drive each turbine to with
+        respect to the ambient wind direction, with length `N_turbines`
+        (inherited from FarmAeroTemplate)
 
-    outputs
+    Outputs
     -------
-        - AEP_farm : a float giving the AEP of the farm
-        - power_turbines : a numpy array of the farm power for each of the
-                turbines in the farm across all of the conditions that have been
-                queried on the wind rose (N_turbines, N_wind_conditions)
-        - thrust_turbines : a numpy array of the wind turbine thrust for each of
-                the turbines in the farm across all of the conditions that have
-                been queried on the wind rose (N_turbines, N_wind_conditions)
+    AEP_farm : float
+        the AEP of the farm given by the analysis
+    power_farm : np.ndarray
+        an array of the farm power for each of the wind conditions that have
+        been queried
+    power_turbines : np.ndarray
+        an array of the farm power for each of the turbines in the farm across
+        all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`)
+    thrust_turbines : np.ndarray
+        an array of the wind turbine thrust for each of the turbines in the farm
+        across all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`)
     """
 
     def initialize(self):
+        """Initialization of OM component."""
         super().initialize()
 
         # wind conditions for AEP analysis are a FLORIS WindRose
         self.options.declare("wind_rose")  # FLORIS WindRose object
 
     def setup(self):
+        """Setup of OM component."""
         super().setup()
 
         # unpack FLORIS wind data object
@@ -203,10 +264,16 @@ class FarmAEPTemplate(FarmAeroTemplate):
         # ... more outputs can be added here
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
         # the default (but not preferred!) derivatives are FDM
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
+        """
+        Computation for the OM compoent.
+
+        For a template class this is not implemented and raises an error!
+        """
 
         #############################################
         #                                           #
