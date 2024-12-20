@@ -9,16 +9,31 @@ import ard.farm_aero.templates as templates
 
 class FLORISFarmComponent:
     """
-    a secondary-inherit superclass for FLORIS FarmAero components to share
-    common code
+    Secondary-inherit component for managing FLORIS for farm simulations.
 
-    TO DO
+    This is a base class for farm aerodynamics simulations using FLORIS, which
+    should cover all the necessary configuration, reproducability config file
+    saving, and output directory management.
+
+    It is not a child class of an OpenMDAO components, but it is designed to
+    mirror the form of the OM component, so that FLORIS activities are separated
+    to have run times that correspond to the similarly-named OM component
+    methods. It is intended to be a second-inherit base class for FLORIS-based
+    OpenMDAO components, and will not work unless the calling object is a
+    specialized class that _also_ specializes `openmdao.api.Component`.
+
+    Options
+    -------
+    case_title : str
+        a "title" for the case, used to disambiguate runs in practice
     """
 
     def initialize(self):
+        """Initialization-time FLORIS management."""
         self.options.declare("case_title")
 
     def setup(self):
+        """Setup-time FLORIS management."""
 
         # set up FLORIS
         self.fmodel = floris.FlorisModel("defaults")
@@ -35,23 +50,34 @@ class FLORISFarmComponent:
         os.makedirs(self.dir_floris, exist_ok=True)
 
     def compute(self, inputs):
+        """
+        Compute-time FLORIS management.
+
+        Compute-time FLORIS management should be specialized based on use case.
+        If the base class is not specialized, an error will be raised.
+        """
 
         raise NotImplementedError("compute must be specialized,")
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
         # for FLORIS, no derivatives. use FD because FLORIS is cheap
         self.declare_partials("*", "*", method="fd")
 
     def get_AEP_farm(self):
+        """Get the AEP of a FLORIS farm."""
         return self.fmodel.get_farm_AEP()
 
     def get_power_farm(self):
+        """Get the farm power of a FLORIS farm at each wind condition."""
         return self.fmodel.get_farm_power()
 
     def get_power_turbines(self):
+        """Get the turbine powers of a FLORIS farm at each wind condition."""
         return self.fmodel.get_turbine_powers().T
 
     def get_thrust_turbines(self):
+        """Get the turbine thrusts of a FLORIS farm at each wind condition."""
         # FLORIS computes the thrust precursors, compute and return thrust
         # use pure FLORIS to get these values for consistency
         CT_turbines = self.fmodel.get_turbine_thrust_coefficients()
@@ -62,7 +88,8 @@ class FLORISFarmComponent:
         thrust_turbines = CT_turbines * (0.5 * rho_floris * A_floris * V_turbines**2)
         return thrust_turbines.T
 
-    def dump_floris_outfile(self, dir_output=None):
+    def dump_floris_yamlfile(self, dir_output=None):
+        """Write a FLORIS yaml file for reproducability of the analysis."""
         # dump the floris case
         if dir_output is None:
             dir_output = self.dir_floris
@@ -71,9 +98,55 @@ class FLORISFarmComponent:
 
 class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
     """
-    a component to compute a batch power estimate using FLORIS
+    Component class for computing a batch power analysis using FLORIS.
 
-    ...
+    A component class that evaluates a series of farm power and associated
+    quantities using FLORIS. Inherits the interface from
+    `templates.BatchFarmPowerTemplate` and the computational guts from
+    `FLORISFarmComponent`.
+
+    Options
+    -------
+    case_title : str
+        a "title" for the case, used to disambiguate runs in practice (inherited
+        from `FLORISFarmComponent`)
+    modeling_options : dict
+        a modeling options dictionary (inherited via
+        `templates.BatchFarmPowerTemplate`)
+    wind_query : floris.wind_data.WindRose
+        a WindQuery objects that specifies the wind conditions that are to be
+        computed (inherited from `templates.BatchFarmPowerTemplate`)
+
+    Inputs
+    ------
+    x_turbines : np.ndarray
+        a 1D numpy array indicating the x-dimension locations of the turbines,
+        with length `N_turbines` (inherited via
+        `templates.BatchFarmPowerTemplate`)
+    y_turbines : np.ndarray
+        a 1D numpy array indicating the y-dimension locations of the turbines,
+        with length `N_turbines` (inherited via
+        `templates.BatchFarmPowerTemplate`)
+    yaw_turbines : np.ndarray
+        a numpy array indicating the yaw angle to drive each turbine to with
+        respect to the ambient wind direction, with length `N_turbines`
+        (inherited via `templates.BatchFarmPowerTemplate`)
+
+    Outputs
+    -------
+    power_farm : np.ndarray
+        an array of the farm power for each of the wind conditions that have
+        been queried (inherited from `templates.BatchFarmPowerTemplate`)
+    power_turbines : np.ndarray
+        an array of the farm power for each of the turbines in the farm across
+        all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`) (inherited from
+        `templates.BatchFarmPowerTemplate`)
+    thrust_turbines : np.ndarray
+        an array of the wind turbine thrust for each of the turbines in the farm
+        across all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`) (inherited from
+        `templates.BatchFarmPowerTemplate`)
     """
 
     def initialize(self):
@@ -108,7 +181,7 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
         self.fmodel.run()
 
         # dump the yaml to re-run this case on demand
-        FLORISFarmComponent.dump_floris_outfile(self, self.dir_floris)
+        FLORISFarmComponent.dump_floris_yamlfile(self, self.dir_floris)
 
         # FLORIS computes the powers
         outputs["power_farm"] = FLORISFarmComponent.get_power_farm(self)
@@ -118,9 +191,56 @@ class FLORISBatchPower(templates.BatchFarmPowerTemplate, FLORISFarmComponent):
 
 class FLORISAEP(templates.FarmAEPTemplate):
     """
-    a component to compute an AEP estimate using FLORIS
+    Component class for computing an AEP analysis using FLORIS.
 
-    ...
+    A component class that evaluates a series of farm power and associated
+    quantities using FLORIS with a wind rose to make an AEP estimate. Inherits
+    the interface from `templates.FarmAEPTemplate` and the computational guts
+    from `FLORISFarmComponent`.
+
+    Options
+    -------
+    case_title : str
+        a "title" for the case, used to disambiguate runs in practice (inherited
+        from `FLORISFarmComponent`)
+    modeling_options : dict
+        a modeling options dictionary (inherited via
+        `templates.FarmAEPTemplate`)
+    wind_query : floris.wind_data.WindRose
+        a WindQuery objects that specifies the wind conditions that are to be
+        computed (inherited from `templates.FarmAEPTemplate`)
+
+    Inputs
+    ------
+    x_turbines : np.ndarray
+        a 1D numpy array indicating the x-dimension locations of the turbines,
+        with length `N_turbines` (inherited via `templates.FarmAEPTemplate`)
+    y_turbines : np.ndarray
+        a 1D numpy array indicating the y-dimension locations of the turbines,
+        with length `N_turbines` (inherited via `templates.FarmAEPTemplate`)
+    yaw_turbines : np.ndarray
+        a numpy array indicating the yaw angle to drive each turbine to with
+        respect to the ambient wind direction, with length `N_turbines`
+        (inherited via `templates.FarmAEPTemplate`)
+
+    Outputs
+    -------
+    AEP_farm : float
+        the AEP of the farm given by the analysis (inherited from
+        `templates.FarmAEPTemplate`)
+    power_farm : np.ndarray
+        an array of the farm power for each of the wind conditions that have
+        been queried (inherited from `templates.FarmAEPTemplate`)
+    power_turbines : np.ndarray
+        an array of the farm power for each of the turbines in the farm across
+        all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`) (inherited from
+        `templates.FarmAEPTemplate`)
+    thrust_turbines : np.ndarray
+        an array of the wind turbine thrust for each of the turbines in the farm
+        across all of the conditions that have been queried on the wind rose
+        (`N_turbines`, `N_wind_conditions`) (inherited from
+        `templates.FarmAEPTemplate`)
     """
 
     def initialize(self):
@@ -148,7 +268,7 @@ class FLORISAEP(templates.FarmAEPTemplate):
         self.fmodel.run()
 
         # dump the yaml to re-run this case on demand
-        FLORISFarmComponent.dump_floris_outfile(self, self.dir_floris)
+        FLORISFarmComponent.dump_floris_yamlfile(self, self.dir_floris)
 
         # FLORIS computes the powers
         outputs["AEP_farm"] = FLORISFarmComponent.get_AEP_farm(self)

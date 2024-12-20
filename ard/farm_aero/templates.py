@@ -79,7 +79,7 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
     Options
     -------
     modeling_options : dict
-        a modeling options dictionary (inherited from FarmAeroTemplate)
+        a modeling options dictionary (inherited from `FarmAeroTemplate`)
     wind_query : floris.wind_data.WindRose
         a WindQuery objects that specifies the wind conditions that are to be
         computed
@@ -88,14 +88,14 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
     ------
     x_turbines : np.ndarray
         a 1D numpy array indicating the x-dimension locations of the turbines,
-        with length `N_turbines` (inherited from FarmAeroTemplate)
+        with length `N_turbines` (inherited from `FarmAeroTemplate`)
     y_turbines : np.ndarray
         a 1D numpy array indicating the y-dimension locations of the turbines,
-        with length `N_turbines` (inherited from FarmAeroTemplate)
+        with length `N_turbines` (inherited from `FarmAeroTemplate`)
     yaw_turbines : np.ndarray
         a numpy array indicating the yaw angle to drive each turbine to with
         respect to the ambient wind direction, with length `N_turbines`
-        (inherited from FarmAeroTemplate)
+        (inherited from `FarmAeroTemplate`)
 
     Outputs
     -------
@@ -193,14 +193,14 @@ class FarmAEPTemplate(FarmAeroTemplate):
     ------
     x_turbines : np.ndarray
         a 1D numpy array indicating the x-dimension locations of the turbines,
-        with length `N_turbines` (inherited from FarmAeroTemplate)
+        with length `N_turbines` (inherited from `FarmAeroTemplate`)
     y_turbines : np.ndarray
         a 1D numpy array indicating the y-dimension locations of the turbines,
-        with length `N_turbines` (inherited from FarmAeroTemplate)
+        with length `N_turbines` (inherited from `FarmAeroTemplate`)
     yaw_turbines : np.ndarray
         a numpy array indicating the yaw angle to drive each turbine to with
         respect to the ambient wind direction, with length `N_turbines`
-        (inherited from FarmAeroTemplate)
+        (inherited from `FarmAeroTemplate`)
 
     Outputs
     -------
