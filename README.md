@@ -57,4 +57,9 @@ Then, navigate to the root directory of the source code and run one of the follo
     pip install .[dev]      # Developer install; includes dependencies for development
 ```
 
+---
+
+Copyright :copyright: 2024, Alliance for Sustainable Energy, LLC
+
+
 <!-- FIN -->
