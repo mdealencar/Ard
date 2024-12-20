@@ -15,9 +15,9 @@ class WindQuery:
 
     def __init__(
         self,
-        directions:np.ndarray=None,
-        speeds:np.ndarray=None,
-        TIs:np.ndarray=None,
+        directions: np.ndarray = None,
+        speeds: np.ndarray = None,
+        TIs: np.ndarray = None,
     ) -> None:
         """
         WindQuery initialization.
@@ -48,7 +48,7 @@ class WindQuery:
         if TIs is not None:
             self.set_TIs(TIs)
 
-    def set_directions(self, directions:np.ndarray):
+    def set_directions(self, directions: np.ndarray):
         """
         Set the directions on a WindQuery object.
 
@@ -63,7 +63,7 @@ class WindQuery:
             None if self.directions.size != self.speeds.size else self.directions.size
         )
 
-    def set_speeds(self, speeds:np.ndarray):
+    def set_speeds(self, speeds: np.ndarray):
         """
         Set the wind speeds on a WindQuery object.
 
@@ -78,7 +78,7 @@ class WindQuery:
             None if self.directions.size != self.speeds.size else self.directions.size
         )
 
-    def set_TIs(self, TIs:Union[float, np.ndarray]):
+    def set_TIs(self, TIs: Union[float, np.ndarray]):
         """
         Set the turbulence intensities on a WindQuery object.
 
@@ -120,22 +120,22 @@ class WindQuery:
         self.set_TIs(TIs_new)
 
     def get_directions(self):
-        """ Get the directions from the wind query object. """
+        """Get the directions from the wind query object."""
         assert self.is_valid(), "mismatch in direction/speed vectors"
         return self.directions
 
     def get_speeds(self):
-        """ Get the wind speeds from the wind query object. """
+        """Get the wind speeds from the wind query object."""
         assert self.is_valid(), "mismatch in direction/speed vectors"
         return self.speeds
 
     def get_TIs(self):
-        """ Get the turbulence intensities from the wind query object. """
+        """Get the turbulence intensities from the wind query object."""
         assert self.is_valid(), "mismatch in direction/speed vectors"
         return self.TIs
 
     def is_valid(self):
-        """ Ensure that the specified wind conditions are valid. """
+        """Ensure that the specified wind conditions are valid."""
 
         # first, not a valid query if the directions and speeds aren't specified
         if (self.directions is None) or (self.speeds is None):

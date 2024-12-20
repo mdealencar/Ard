@@ -1,5 +1,7 @@
 import openmdao.api as om
 
+import floris.wind_data
+
 import ard.layout.gridfarm as gridfarm
 import ard.farm_aero.floris as farmaero_floris
 import ard.cost.wisdem_wrap as cost_wisdem
@@ -7,15 +9,46 @@ import ard.cost.wisdem_wrap as cost_wisdem
 
 def create_setup_OM_problem(
     modeling_options,
-    wind_rose=None,
-    aero_backend="FLORIS",
-    layout_type="gridfarm",
+    wind_rose: floris.wind_data.WindRose = None,
+    aero_backend: str = "FLORIS",
+    layout_type: str = "gridfarm",
 ):
-    if layout_type != "gridfarm":
+    """
+    A prototype to create and setup an Ard OpenMDAO problem.
+
+    This is a prototype of the "glue code" functionality of Ard, which creates
+    and manages the setup of an OM problem to define a wind farm.
+
+    Parameters
+    ----------
+    modeling_options : dict
+        a modeling options dictionary
+    wind_rose : floris.wind_data.WindRose, optional
+        a `floris.wind_data.WindRose` object for AEP calculation
+    aero_backend : str, optional
+        aerodynamic backend for calculation by default (and at present
+        exclusively) "FLORIS"
+    layout_type : str, optional
+        layout parametrization model by default (and at present exclusively)
+        "gridfarm"
+
+    Returns
+    -------
+    openmdao.api.Problem
+        an OpenMDAO problem representing the wind farm analysis stack
+
+    Raises
+    ------
+    NotImplementedError
+        raised if a configuration we haven't prototyped out yet has been
+        requested
+    """
+
+    if layout_type not in ["gridfarm"]:
         raise NotImplementedError(
             f"layout type {layout_type} is not implemented yet. -cfrontin"
         )
-    if aero_backend != "FLORIS":
+    if aero_backend not in ["FLORIS"]:
         raise NotImplementedError(
             f"aerodynamic backend {aero_backend} is not implemented yet. -cfrontin"
         )
