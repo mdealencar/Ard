@@ -9,8 +9,8 @@ import ard.farm_aero.templates as templates
 
 class FLORISFarmComponent:
     """
-    a second-inherit superclass for FLORIS FarmAero components to share common
-    code
+    a secondary-inherit superclass for FLORIS FarmAero components to share
+    common code
 
     TO DO
     """

@@ -4,11 +4,50 @@ import openmdao.api as om
 
 
 class LayoutTemplate(om.ExplicitComponent):
+    """
+    A template class for layout parametrizations.
+
+    This is a template class that represents the fundamental input/output flow
+    for a layout parametrization. This means outputting $(x,y)$ tuples (via
+    `x_turbines` and `y_turbines) for the `N_turbines` in the farm, and
+    outputting effective spacing metrics (for, e.g., simple BOS tools).
+
+    Options
+    -------
+    modeling_options : dict
+        a modeling options dictionary
+    N_turbines : int
+        the number of turbines that should be in the farm layout
+
+    Inputs
+    ------
+    None
+
+    Outputs
+    -------
+    x_turbines : np.ndarray
+        a 1-D numpy array that represents that x (i.e. Easting) coordinate of
+        the location of each of the turbines in the farm in meters
+    y_turbines : np.ndarray
+        a 1-D numpy array that represents that y (i.e. Northing) coordinate of
+        the location of each of the turbines in the farm in meters
+    spacing_effective_primary : float
+        a measure of the spacing on a primary axis of a rectangular farm that
+        would be equivalent to this one for the purposes of computing BOS costs
+        measured in rotor diameters
+    spacing_effective_secondary : float
+        a measure of the spacing on a secondary axis of a rectangular farm that
+        would be equivalent to this one for the purposes of computing BOS costs
+        measured in rotor diameters
+    """
 
     def initialize(self):
+        """Initialization of OM component."""
         self.options.declare("modeling_options")
 
     def setup(self):
+        """Setup of OM component."""
+
         # load modeling options
         modeling_options = self.modeling_options = self.options["modeling_options"]
         self.N_turbines = modeling_options["farm"]["N_turbines"]
@@ -38,22 +77,59 @@ class LayoutTemplate(om.ExplicitComponent):
         )
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
+
         # default complex step for the layout tools, since they're often algebraic
         self.declare_partials("*", "*", method="cs")
 
     def compute(self):
+        """
+        Computation for the OM compoent.
+
+        For a template class this is not implemented and raises an error!
+        """
+
         raise NotImplementedError(
             "This is an abstract class for a derived class to implement"
         )
 
 
 class LanduseTemplate(om.ExplicitComponent):
+    """
+    A template class for landuse computations.
+
+    This is a template class that represents the fundamental input/output flow
+    for a landuse calculation. Most details will be specialized based on use
+    case, but most fundamentally it will intake a layback distance and output a
+    simple area computation.
+
+    Options
+    -------
+    modeling_options : dict
+        a modeling options dictionary
+    N_turbines : int
+        the number of turbines that should be in the farm layout
+
+    Inputs
+    ------
+    distance_layback_diameters : float
+        the number of diameters of layback desired for the landuse calculation
+
+    Outputs
+    -------
+    area_tight : float
+        the area in square kilometers that the farm occupies based on the
+        circumscribing geometry with a specified (default zero) layback buffer
+    """
 
     def initialize(self):
+        """Initialization of OM component."""
         self.options.declare("modeling_options")
 
     def setup(self):
-        # load modeling options
+        """Setup of OM component."""
+
+        # load modeling options and turbine count
         modeling_options = self.modeling_options = self.options["modeling_options"]
         self.N_turbines = modeling_options["farm"]["N_turbines"]
 
@@ -74,10 +150,18 @@ class LanduseTemplate(om.ExplicitComponent):
         )
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
+
         # default complex step for the layout-landuse tools, since they're often algebraic
         self.declare_partials("*", "*", method="cs")
 
     def compute(self):
+        """
+        Computation for the OM compoent.
+
+        For a template class this is not implemented and raises an error!
+        """
+
         raise NotImplementedError(
             "This is an abstract class for a derived class to implement"
         )

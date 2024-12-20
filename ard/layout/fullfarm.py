@@ -9,10 +9,39 @@ import ard.layout.templates as templates
 
 class FullFarmLanduse(templates.LanduseTemplate):
     """
-    a class to compute the land use of a full layout optimization
+    Landuse class for full Cartesian grid farm layout.
+
+    This is a class to compute the landuse area of a fully specified Cartesian
+    grid farm layout.
+
+    Options
+    -------
+    modeling_options : dict
+        a modeling options dictionary (inherited from
+        `templates.LayoutTemplate`)
+    N_turbines : int
+        the number of turbines that should be in the farm layout (inherited from
+        `templates.LayoutTemplate`)
+
+    Inputs
+    ------
+    x_turbines : np.ndarray
+        a 1-D numpy array that represents that x (i.e. Easting) coordinate of
+        the location of each of the turbines in the farm in meters
+    y_turbines : np.ndarray
+        a 1-D numpy array that represents that y (i.e. Northing) coordinate of
+        the location of each of the turbines in the farm in meters
+
+    Outputs
+    -------
+    area_tight : float
+        the area in square kilometers that the farm occupies based on the
+        circumscribing geometry with a specified (default zero) layback buffer
+        (inherited from `templates.LayoutTemplate`)
     """
 
     def setup(self):
+        """Setup of OM component."""
         super().setup()
 
         # add the full layout inputs
@@ -29,19 +58,14 @@ class FullFarmLanduse(templates.LanduseTemplate):
             desc="turbine location in y-direction",
         )
 
-        # add the layback output
-        self.add_output(
-            "area_layback",
-            0.0,
-            units="km**2",
-            desc="area of the farm geometry (plus layback)",
-        )
-
     def setup_partials(self):
+        """Derivative setup for OM component."""
+
         # default complex step for the layout-landuse tools, since they're often algebraic
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
+        """ Computation for the OM compoent. """
 
         # extract the points from the inputs
         points = list(
@@ -59,7 +83,6 @@ class FullFarmLanduse(templates.LanduseTemplate):
         lengthscale_layback = float(inputs["distance_layback_diameters"][0] * D_rotor)
 
         # area tight is equal to the convex hull area for the points in sq. km.
-        outputs["area_tight"] = mp.convex_hull.area / 1000**2
-        outputs["area_layback"] = (
+        outputs["area_tight"] = (
             mp.convex_hull.buffer(lengthscale_layback).area / 1000**2
         )
