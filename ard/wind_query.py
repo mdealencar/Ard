@@ -1,5 +1,3 @@
-from typing import Union
-
 import numpy as np
 
 from floris.wind_data import WindDataBase
@@ -78,7 +76,7 @@ class WindQuery:
             None if self.directions.size != self.speeds.size else self.directions.size
         )
 
-    def set_TIs(self, TIs: Union[float, np.ndarray]):
+    def set_TIs(self, TIs: float | np.ndarray):
         """
         Set the turbulence intensities on a WindQuery object.
 

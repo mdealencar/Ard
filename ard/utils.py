@@ -1,7 +1,6 @@
 import copy
 from os import PathLike
 from pathlib import Path
-from typing import Union
 import yaml
 
 import numpy as np
@@ -38,7 +37,7 @@ def load_turbine_spec(
 
 
 def create_FLORIS_turbine(
-    input_turbine_spec: Union[dict, PathLike],
+    input_turbine_spec: dict | PathLike,
     filename_turbine_FLORIS: PathLike = None,
 ) -> dict:
     """
@@ -46,7 +45,7 @@ def create_FLORIS_turbine(
 
     Parameters
     ----------
-    input_turbine_spec : Union[dict, PathLike]
+    input_turbine_spec : dict | PathLike
         a turbine specification from which to extract a FLORIS turbine
     filename_turbine_FLORIS : PathLike, optional
         a path to save a FLORIS turbine configuration yaml file, optionally
