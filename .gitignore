@@ -1,6 +1,7 @@
 
 ### ARD DEVELOPMENT IGNORES 
 
+.vscode
 case_files/
 
 ### MACOS DEFAULT IGNORES
