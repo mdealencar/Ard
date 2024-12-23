@@ -65,7 +65,7 @@ class FullFarmLanduse(templates.LanduseTemplate):
         self.declare_partials("*", "*", method="fd")
 
     def compute(self, inputs, outputs):
-        """Computation for the OM compoent."""
+        """Computation for the OM component."""
 
         # extract the points from the inputs
         points = list(

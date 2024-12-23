@@ -12,7 +12,7 @@ class FLORISFarmComponent:
     Secondary-inherit component for managing FLORIS for farm simulations.
 
     This is a base class for farm aerodynamics simulations using FLORIS, which
-    should cover all the necessary configuration, reproducability config file
+    should cover all the necessary configuration, reproducibility config file
     saving, and output directory management.
 
     It is not a child class of an OpenMDAO components, but it is designed to

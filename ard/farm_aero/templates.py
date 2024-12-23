@@ -53,7 +53,7 @@ class FarmAeroTemplate(om.ExplicitComponent):
 
     def compute(self, inputs, outputs):
         """
-        Computation for the OM compoent.
+        Computation for the OM component.
 
         For a template class this is not implemented and raises an error!
         """
@@ -158,7 +158,7 @@ class BatchFarmPowerTemplate(FarmAeroTemplate):
 
     def compute(self, inputs, outputs):
         """
-        Computation for the OM compoent.
+        Computation for the OM component.
 
         For a template class this is not implemented and raises an error!
         """
@@ -270,7 +270,7 @@ class FarmAEPTemplate(FarmAeroTemplate):
 
     def compute(self, inputs, outputs):
         """
-        Computation for the OM compoent.
+        Computation for the OM component.
 
         For a template class this is not implemented and raises an error!
         """

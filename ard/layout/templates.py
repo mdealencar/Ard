@@ -84,7 +84,7 @@ class LayoutTemplate(om.ExplicitComponent):
 
     def compute(self):
         """
-        Computation for the OM compoent.
+        Computation for the OM component.
 
         For a template class this is not implemented and raises an error!
         """
@@ -157,7 +157,7 @@ class LanduseTemplate(om.ExplicitComponent):
 
     def compute(self):
         """
-        Computation for the OM compoent.
+        Computation for the OM component.
 
         For a template class this is not implemented and raises an error!
         """

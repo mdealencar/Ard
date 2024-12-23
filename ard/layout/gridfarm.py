@@ -5,10 +5,10 @@ import ard.layout.templates as templates
 
 class GridFarmLayout(templates.LayoutTemplate):
     """
-    A simplified, uniform four-parameter parallelopiped grid farm layout class.
+    A simplified, uniform four-parameter parallelepiped grid farm layout class.
 
     This is a class to take a parameterized, structured grid farm defined by a
-    gridded parallelopiped with spacing variables defined to 1) orient the farm
+    gridded parallelepiped with spacing variables defined to 1) orient the farm
     with respect to North, 2) space the rows of turbines along this primary
     vector, 3) space the columns of turbines along the perpendicular, and
     4) skew the positioning along a parallel to the primary (orientation)
@@ -94,7 +94,7 @@ class GridFarmLayout(templates.LayoutTemplate):
         self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs):
-        """Computation for the OM compoent."""
+        """Computation for the OM component."""
 
         D_rotor = self.modeling_options["turbine"]["geometry"]["diameter_rotor"]
         lengthscale_spacing_streamwise = inputs["spacing_primary"] * D_rotor
@@ -158,7 +158,7 @@ class GridFarmLayout(templates.LayoutTemplate):
 
 class GridFarmLanduse(templates.LanduseTemplate):
     """
-    Landuse class for four-parameter parallelopiped grid farm layout.
+    Landuse class for four-parameter parallelepiped grid farm layout.
 
     This is a class to compute the landuse area of the parameterized, structured
     grid farm defined in `GridFarmLayout`.
@@ -238,7 +238,7 @@ class GridFarmLanduse(templates.LanduseTemplate):
         self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs):
-        """Computation for the OM compoent."""
+        """Computation for the OM component."""
 
         D_rotor = self.modeling_options["turbine"]["geometry"]["diameter_rotor"]
         lengthscale_spacing_streamwise = inputs["spacing_primary"] * D_rotor

@@ -23,7 +23,7 @@ class WindQuery:
         WindQuery initialization.
 
         A WindQuery object must be initialized with speeds and directions, which
-        must be equal-length numpy arrays, and turbuence intensities can be
+        must be equal-length numpy arrays, and turbulence intensities can be
         provided with a same-length array, a single float, or will otherwise be
         set by default using FLORIS's `assign_ti_using_IEC_method`.
 
