@@ -46,15 +46,15 @@ def create_setup_OM_problem(
 
     if layout_type not in ["gridfarm"]:
         raise NotImplementedError(
-            f"layout type {layout_type} is not implemented yet. -cfrontin"
+            f"layout type {layout_type} is not implemented yet."
         )
     if aero_backend not in ["FLORIS"]:
         raise NotImplementedError(
-            f"aerodynamic backend {aero_backend} is not implemented yet. -cfrontin"
+            f"aerodynamic backend {aero_backend} is not implemented yet."
         )
     if wind_rose is None:
         raise NotImplementedError(
-            "this wind rose configuration is not implemented. -cfrontin"
+            "this wind rose configuration is not implemented."
         )
 
     # create the OpenMDAO model
