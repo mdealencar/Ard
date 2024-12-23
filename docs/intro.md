@@ -72,8 +72,6 @@ This, then, allows us to attempt to accomplish the technical goals of `Ard`, to:
 1) target wholistic and complex system-level optimization objectives like LCOE and beyond-LCOE metrics
 1) naturally incorporate multi-fidelity analyses to efficiently integrate physics-resolving simulation
 
-This, then, is `Ard`.
-
 ---
 
 Copyright :copyright: 2024, Alliance for Sustainable Energy, LLC
