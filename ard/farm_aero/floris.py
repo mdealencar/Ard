@@ -89,8 +89,11 @@ class FLORISFarmComponent:
         return thrust_turbines.T
 
     def dump_floris_yamlfile(self, dir_output=None):
-        """Write a FLORIS yaml file for reproducability of the analysis."""
-        # dump the floris case
+        """
+        Export the current FLORIS inputs to a YAML file file for reproducibility of the analysis.
+        The file will be saved in the `dir_output` directory, or in the current working directory
+        if `dir_output` is None.
+        """
         if dir_output is None:
             dir_output = self.dir_floris
         self.fmodel.core.to_file(os.path.join(dir_output, "batch.yaml"))
