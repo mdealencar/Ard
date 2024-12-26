@@ -6,8 +6,8 @@ It is automatically generated every time the documentation is built.
 
 ```{eval-rst}
 .. autosummary::
-   :toctree: _autosummary
-   :recursive:
+    :toctree: _autosummary
+    :recursive:
 
     ard.cost
     ard.farm_aero

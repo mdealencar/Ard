@@ -51,6 +51,7 @@ docs = [
   "pyxdsm",
   "jupyter-book",
   "sphinx-book-theme",
+  "sphinx-autodoc-typehints",
 ]
 [project.urls]
 # Homepage = "https://example.com"
