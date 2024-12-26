@@ -55,7 +55,7 @@ docs = [
 ]
 [project.urls]
 # Homepage = "https://example.com"
-# Documentation = "https://wisdem.github.io/Ard"
+Documentation = "https://wisdem.github.io/Ard"
 Repository = "https://github.com/wisdem/Ard.git"
 Issues = "https://github.com/wisdem/Ard/issues"
 # Changelog = "https://github.com/wisdem/Ard/blob/main/CHANGELOG.md"
