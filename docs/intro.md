@@ -1,17 +1,16 @@
 
 # Ard
 
-Dig into wind farm design.
+**Dig into wind farm design.**
+
 <!-- The (aspirationally) foolproof tool for preparing wind farm layouts. -->
 
-## Introduction
-
 [An ard is a type of simple and lightweight plow](https://en.wikipedia.org/wiki/Ard_\(plough\)), used through the single-digit centuries to prepare a farm for planting.
-The idea of `Ard` is to be a modular, full-stack multi-disciplinary optimization tool for wind farms.
+The intent of `Ard` is to be a modular, full-stack multi-disciplinary optimization tool for wind farms.
 
 The problem with wind farms is that they are complicated, multi-disciplinary objects.
 They are aerodynamic machines, with complicated control systems, power electronic devices, social and political objects, and the core value (and cost) of complicated financial instruments.
-Moreover, the design of *one* of these aspects effects all the rest!
+Moreover, the design of *one* of these aspects affects all the rest!
 
 `Ard` seeks to make plant-level design choices that can incorporate these different aspects _and their interactions_ to make wind energy projects more successful.
 
@@ -35,13 +34,13 @@ From here, installation can be handled by `pip`:
 pip install .
 ```
 will install Ard in its most basic and static configuration.
-For development (and really for everone during pre-release), we recommend a full development installation:
+For development (and really for everyone during pre-release), we recommend a full development installation:
 ```shell
 pip install -e .[dev,docs]
 ```
 which will install in "editable mode" (`-e`), such that changes made to the source will not require re-installation, and with additional optional packages for development and documentation (`[dev,docs]`).
 
-There can be some hardware-software misspecification issues with WISDEM installation from `pip` for MacOS 12 and 13 on machines with Apple Silicon.
+There can be some hardware-software mis-specification issues with WISDEM installation from `pip` for MacOS 12 and 13 on machines with Apple Silicon.
 In the event of issues, WISDEM can be installed manually or using `conda` without issues, then `pip` installation can proceed.
 
 For user information, in pre-release, we are using some co-developed changes to the `FLORIS` library.
@@ -74,4 +73,4 @@ This, then, allows us to attempt to accomplish the technical goals of `Ard`, to:
 
 ---
 
-Copyright :copyright: 2024, Alliance for Sustainable Energy, LLC
+Copyright &copy; 2024, Alliance for Sustainable Energy, LLC
