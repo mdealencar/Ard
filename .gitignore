@@ -1,6 +1,7 @@
 
 ### ARD DEVELOPMENT IGNORES 
 
+.vscode
 case_files/
 
 ### MACOS DEFAULT IGNORES
@@ -81,6 +82,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+_autosummary/
 
 # PyBuilder
 .pybuilder/

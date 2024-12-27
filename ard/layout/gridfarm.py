@@ -5,8 +5,14 @@ import ard.layout.templates as templates
 
 class GridFarmLayout(templates.LayoutTemplate):
     """
-     a class to take a parameterized, structured grid farm and output an actual
-     grid for the farm
+    A simplified, uniform four-parameter parallelepiped grid farm layout class.
+
+    This is a class to take a parameterized, structured grid farm defined by a
+    gridded parallelepiped with spacing variables defined to 1) orient the farm
+    with respect to North, 2) space the rows of turbines along this primary
+    vector, 3) space the columns of turbines along the perpendicular, and
+    4) skew the positioning along a parallel to the primary (orientation)
+    vector. The layout model is shown in a ASCII image below:
 
                                       |-------| <- streamwise spacing
       orient.         x ----- x ----- x ----- x ----- x -
@@ -21,12 +27,58 @@ class GridFarmLayout(templates.LayoutTemplate):
                      /|
                     / |
                    /  | <- skew angle
+
+    Options
+    -------
+    modeling_options : dict
+        a modeling options dictionary (inherited from
+        `templates.LayoutTemplate`)
+    N_turbines : int
+        the number of turbines that should be in the farm layout (inherited from
+        `templates.LayoutTemplate`)
+
+    Inputs
+    ------
+    angle_orientation : float
+        orientation in degrees clockwise with respect to North of the primary
+        axis of the wind farm layout
+    spacing_primary : float
+        spacing of turbine rows along the primary axis (rotated by
+        `angle_orientation`) in nondimensional rotor diameters
+    spacing_secondary : float
+        spacing of turbine columns along the perpendicular to the primary axis
+        (rotated by 90° with respect to the primary axis) in nondimensional
+        rotor diameters
+    angle_skew : float
+        clockwise skew angle of turbine rows w.r.t. beyond the 90° clockwise
+        perpendicular to the primary axis
+
+    Outputs
+    -------
+    x_turbines : np.ndarray
+        a 1-D numpy array that represents that x (i.e. Easting) coordinate of
+        the location of each of the turbines in the farm in meters (inherited
+        from `templates.LayoutTemplate`)
+    y_turbines : np.ndarray
+        a 1-D numpy array that represents that y (i.e. Northing) coordinate of
+        the location of each of the turbines in the farm in meters (inherited
+        from `templates.LayoutTemplate`)
+    spacing_effective_primary : float
+        a measure of the spacing on a primary axis of a rectangular farm that
+        would be equivalent to this one for the purposes of computing BOS costs
+        measured in rotor diameters (inherited from `templates.LayoutTemplate`)
+    spacing_effective_secondary : float
+        a measure of the spacing on a secondary axis of a rectangular farm that
+        would be equivalent to this one for the purposes of computing BOS costs
+        measured in rotor diameters (inherited from `templates.LayoutTemplate`)
     """
 
     def initialize(self):
+        """Initialization of OM component."""
         super().initialize()
 
     def setup(self):
+        """Setup of OM component."""
         super().setup()
 
         # add four-parameter grid farm layout DVs
@@ -36,10 +88,13 @@ class GridFarmLayout(templates.LayoutTemplate):
         self.add_input("angle_skew", 0.0, units="deg")
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
+
         # default complex step for the layout tools, since they're often algebraic
         self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs):
+        """Computation for the OM component."""
 
         D_rotor = self.modeling_options["turbine"]["geometry"]["diameter_rotor"]
         lengthscale_spacing_streamwise = inputs["spacing_primary"] * D_rotor
@@ -103,11 +158,58 @@ class GridFarmLayout(templates.LayoutTemplate):
 
 class GridFarmLanduse(templates.LanduseTemplate):
     """
-    a class that can compute the land-use area of the above parametrized,
-    structured grid farm above and output the land use for the farm
+    Landuse class for four-parameter parallelepiped grid farm layout.
+
+    This is a class to compute the landuse area of the parameterized, structured
+    grid farm defined in `GridFarmLayout`.
+
+    Options
+    -------
+    modeling_options : dict
+        a modeling options dictionary (inherited from
+        `templates.LayoutTemplate`)
+    N_turbines : int
+        the number of turbines that should be in the farm layout (inherited from
+        `templates.LayoutTemplate`)
+
+    Inputs
+    ------
+    distance_layback_diameters : float
+        the number of diameters of layback desired for the landuse calculation
+        (inherited from `templates.LayoutTemplate`)
+    angle_orientation : float
+        orientation in degrees clockwise with respect to North of the primary
+        axis of the wind farm layout
+    spacing_primary : float
+        spacing of turbine rows along the primary axis (rotated by
+        `angle_orientation`) in nondimensional rotor diameters
+    spacing_secondary : float
+        spacing of turbine columns along the perpendicular to the primary axis
+        (rotated by 90° with respect to the primary axis) in nondimensional
+        rotor diameters
+    angle_skew : float
+        clockwise skew angle of turbine rows w.r.t. beyond the 90° clockwise
+        perpendicular to the primary axis
+
+    Outputs
+    -------
+    area_tight : float
+        the area in square kilometers that the farm occupies based on the
+        circumscribing geometry with a specified (default zero) layback buffer
+        (inherited from `templates.LayoutTemplate`)
+    area_aligned_parcel : float
+        the area in square kilometers that the farm occupies based on the
+        circumscribing rectangle that is aligned with the primary axis of the
+        wind farm plus a specified (default zero) layback buffer
+    area_compass_parcel : float
+        the area in square kilometers that the farm occupies based on the
+        circumscribing rectangle that is aligned with the compass rose plus a
+        specified (default zero) layback buffer
     """
 
     def setup(self):
+        """Setup of OM component."""
+
         super().setup()
 
         # add grid farm-specific inputs
@@ -130,10 +232,13 @@ class GridFarmLanduse(templates.LanduseTemplate):
         )
 
     def setup_partials(self):
+        """Derivative setup for OM component."""
+
         # default complex step for the layout tools, since they're often algebraic
         self.declare_partials("*", "*", method="cs")
 
     def compute(self, inputs, outputs):
+        """Computation for the OM component."""
 
         D_rotor = self.modeling_options["turbine"]["geometry"]["diameter_rotor"]
         lengthscale_spacing_streamwise = inputs["spacing_primary"] * D_rotor

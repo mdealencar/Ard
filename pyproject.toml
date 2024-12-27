@@ -14,7 +14,7 @@ packages = ["ard"]
 
 [project]
 name = "Ard"
-version = "0.0.0a1"
+version = "1.0.0-alpha0"
 authors = [
   {name = "Cory Frontin", email = "cory.frontin@nrel.gov"},
   {name = "Rafael Mudafort", email = "rafael.mudafort@nrel.gov"},
@@ -51,10 +51,11 @@ docs = [
   "pyxdsm",
   "jupyter-book",
   "sphinx-book-theme",
+  "sphinx-autodoc-typehints",
 ]
 [project.urls]
 # Homepage = "https://example.com"
-# Documentation = "https://wisdem.github.io/Ard"
+Documentation = "https://wisdem.github.io/Ard"
 Repository = "https://github.com/wisdem/Ard.git"
 Issues = "https://github.com/wisdem/Ard/issues"
 # Changelog = "https://github.com/wisdem/Ard/blob/main/CHANGELOG.md"

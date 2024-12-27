@@ -40,7 +40,34 @@ html:
 
 # Sphinx for API doc generation
 sphinx:
+  extra_extensions:
+  - 'sphinx.ext.autodoc'
+  - 'sphinx.ext.autosummary'
+  - 'sphinx.ext.viewcode'
+  - 'sphinx_autodoc_typehints'
+  - 'sphinx.ext.napoleon'
   config:
     language: 'python'
     nb_execution_show_tb: true          # Shows the stack trace in stdout; its suppressed otherwise.
     nb_execution_raise_on_error: true   # Stops the Sphinx build if there is an error in a notebook. See https://github.com/executablebooks/jupyter-book/issues/2011
+
+    suppress_warnings:
+    - etoc.toctree                      # autodoc output contains toctrees, so suppress this warning. See https://github.com/executablebooks/sphinx-external-toc/issues/36
+
+    autosummary_generate: true
+    # Autodoc config reference
+    # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
+    autodoc_default_options:
+      members: true
+      member-order: bysource
+      undoc-members: true
+      private-members: false
+      # special-members: true
+      # inherited-members
+      # show-inheritance
+      # ignore-module-all
+      # imported-members: true
+      # exclude-members
+      # class-doc-from
+      # no-value
+    autodoc_typehints: both

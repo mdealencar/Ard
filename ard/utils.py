@@ -1,4 +1,5 @@
 import copy
+from os import PathLike
 from pathlib import Path
 import yaml
 
@@ -8,8 +9,22 @@ from wisdem.inputs.validation import load_yaml
 
 
 def load_turbine_spec(
-    filename_turbine_spec,
+    filename_turbine_spec: PathLike,
 ):
+    """
+    Utility to load turbine spec. files, & transform relative to absolute links.
+
+    Parameters
+    ----------
+    filename_turbine_spec : Pathlike
+        filename of a turbine specification to load
+
+    Returns
+    -------
+    dict
+        a turbine specification dictionary
+    """
+
     filename_turbine_spec = Path(filename_turbine_spec)
     dir_turbine_spec = filename_turbine_spec.parent
     turbine_spec = load_yaml(filename_turbine_spec)
@@ -22,11 +37,31 @@ def load_turbine_spec(
 
 
 def create_FLORIS_turbine(
-    input_turbine_spec=None,
-    filename_turbine_FLORIS=None,
+    input_turbine_spec: dict | PathLike,
+    filename_turbine_FLORIS: PathLike = None,
 ) -> dict:
+    """
+    Create a FLORIS turbine from a generic Ard turbine specification.
 
-    if isinstance(input_turbine_spec, (str, Path)):
+    Parameters
+    ----------
+    input_turbine_spec : dict | PathLike
+        a turbine specification from which to extract a FLORIS turbine
+    filename_turbine_FLORIS : PathLike, optional
+        a path to save a FLORIS turbine configuration yaml file, optionally
+
+    Returns
+    -------
+    dict
+        a FLORIS turbine configuration in dictionary form
+
+    Raises
+    ------
+    TypeError
+        if the turbine specification input is not the correct type
+    """
+
+    if isinstance(input_turbine_spec, PathLike):
         with open(input_turbine_spec, "r") as file_turbine_spec:
             turbine_spec = load_turbine_spec(file_turbine_spec)
     elif type(input_turbine_spec) == dict:
