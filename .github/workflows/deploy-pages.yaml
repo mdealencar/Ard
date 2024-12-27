@@ -3,15 +3,9 @@ name: deploy-pages
 on:
   push:
     branches:
-    - develop
-    - gh-pages
+    - main
     paths:
     - docs/**
-  # pull_request:
-  #   branches:
-  #   - develop
-  #   paths:
-  #   - docs/**
 
 # This job installs dependencies, builds the book, and pushes it to `gh-pages`
 jobs:
