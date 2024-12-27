@@ -4,13 +4,14 @@ on:
   push:
     branches:
     - develop
+    - gh-pages
     paths:
     - docs/**
-  pull_request:
-    branches:
-    - develop
-    paths:
-    - docs/**
+  # pull_request:
+  #   branches:
+  #   - develop
+  #   paths:
+  #   - docs/**
 
 # This job installs dependencies, builds the book, and pushes it to `gh-pages`
 jobs:
