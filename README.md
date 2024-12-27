@@ -73,4 +73,6 @@ This, then, allows us to attempt to accomplish the technical goals of `Ard`, to:
 
 ---
 
-Copyright &copy; 2025, Alliance for Sustainable Energy, LLC
+Copyright &copy; 2025, Alliance for Sustainable Energy, LLC.
+
+Released as open-source software by the National Renewable Energy Laboratory under NREL software record number SWR-25-18.
