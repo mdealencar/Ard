@@ -73,4 +73,4 @@ This, then, allows us to attempt to accomplish the technical goals of `Ard`, to:
 
 ---
 
-Copyright &copy; 2024-2025, Alliance for Sustainable Energy, LLC
+Copyright &copy; 2024, Alliance for Sustainable Energy, LLC
