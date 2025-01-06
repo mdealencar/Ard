@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -335,14 +335,14 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.layout.templates</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">openmdao.api</span> <span class="k">as</span> <span class="nn">om</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openmdao.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">om</span>
 
 
 <div class="viewcode-block" id="LayoutTemplate">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LayoutTemplate">[docs]</a>
-<span class="k">class</span> <span class="nc">LayoutTemplate</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LayoutTemplate</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A template class for layout parametrizations.</span>
 
@@ -382,14 +382,14 @@
 
 <div class="viewcode-block" id="LayoutTemplate.initialize">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LayoutTemplate.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialization of OM component.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span><span class="s2">&quot;modeling_options&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LayoutTemplate.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LayoutTemplate.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># load modeling options</span>
@@ -423,7 +423,7 @@
 
 <div class="viewcode-block" id="LayoutTemplate.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LayoutTemplate.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># default complex step for the layout tools, since they&#39;re often algebraic</span>
@@ -432,7 +432,7 @@
 
 <div class="viewcode-block" id="LayoutTemplate.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LayoutTemplate.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computation for the OM component.</span>
 
@@ -448,7 +448,7 @@
 
 <div class="viewcode-block" id="LanduseTemplate">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LanduseTemplate">[docs]</a>
-<span class="k">class</span> <span class="nc">LanduseTemplate</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LanduseTemplate</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A template class for landuse computations.</span>
 
@@ -478,14 +478,14 @@
 
 <div class="viewcode-block" id="LanduseTemplate.initialize">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LanduseTemplate.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialization of OM component.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span><span class="s2">&quot;modeling_options&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LanduseTemplate.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LanduseTemplate.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># load modeling options and turbine count</span>
@@ -511,7 +511,7 @@
 
 <div class="viewcode-block" id="LanduseTemplate.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LanduseTemplate.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># default complex step for the layout-landuse tools, since they&#39;re often algebraic</span>
@@ -520,7 +520,7 @@
 
 <div class="viewcode-block" id="LanduseTemplate.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.templates.html#ard.layout.templates.LanduseTemplate.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computation for the OM component.</span>
 

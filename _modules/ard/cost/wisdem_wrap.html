@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -335,16 +335,16 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.cost.wisdem_wrap</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">openmdao.api</span> <span class="k">as</span> <span class="nn">om</span>
-<span class="kn">from</span> <span class="nn">wisdem.plant_financese.plant_finance</span> <span class="kn">import</span> <span class="n">PlantFinance</span> <span class="k">as</span> <span class="n">PlantFinance_orig</span>
-<span class="kn">from</span> <span class="nn">wisdem.landbosse.landbosse_omdao.landbosse</span> <span class="kn">import</span> <span class="n">LandBOSSE</span> <span class="k">as</span> <span class="n">LandBOSSE_orig</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openmdao.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">om</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wisdem.plant_financese.plant_finance</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlantFinance</span> <span class="k">as</span> <span class="n">PlantFinance_orig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wisdem.landbosse.landbosse_omdao.landbosse</span><span class="w"> </span><span class="kn">import</span> <span class="n">LandBOSSE</span> <span class="k">as</span> <span class="n">LandBOSSE_orig</span>
 
 
 <div class="viewcode-block" id="LandBOSSE">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.LandBOSSE">[docs]</a>
-<span class="k">class</span> <span class="nc">LandBOSSE</span><span class="p">(</span><span class="n">LandBOSSE_orig</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LandBOSSE</span><span class="p">(</span><span class="n">LandBOSSE_orig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for WISDEM&#39;s LandBOSSE BOS calculators.</span>
 
@@ -356,7 +356,7 @@
 
 <div class="viewcode-block" id="LandBOSSE.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.LandBOSSE.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
@@ -366,7 +366,7 @@
 
 <div class="viewcode-block" id="LandBOSSE.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.LandBOSSE.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># finite difference WISDEM tools for gradients</span>
@@ -385,7 +385,7 @@
 
 <div class="viewcode-block" id="LandBOSSE.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.LandBOSSE.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM compoent.&quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="PlantFinance">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.PlantFinance">[docs]</a>
-<span class="k">class</span> <span class="nc">PlantFinance</span><span class="p">(</span><span class="n">PlantFinance_orig</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlantFinance</span><span class="p">(</span><span class="n">PlantFinance_orig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for WISDEM&#39;s PlantFinanceSE calculators.</span>
 
@@ -409,7 +409,7 @@
 
 <div class="viewcode-block" id="PlantFinance.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.PlantFinance.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
@@ -419,7 +419,7 @@
 
 <div class="viewcode-block" id="PlantFinance.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.PlantFinance.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM compoent.&quot;&quot;&quot;</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
@@ -431,7 +431,7 @@
 
 <div class="viewcode-block" id="TurbineCapitalCosts">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.TurbineCapitalCosts">[docs]</a>
-<span class="k">class</span> <span class="nc">TurbineCapitalCosts</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TurbineCapitalCosts</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple component to compute the turbine capital costs.</span>
 
@@ -457,7 +457,7 @@
 
 <div class="viewcode-block" id="TurbineCapitalCosts.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.TurbineCapitalCosts.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="s2">&quot;machine_rating&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;kW&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="s2">&quot;tcc_per_kW&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;USD/kW&quot;</span><span class="p">)</span>
@@ -468,7 +468,7 @@
 
 <div class="viewcode-block" id="TurbineCapitalCosts.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.TurbineCapitalCosts.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
         <span class="c1"># complex step for simple gradients</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cs&quot;</span><span class="p">)</span></div>
@@ -476,7 +476,7 @@
 
 <div class="viewcode-block" id="TurbineCapitalCosts.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.TurbineCapitalCosts.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM compoent.&quot;&quot;&quot;</span>
         <span class="c1"># Unpack parameters</span>
         <span class="n">t_rating</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">&quot;machine_rating&quot;</span><span class="p">]</span>
@@ -489,7 +489,7 @@
 
 <div class="viewcode-block" id="OperatingExpenses">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.OperatingExpenses">[docs]</a>
-<span class="k">class</span> <span class="nc">OperatingExpenses</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OperatingExpenses</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">ExplicitComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple component to compute the operating costs.</span>
 
@@ -514,7 +514,7 @@
 
 <div class="viewcode-block" id="OperatingExpenses.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.OperatingExpenses.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="s2">&quot;machine_rating&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;kW&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="s2">&quot;opex_per_kW&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;USD/kW/yr&quot;</span><span class="p">)</span>
@@ -524,7 +524,7 @@
 
 <div class="viewcode-block" id="OperatingExpenses.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.OperatingExpenses.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
         <span class="c1"># complex step for simple gradients</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cs&quot;</span><span class="p">)</span></div>
@@ -532,7 +532,7 @@
 
 <div class="viewcode-block" id="OperatingExpenses.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.OperatingExpenses.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">discrete_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discrete_outputs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM compoent.&quot;&quot;&quot;</span>
         <span class="c1"># Unpack parameters</span>
         <span class="n">t_rating</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">&quot;machine_rating&quot;</span><span class="p">]</span>
@@ -545,7 +545,7 @@
 
 <div class="viewcode-block" id="LandBOSSE_setup_latents">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.LandBOSSE_setup_latents">[docs]</a>
-<span class="k">def</span> <span class="nf">LandBOSSE_setup_latents</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">modeling_options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">LandBOSSE_setup_latents</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">modeling_options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function to set up the LandBOSSE latent variables using modeling options.</span>
 
@@ -646,7 +646,7 @@
 
 <div class="viewcode-block" id="FinanceSE_setup_latents">
 <a class="viewcode-back" href="../../../_autosummary/ard.cost.wisdem_wrap.html#ard.cost.wisdem_wrap.FinanceSE_setup_latents">[docs]</a>
-<span class="k">def</span> <span class="nf">FinanceSE_setup_latents</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">modeling_options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">FinanceSE_setup_latents</span><span class="p">(</span><span class="n">prob</span><span class="p">,</span> <span class="n">modeling_options</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function to set up the FinanceSE latent variables using modeling options.</span>
 

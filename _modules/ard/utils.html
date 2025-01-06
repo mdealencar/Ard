@@ -29,7 +29,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -335,19 +335,19 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">PathLike</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">PathLike</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">wisdem.inputs.validation</span> <span class="kn">import</span> <span class="n">load_yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wisdem.inputs.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_yaml</span>
 
 
 <div class="viewcode-block" id="load_turbine_spec">
 <a class="viewcode-back" href="../../_autosummary/ard.utils.html#ard.utils.load_turbine_spec">[docs]</a>
-<span class="k">def</span> <span class="nf">load_turbine_spec</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_turbine_spec</span><span class="p">(</span>
     <span class="n">filename_turbine_spec</span><span class="p">:</span> <span class="n">PathLike</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -378,7 +378,7 @@
 
 <div class="viewcode-block" id="create_FLORIS_turbine">
 <a class="viewcode-back" href="../../_autosummary/ard.utils.html#ard.utils.create_FLORIS_turbine">[docs]</a>
-<span class="k">def</span> <span class="nf">create_FLORIS_turbine</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_FLORIS_turbine</span><span class="p">(</span>
     <span class="n">input_turbine_spec</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">PathLike</span><span class="p">,</span>
     <span class="n">filename_turbine_FLORIS</span><span class="p">:</span> <span class="n">PathLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>

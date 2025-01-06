@@ -29,7 +29,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -335,22 +335,22 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.wind_query</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">floris.wind_data</span> <span class="kn">import</span> <span class="n">WindDataBase</span>
-<span class="kn">from</span> <span class="nn">floris.wind_data</span> <span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">floris.wind_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindDataBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">floris.wind_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
 
 <div class="viewcode-block" id="WindQuery">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery">[docs]</a>
-<span class="k">class</span> <span class="nc">WindQuery</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WindQuery</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class that manages sets of wind conditions to query that can operate</span>
 <span class="sd">    for different types and fidelities of aerodynamic solvers without loss of</span>
 <span class="sd">    generality.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">directions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">speeds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -387,7 +387,7 @@
 
 <div class="viewcode-block" id="WindQuery.set_directions">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.set_directions">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the directions on a WindQuery object.</span>
 
@@ -405,7 +405,7 @@
 
 <div class="viewcode-block" id="WindQuery.set_speeds">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.set_speeds">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_speeds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speeds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_speeds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">speeds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the wind speeds on a WindQuery object.</span>
 
@@ -423,7 +423,7 @@
 
 <div class="viewcode-block" id="WindQuery.set_TIs">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.set_TIs">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_TIs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TIs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_TIs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">TIs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the turbulence intensities on a WindQuery object.</span>
 
@@ -447,7 +447,7 @@
 
 <div class="viewcode-block" id="WindQuery.set_TI_using_IEC_method">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.set_TI_using_IEC_method">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_TI_using_IEC_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_TI_using_IEC_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Re-set the turbulence intensities using the FLORIS IEC method interface.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -470,7 +470,7 @@
 
 <div class="viewcode-block" id="WindQuery.get_directions">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.get_directions">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the directions from the wind query object.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(),</span> <span class="s2">&quot;mismatch in direction/speed vectors&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">directions</span></div>
@@ -478,7 +478,7 @@
 
 <div class="viewcode-block" id="WindQuery.get_speeds">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.get_speeds">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_speeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_speeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the wind speeds from the wind query object.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(),</span> <span class="s2">&quot;mismatch in direction/speed vectors&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">speeds</span></div>
@@ -486,7 +486,7 @@
 
 <div class="viewcode-block" id="WindQuery.get_TIs">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.get_TIs">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_TIs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_TIs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the turbulence intensities from the wind query object.&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(),</span> <span class="s2">&quot;mismatch in direction/speed vectors&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIs</span></div>
@@ -494,7 +494,7 @@
 
 <div class="viewcode-block" id="WindQuery.is_valid">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.is_valid">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that the specified wind conditions are valid.&quot;&quot;&quot;</span>
 
         <span class="c1"># first, not a valid query if the directions and speeds aren&#39;t specified</span>
@@ -514,7 +514,7 @@
 
 <div class="viewcode-block" id="WindQuery.from_FLORIS_WindData">
 <a class="viewcode-back" href="../../_autosummary/ard.wind_query.html#ard.wind_query.WindQuery.from_FLORIS_WindData">[docs]</a>
-    <span class="k">def</span> <span class="nf">from_FLORIS_WindData</span><span class="p">(</span><span class="n">winddata_FLORIS</span><span class="p">:</span> <span class="n">WindDataBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_FLORIS_WindData</span><span class="p">(</span><span class="n">winddata_FLORIS</span><span class="p">:</span> <span class="n">WindDataBase</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turn a FLORIS WindData object into a (more general) WindQuery object.</span>
 

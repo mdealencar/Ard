@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -335,18 +335,18 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.farm_aero.floris</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">floris</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">floris</span>
 
-<span class="kn">import</span> <span class="nn">ard.utils</span>
-<span class="kn">import</span> <span class="nn">ard.farm_aero.templates</span> <span class="k">as</span> <span class="nn">templates</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ard.utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ard.farm_aero.templates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">templates</span>
 
 
 <div class="viewcode-block" id="FLORISFarmComponent">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent">[docs]</a>
-<span class="k">class</span> <span class="nc">FLORISFarmComponent</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FLORISFarmComponent</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Secondary-inherit component for managing FLORIS for farm simulations.</span>
 
@@ -369,14 +369,14 @@
 
 <div class="viewcode-block" id="FLORISFarmComponent.initialize">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialization-time FLORIS management.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span><span class="s2">&quot;case_title&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FLORISFarmComponent.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup-time FLORIS management.&quot;&quot;&quot;</span>
 
         <span class="c1"># set up FLORIS</span>
@@ -396,7 +396,7 @@
 
 <div class="viewcode-block" id="FLORISFarmComponent.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute-time FLORIS management.</span>
 
@@ -409,7 +409,7 @@
 
 <div class="viewcode-block" id="FLORISFarmComponent.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
         <span class="c1"># for FLORIS, no derivatives. use FD because FLORIS is cheap</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">declare_partials</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fd&quot;</span><span class="p">)</span></div>
@@ -417,28 +417,28 @@
 
 <div class="viewcode-block" id="FLORISFarmComponent.get_AEP_farm">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.get_AEP_farm">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_AEP_farm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_AEP_farm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the AEP of a FLORIS farm.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmodel</span><span class="o">.</span><span class="n">get_farm_AEP</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="FLORISFarmComponent.get_power_farm">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.get_power_farm">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_power_farm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_power_farm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the farm power of a FLORIS farm at each wind condition.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmodel</span><span class="o">.</span><span class="n">get_farm_power</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="FLORISFarmComponent.get_power_turbines">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.get_power_turbines">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_power_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_power_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the turbine powers of a FLORIS farm at each wind condition.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmodel</span><span class="o">.</span><span class="n">get_turbine_powers</span><span class="p">()</span><span class="o">.</span><span class="n">T</span></div>
 
 
 <div class="viewcode-block" id="FLORISFarmComponent.get_thrust_turbines">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.get_thrust_turbines">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_thrust_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_thrust_turbines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the turbine thrusts of a FLORIS farm at each wind condition.&quot;&quot;&quot;</span>
         <span class="c1"># FLORIS computes the thrust precursors, compute and return thrust</span>
         <span class="c1"># use pure FLORIS to get these values for consistency</span>
@@ -453,7 +453,7 @@
 
 <div class="viewcode-block" id="FLORISFarmComponent.dump_floris_yamlfile">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISFarmComponent.dump_floris_yamlfile">[docs]</a>
-    <span class="k">def</span> <span class="nf">dump_floris_yamlfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dump_floris_yamlfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export the current FLORIS inputs to a YAML file file for reproducibility of the analysis.</span>
 <span class="sd">        The file will be saved in the `dir_output` directory, or in the current working directory</span>
@@ -468,7 +468,7 @@
 
 <div class="viewcode-block" id="FLORISBatchPower">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISBatchPower">[docs]</a>
-<span class="k">class</span> <span class="nc">FLORISBatchPower</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">BatchFarmPowerTemplate</span><span class="p">,</span> <span class="n">FLORISFarmComponent</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FLORISBatchPower</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">BatchFarmPowerTemplate</span><span class="p">,</span> <span class="n">FLORISFarmComponent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Component class for computing a batch power analysis using FLORIS.</span>
 
@@ -523,27 +523,27 @@
 
 <div class="viewcode-block" id="FLORISBatchPower.initialize">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISBatchPower.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># run super class script first!</span>
         <span class="n">FLORISFarmComponent</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># FLORIS superclass</span></div>
 
 
 <div class="viewcode-block" id="FLORISBatchPower.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISBatchPower.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>  <span class="c1"># run super class script first!</span>
         <span class="n">FLORISFarmComponent</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># setup a FLORIS run</span></div>
 
 
 <div class="viewcode-block" id="FLORISBatchPower.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISBatchPower.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">FLORISFarmComponent</span><span class="o">.</span><span class="n">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FLORISBatchPower.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISBatchPower.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
 
         <span class="c1"># generate the list of conditions for evaluation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_series</span> <span class="o">=</span> <span class="n">floris</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span>
@@ -576,7 +576,7 @@
 
 <div class="viewcode-block" id="FLORISAEP">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISAEP">[docs]</a>
-<span class="k">class</span> <span class="nc">FLORISAEP</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">FarmAEPTemplate</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FLORISAEP</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">FarmAEPTemplate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Component class for computing an AEP analysis using FLORIS.</span>
 
@@ -632,24 +632,24 @@
 
 <div class="viewcode-block" id="FLORISAEP.initialize">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISAEP.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>  <span class="c1"># run super class script first!</span>
         <span class="n">FLORISFarmComponent</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># add on FLORIS superclass</span></div>
 
 
 <div class="viewcode-block" id="FLORISAEP.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISAEP.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>  <span class="c1"># run super class script first!</span>
         <span class="n">FLORISFarmComponent</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># setup a FLORIS run</span></div>
 
 
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup_partials</span><span class="p">()</span>
 
 <div class="viewcode-block" id="FLORISAEP.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISAEP.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
 
         <span class="c1"># set up and run the floris model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fmodel</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
@@ -674,7 +674,7 @@
 
 <div class="viewcode-block" id="FLORISAEP.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.farm_aero.floris.html#ard.farm_aero.floris.FLORISAEP.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">FLORISFarmComponent</span><span class="o">.</span><span class="n">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </div>
 

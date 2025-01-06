@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -335,18 +335,18 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.layout.fullfarm</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">openmdao.api</span> <span class="k">as</span> <span class="nn">om</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openmdao.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">om</span>
 
-<span class="kn">from</span> <span class="nn">shapely</span> <span class="kn">import</span> <span class="n">length</span>
-<span class="kn">import</span> <span class="nn">shapely.geometry</span> <span class="k">as</span> <span class="nn">sg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely</span><span class="w"> </span><span class="kn">import</span> <span class="n">length</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sg</span>
 
-<span class="kn">import</span> <span class="nn">ard.layout.templates</span> <span class="k">as</span> <span class="nn">templates</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ard.layout.templates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">templates</span>
 
 
 <div class="viewcode-block" id="FullFarmLanduse">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.fullfarm.html#ard.layout.fullfarm.FullFarmLanduse">[docs]</a>
-<span class="k">class</span> <span class="nc">FullFarmLanduse</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">LanduseTemplate</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FullFarmLanduse</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">LanduseTemplate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Landuse class for full Cartesian grid farm layout.</span>
 
@@ -381,7 +381,7 @@
 
 <div class="viewcode-block" id="FullFarmLanduse.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.fullfarm.html#ard.layout.fullfarm.FullFarmLanduse.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
@@ -402,7 +402,7 @@
 
 <div class="viewcode-block" id="FullFarmLanduse.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.fullfarm.html#ard.layout.fullfarm.FullFarmLanduse.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># default complex step for the layout-landuse tools, since they&#39;re often algebraic</span>
@@ -411,7 +411,7 @@
 
 <div class="viewcode-block" id="FullFarmLanduse.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.fullfarm.html#ard.layout.fullfarm.FullFarmLanduse.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># extract the points from the inputs</span>

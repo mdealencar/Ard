@@ -29,7 +29,7 @@
   <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -335,14 +335,14 @@
                 <article class="bd-article">
                   
   <h1>Source code for ard.layout.gridfarm</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">ard.layout.templates</span> <span class="k">as</span> <span class="nn">templates</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ard.layout.templates</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">templates</span>
 
 
 <div class="viewcode-block" id="GridFarmLayout">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLayout">[docs]</a>
-<span class="k">class</span> <span class="nc">GridFarmLayout</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">LayoutTemplate</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GridFarmLayout</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">LayoutTemplate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simplified, uniform four-parameter parallelepiped grid farm layout class.</span>
 
@@ -414,14 +414,14 @@
 
 <div class="viewcode-block" id="GridFarmLayout.initialize">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLayout.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialization of OM component.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="GridFarmLayout.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLayout.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
@@ -434,7 +434,7 @@
 
 <div class="viewcode-block" id="GridFarmLayout.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLayout.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># default complex step for the layout tools, since they&#39;re often algebraic</span>
@@ -443,7 +443,7 @@
 
 <div class="viewcode-block" id="GridFarmLayout.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLayout.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM component.&quot;&quot;&quot;</span>
 
         <span class="n">D_rotor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modeling_options</span><span class="p">[</span><span class="s2">&quot;turbine&quot;</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;diameter_rotor&quot;</span><span class="p">]</span>
@@ -510,7 +510,7 @@
 
 <div class="viewcode-block" id="GridFarmLanduse">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLanduse">[docs]</a>
-<span class="k">class</span> <span class="nc">GridFarmLanduse</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">LanduseTemplate</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GridFarmLanduse</span><span class="p">(</span><span class="n">templates</span><span class="o">.</span><span class="n">LanduseTemplate</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Landuse class for four-parameter parallelepiped grid farm layout.</span>
 
@@ -563,7 +563,7 @@
 
 <div class="viewcode-block" id="GridFarmLanduse.setup">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLanduse.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup of OM component.&quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
@@ -590,7 +590,7 @@
 
 <div class="viewcode-block" id="GridFarmLanduse.setup_partials">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLanduse.setup_partials">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Derivative setup for OM component.&quot;&quot;&quot;</span>
 
         <span class="c1"># default complex step for the layout tools, since they&#39;re often algebraic</span>
@@ -599,7 +599,7 @@
 
 <div class="viewcode-block" id="GridFarmLanduse.compute">
 <a class="viewcode-back" href="../../../_autosummary/ard.layout.gridfarm.html#ard.layout.gridfarm.GridFarmLanduse.compute">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computation for the OM component.&quot;&quot;&quot;</span>
 
         <span class="n">D_rotor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modeling_options</span><span class="p">[</span><span class="s2">&quot;turbine&quot;</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;diameter_rotor&quot;</span><span class="p">]</span>
