@@ -28,12 +28,8 @@ class TestWindQuery:
         assert np.all(
             self.query.get_directions() == dir_q
         ), "specified directions should match"
-        assert np.all(
-            self.query.get_speeds() == V_q
-        ), "specified speeds should match"
-        assert np.all(
-            self.query.get_TIs() == TI_q
-        ), "specified TIs should match"
+        assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
+        assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
         assert (
             self.query.N_conditions == size_q[0]
         ), "internal size tracking should match"
@@ -56,12 +52,8 @@ class TestWindQuery:
         assert np.all(
             self.query.get_directions() == dir_q
         ), "specified directions should match"
-        assert np.all(
-            self.query.get_speeds() == V_q
-        ), "specified speeds should match"
-        assert np.all(
-            self.query.get_TIs() == TI_q
-        ), "specified TIs should match"
+        assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
+        assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
         assert (
             self.query.N_conditions == size_q[0]
         ), "internal size tracking should match"
@@ -93,9 +85,7 @@ class TestWindQuery:
         # shouldn't be valid because TI doesn't and this should therefore raise
         # an error
         with pytest.raises(AssertionError):
-            np.all(
-                self.query.get_speeds() == V_q
-            ), "specified speeds should match"
+            np.all(self.query.get_speeds() == V_q), "specified speeds should match"
         assert (
             self.query.N_conditions is None
         ), "number of conditions should be ill-defined"
@@ -106,12 +96,8 @@ class TestWindQuery:
         self.query.set_TIs(TI_q)
 
         # make sure values are actually set in exactly and the query should be valid
-        assert np.all(
-            self.query.get_TIs() == TI_q
-        ), "specified TIs should match"
-        assert np.all(
-            self.query.get_speeds() == V_q
-        ), "specified speeds should match"
+        assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
+        assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
         assert np.all(
             self.query.get_directions() == dir_q
         ), "specified directions should match"
@@ -148,4 +134,3 @@ class TestWindQuery:
             self.query.N_conditions == wind_directions.size * wind_speeds.size
         ), "internal size tracking should match"
         assert self.query.is_valid()
-

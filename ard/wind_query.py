@@ -58,7 +58,12 @@ class WindQuery:
 
         self.directions = directions
         self.N_conditions = (
-            None if ((self.directions.size != self.speeds.size) or (self.directions.size != self.TIs.size)) else self.directions.size
+            None
+            if (
+                (self.directions.size != self.speeds.size)
+                or (self.directions.size != self.TIs.size)
+            )
+            else self.directions.size
         )
 
     def set_speeds(self, speeds: np.ndarray):
@@ -73,7 +78,12 @@ class WindQuery:
 
         self.speeds = speeds
         self.N_conditions = (
-            None if ((self.directions.size != self.speeds.size) or (self.directions.size != self.TIs.size)) else self.directions.size
+            None
+            if (
+                (self.directions.size != self.speeds.size)
+                or (self.directions.size != self.TIs.size)
+            )
+            else self.directions.size
         )
 
     def set_TIs(self, TIs: float | np.ndarray):
@@ -91,22 +101,26 @@ class WindQuery:
         TIs = np.array(TIs)
         if (np.array(TIs).size == 1) and (self.N_conditions is not None):
             TIs = TIs * np.ones((self.N_conditions,))
-        elif (np.array(TIs).size == 1):
+        elif np.array(TIs).size == 1:
             assert np.all(
                 self.directions.shape == self.speeds.shape
             ), "to set TIs automatically direction and speed must be set, and consistently"
             TIs = TIs * np.ones_like(self.directions)
         else:
-            assert (
-                np.all(TIs.shape == self.directions.shape)
-                and np.all(TIs.shape == self.speeds.shape)
+            assert np.all(TIs.shape == self.directions.shape) and np.all(
+                TIs.shape == self.speeds.shape
             ), "mismatch in TI size vs. direction"
-            assert (
-                np.all(TIs.shape == self.speeds.shape)
+            assert np.all(
+                TIs.shape == self.speeds.shape
             ), "mismatch in TI size vs. speed"
         self.TIs = TIs
         self.N_conditions = (
-            None if ((self.directions.size != self.speeds.size) or (self.directions.size != self.TIs.size)) else self.directions.size
+            None
+            if (
+                (self.directions.size != self.speeds.size)
+                or (self.directions.size != self.TIs.size)
+            )
+            else self.directions.size
         )
 
     def set_TI_using_IEC_method(self):
@@ -154,7 +168,9 @@ class WindQuery:
         if not np.all(np.equal(self.directions.shape, self.speeds.shape)):
             return False
         # next, to be valid the TIs should also be the same size and shape. or None
-        if (not np.all(np.equal(self.directions.shape, self.TIs.shape))) and (self.TIs.shape != ()):
+        if (not np.all(np.equal(self.directions.shape, self.TIs.shape))) and (
+            self.TIs.shape != ()
+        ):
             return False
         # to be valid, directions should be on [0, 360]
         if np.any((self.directions < 0.0) | (self.directions > 360.0)):
