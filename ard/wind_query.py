@@ -178,7 +178,10 @@ class WindQuery:
         if np.any((self.directions < 0.0) | (self.directions > 360.0)):
             return False
         # to be valid, velocity should be on [0, +inf)
-        if np.any(self.directions < 0.0):
+        if np.any(self.speeds < 0.0):
+            return False
+        # to be valid, TI should be on [0, +inf)
+        if np.any(self.TIs < 0.0):
             return False
         return True
 
