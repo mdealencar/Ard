@@ -150,7 +150,7 @@ class TestWindQuery:
         ), "internal size tracking should match"
         assert self.query.is_valid()
 
-        dir_q[int(len(dir_q)/2)] = -5.0
+        dir_q[int(len(dir_q) / 2)] = -5.0
 
         # set in the wind conditions to query
         self.query.set_directions(dir_q)
@@ -167,17 +167,15 @@ class TestWindQuery:
                 self.query.get_speeds() == V_q
             ), "specified speeds should match"
         with pytest.raises(AssertionError):
-            assert np.all(
-                self.query.get_TIs() == TI_q
-            ), "specified TIs should match"
+            assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
         assert (
             self.query.N_conditions == size_q[0]
         ), "internal size tracking should still match"
         assert not self.query.is_valid()
 
         # test invalid directions (outside (0, 360))
-        dir_q[int(len(dir_q)/2)] = 360.0 * rng.rand()
-        dir_q[int(len(dir_q)/2+1)] = 365.0
+        dir_q[int(len(dir_q) / 2)] = 360.0 * rng.rand()
+        dir_q[int(len(dir_q) / 2 + 1)] = 365.0
 
         # set in the wind conditions to query
         self.query.set_directions(dir_q)
@@ -194,18 +192,16 @@ class TestWindQuery:
                 self.query.get_speeds() == V_q
             ), "specified speeds should match"
         with pytest.raises(AssertionError):
-            assert np.all(
-                self.query.get_TIs() == TI_q
-            ), "specified TIs should match"
+            assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
         assert (
             self.query.N_conditions == size_q[0]
         ), "internal size tracking should still match"
         assert not self.query.is_valid()
 
         # test invalid (negative) velocities
-        dir_q[int(len(dir_q)/2)] = 360.0 * rng.rand()
-        dir_q[int(len(dir_q)/2+1)] = 360.0 * rng.rand()
-        V_q[int(len(V_q)/2)] = -5.0
+        dir_q[int(len(dir_q) / 2)] = 360.0 * rng.rand()
+        dir_q[int(len(dir_q) / 2 + 1)] = 360.0 * rng.rand()
+        V_q[int(len(V_q) / 2)] = -5.0
 
         # set in the wind conditions to query
         self.query.set_directions(dir_q)
@@ -222,19 +218,17 @@ class TestWindQuery:
                 self.query.get_speeds() == V_q
             ), "specified speeds should match"
         with pytest.raises(AssertionError):
-            assert np.all(
-                self.query.get_TIs() == TI_q
-            ), "specified TIs should match"
+            assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
         assert (
             self.query.N_conditions == size_q[0]
         ), "internal size tracking should still match"
         assert not self.query.is_valid()
 
         # test invalid (negative) TIs
-        dir_q[int(len(dir_q)/2)] = 360.0 * rng.rand()
-        dir_q[int(len(dir_q)/2+1)] = 360.0 * rng.rand()
-        V_q[int(len(V_q)/2)] = np.abs(15.0 * rng.randn())
-        TI_q[int(len(TI_q)/2)] = -0.06
+        dir_q[int(len(dir_q) / 2)] = 360.0 * rng.rand()
+        dir_q[int(len(dir_q) / 2 + 1)] = 360.0 * rng.rand()
+        V_q[int(len(V_q) / 2)] = np.abs(15.0 * rng.randn())
+        TI_q[int(len(TI_q) / 2)] = -0.06
 
         # set in the wind conditions to query
         self.query.set_directions(dir_q)
@@ -251,9 +245,7 @@ class TestWindQuery:
                 self.query.get_speeds() == V_q
             ), "specified speeds should match"
         with pytest.raises(AssertionError):
-            assert np.all(
-                self.query.get_TIs() == TI_q
-            ), "specified TIs should match"
+            assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
         assert (
             self.query.N_conditions == size_q[0]
         ), "internal size tracking should still match"
