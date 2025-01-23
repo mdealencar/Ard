@@ -17,11 +17,26 @@ class TestWindQuery:
         size_q = (5,)
         dir_q = 360.0 * rng.rand(*size_q)
         V_q = np.abs(15.0 * rng.randn(*size_q))
-        TI_q = np.abs(0.4 * rng.randn(*size_q))
+        TI_q = np.abs(0.04 * rng.randn(*size_q))
 
         # set in the wind conditions to query
         self.query.set_directions(dir_q)
         self.query.set_speeds(V_q)
+        self.query.set_TIs(TI_q)
+
+        # make sure values are actually set in exactly
+        assert np.all(
+            self.query.get_directions() == dir_q
+        ), "specified directions should match"
+        assert np.all(self.query.get_speeds() == V_q), "specified speeds should match"
+        assert np.all(self.query.get_TIs() == TI_q), "specified TIs should match"
+        assert (
+            self.query.N_conditions == size_q[0]
+        ), "internal size tracking should match"
+        assert self.query.is_valid()
+
+        # try testing the single-value TI system
+        TI_q = 0.06
         self.query.set_TIs(TI_q)
 
         # make sure values are actually set in exactly
@@ -41,7 +56,7 @@ class TestWindQuery:
         size_q = (5,)
         dir_q = 360.0 * rng.rand(*size_q)
         V_q = np.abs(15.0 * rng.randn(*size_q))
-        TI_q = np.abs(0.4 * rng.randn(*size_q))
+        TI_q = np.abs(0.04 * rng.randn(*size_q))
 
         # set in the wind conditions to query
         self.query.set_directions(dir_q)
@@ -92,7 +107,7 @@ class TestWindQuery:
         assert self.query.is_valid() is False, "not valid with different length on TI"
 
         # now modify speeds
-        TI_q = np.abs(0.4 * rng.randn(*size_q))
+        TI_q = np.abs(0.04 * rng.randn(*size_q))
         self.query.set_TIs(TI_q)
 
         # make sure values are actually set in exactly and the query should be valid
