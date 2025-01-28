@@ -238,12 +238,12 @@ def LandBOSSE_setup_latents(prob, modeling_options):
         modeling_options["turbine"]["costs"]["foundation_height"],
     )
     prob.set_val(
-        comp2promotion_map["landbosse.landbosse.commissioning_pct"],
-        modeling_options["turbine"]["costs"]["commissioning_pct"],
+        comp2promotion_map["landbosse.landbosse.commissioning_cost_kW"],
+        modeling_options["turbine"]["costs"]["commissioning_cost_kW"],
     )
     prob.set_val(
-        comp2promotion_map["landbosse.landbosse.decommissioning_pct"],
-        modeling_options["turbine"]["costs"]["decommissioning_pct"],
+        comp2promotion_map["landbosse.landbosse.decommissioning_cost_kW"],
+        modeling_options["turbine"]["costs"]["decommissioning_cost_kW"],
     )
     prob.set_val(
         comp2promotion_map["landbosse.landbosse.trench_len_to_substation_km"],

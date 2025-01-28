@@ -53,7 +53,7 @@ There can be some hardware-software mis-specification issues with WISDEM install
 In the event of issues, WISDEM can be installed manually or using `conda` without issues, then `pip` installation can proceed.
 
 ```shell
-mamba install wisdem=3.17.0 -y
+mamba install wisdem=3.18.1 -y
 pip install -e .[dev,docs]
 ```
 
