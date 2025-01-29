@@ -85,7 +85,14 @@ class TestLCOEstack:
         # check the data against a pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            "test_LCOE_stack_pyrite.npz",
+            Path(
+                Path(ard.__file__).parent,
+                "..",
+                "test",
+                "system",
+                "LCOE_stack",
+                "test_LCOE_stack_pyrite.npz",
+            ),
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
