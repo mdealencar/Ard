@@ -25,15 +25,17 @@ wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
 # specify the configuration/specification files to use
 filename_turbine_spec = os.path.join(
-    os.path.dirname(run_dir), "data", "turbine_spec_IEA-3p4-130-RWT.yaml"
+    os.path.dirname(run_dir), "data", "turbine_spec_IEA-22-284-RWT.yaml"
 )
 data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
 # set up the modeling options
 modeling_options = {
     "farm": {"N_turbines": 25},
+    "site_depth": 50.,
     "turbine": data_turbine_spec,
-    "offshore": False,
+    "offshore": True,
+    "floating": True,
 }
 
 # create the OM problem
@@ -44,8 +46,8 @@ prob = glue.create_setup_OM_problem(
 
 if True:  # set true to run one-shot analysis
 
-    # setup the latent variables for LandBOSSE and FinanceSE
-    cost_wisdem.LandBOSSE_setup_latents(prob, modeling_options)
+    # setup the latent variables for Orbit and FinanceSE
+    cost_wisdem.Orbit_setup_latents(prob, modeling_options)
     cost_wisdem.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables
@@ -103,8 +105,8 @@ else:
     # setup the problem
     prob.setup()
 
-    # setup the latent variables for LandBOSSE and FinanceSE
-    cost_wisdem.LandBOSSE_setup_latents(prob, modeling_options)
+    # setup the latent variables for Orbit and FinanceSE
+    cost_wisdem.Orbit_setup_latents(prob, modeling_options)
     cost_wisdem.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables
@@ -119,7 +121,7 @@ else:
 # get and print the AEP
 AEP_val = float(prob.get_val("AEP_farm", units="GW*h")[0])
 CapEx_val = float(prob.get_val("tcc.tcc", units="MUSD")[0])
-BOS_val = float(prob.get_val("landbosse.total_capex", units="MUSD")[0])
+BOS_val = float(prob.get_val("orbit.installation_capex", units="MUSD")[0])
 OpEx_val = float(prob.get_val("opex.opex", units="MUSD/yr")[0])
 LCOE_val = float(prob.get_val("financese.lcoe", units="USD/MW/h")[0])
 
