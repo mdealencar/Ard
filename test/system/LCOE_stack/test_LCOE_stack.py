@@ -48,6 +48,7 @@ class TestLCOEstack:
         self.modeling_options = {
             "farm": {"N_turbines": 25},
             "turbine": data_turbine_spec,
+            "offshore": False,
         }
 
         # create the OM problem
