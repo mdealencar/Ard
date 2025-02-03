@@ -7,6 +7,78 @@ import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
+def smoothmin(target, alpha_smoothmin=10.0):
+    if False:
+        kernel_smoothmin = alpha_smoothmin * np.array(target)  # basic
+    elif False:
+        kernel_smoothmin = np.maximum(
+            alpha_smoothmin * np.array(target), -500.0
+        )  # target buffer to prevent overflow
+    else:
+        kernel_overflow_max = -500.0
+        target = alpha_smoothmin * np.array(target)
+        eps_smu = 1e-6
+        kernel_smoothmin = 0.5 * (
+            kernel_overflow_max
+            + np.array(target)
+            + np.sqrt((kernel_overflow_max - target) ** 2 + eps_smu)
+        )
+    return 1 / alpha_smoothmin * np.log(np.mean(np.exp(kernel_smoothmin)))
+
+def smooth_max(x:np.ndarray, s:float=10.0) -> float:
+    """Non-overflowing version of Smooth Max function (see ref 3 and 4 below). 
+    Calculates the smoothmax (a.k.a. softmax or LogSumExponential) of the elements in x.
+
+    Based on implementation in BYU FLOW Lab's FLOWFarm software at
+    (1) https://github.com/byuflowlab/FLOWFarm.jl/tree/master
+    which is based on John D. Cook's writings at
+    (2) https://www.johndcook.com/blog/2010/01/13/soft-maximum/
+    and
+    (3) https://www.johndcook.com/blog/2010/01/20/how-to-compute-the-soft-maximum/
+    And based on article in FeedlyBlog
+    (4) https://blog.feedly.com/tricks-of-the-trade-logsumexp/
+
+    Args:
+        x (list): list of values to be compared
+        s (float, optional): alpha for smooth max function. Defaults to 10.0. 
+            Larger values of `s` lead to more accurate results, but reduce the smoothness 
+            of the output values.
+
+    Returns:
+        float: the smooth max of the provided `x` list
+    """
+
+    # get the maximum value and the index of maximum value
+    max_ind = np.argmax(x)
+    max_val = x[max_ind]
+    
+    # get the indices of x
+    indices = np.arange(0, len(x), dtype=int)
+
+    # remove the index of the maximum value
+    # indices = np.delete(indices, max_ind)
+
+    # LogSumExp with smoothing factor s
+    # import pdb; pdb.set_trace()
+    exponential = np.exp(s*(x[indices != max_ind] - max_val))
+    r = (np.log(1.0 + np.sum([exponential])) + s*max_val)/s
+
+    return r
+
+def smooth_min(x:np.ndarray, s:float=10.0) -> float:
+    """ Finds smooth min using the `smooth_max` function
+
+    Args:
+        x (list): list of values to be compared
+        s (float, optional): alpha for smooth min function. Defaults to 10.0. 
+            Larger values of `s` lead to more accurate results, but reduce the smoothness 
+            of the output values.
+
+    Returns:
+        float: the smooth min of the provided `x` list
+    """
+
+    return -smooth_max(x=-x, s=s)
 
 def load_turbine_spec(
     filename_turbine_spec: PathLike,
