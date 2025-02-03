@@ -98,4 +98,5 @@ class TestLCOE_LB_stack:
             rtol_val=5e-3,
         )
 
+
 #

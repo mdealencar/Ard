@@ -32,7 +32,7 @@ data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 # set up the modeling options
 modeling_options = {
     "farm": {"N_turbines": 25},
-    "site_depth": 50.,
+    "site_depth": 50.0,
     "turbine": data_turbine_spec,
     "offshore": True,
     "floating": True,

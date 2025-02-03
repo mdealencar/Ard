@@ -47,7 +47,7 @@ class TestLCOE_OFL_stack:
         # set up the modeling options
         self.modeling_options = {
             "farm": {"N_turbines": 25},
-            "site_depth": 50.,
+            "site_depth": 50.0,
             "turbine": data_turbine_spec,
             "offshore": True,
             "floating": True,
@@ -99,4 +99,6 @@ class TestLCOE_OFL_stack:
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
+
+
 #
