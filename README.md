@@ -70,13 +70,16 @@ If the installation fails, please open a new issue [here](https://github.com/WIS
 ## Current capabilities
 
 For the alpha pre-release of `Ard`, we have concentrated on optimization of wind plants, starting from a structured layout and optimizing it to minimize the levelized cost of energy, or LCOE.
-This capability is demonstrated for a land-based (LB) wind farm in `examples/LCOE_LB_stack` and tested in an abridged form in `test/system/LCOE_stack/test_LCOE_LB_stack.py`. In this example, the wind farm layout is parametrized with two angles, named orientation and skewed, and turbine distancing for rows and columns.
+This capability is demonstrated for a land-based (LB) wind farm in `examples/LCOE_LB_stack` and tested in an abridged form in `test/system/LCOE_stack/test_LCOE_LB_stack.py`.
+In this example, the wind farm layout is parametrized with two angles, named orientation and skewed, and turbine distancing for rows and columns.
 In the alpha pre-release stage, the constituent subcomponents of these problems are known to work and fully tested; any capabilities not touched in the layout-to-LCOE stack should be treated as experimental.
 
 These cases start from a four parameter farm layout, compute landuse area, make FLORIS AEP estimates, compute turbine capital costs, balance-of-station (BOS), and operational costs using WISDEM components, and finally give summary estimates of plant finance figures.
 The components that achieve this can be assembled to either run a single top-down analysis run, or run an optimization.
 
-A second example is in progress to reoptimize the layout of two offshore wind farms, one fixed bottom (OFB) and one floating (OFL). Both wind farms are made of the [22 MW reference wind turbine](https://github.com/IEAWindSystems/IEA-22-280-RWT). In this example, BOS costs are estimated using the tool [Orbit](https://github.com/WISDEM/ORBIT).
+A second example is in progress to reoptimize the layout of two offshore wind farms, one fixed bottom (OFB) and one floating (OFL).
+Both wind farms are made of the [22 MW reference wind turbine](https://github.com/IEAWindSystems/IEA-22-280-RWT).
+In this example, BOS costs are estimated using the tool [Orbit](https://github.com/WISDEM/ORBIT).
 
 ## Roadmap to future capabilities
 
