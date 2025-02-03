@@ -44,7 +44,7 @@ prob = glue.create_setup_OM_problem(
     wind_rose=wind_rose,
 )
 
-if True:  # set true to run one-shot analysis
+if False:  # set true to run one-shot analysis
 
     # setup the latent variables for Orbit and FinanceSE
     cost_wisdem.Orbit_setup_latents(prob, modeling_options)
