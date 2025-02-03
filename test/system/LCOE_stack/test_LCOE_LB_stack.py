@@ -15,7 +15,7 @@ import ard.glue.prototype as glue
 import ard.cost.wisdem_wrap as cost_wisdem
 
 
-class TestLCOEstack:
+class TestLCOE_LB_stack:
 
     def setup_method(self):
 
@@ -48,6 +48,7 @@ class TestLCOEstack:
         self.modeling_options = {
             "farm": {"N_turbines": 25},
             "turbine": data_turbine_spec,
+            "offshore": False,
         }
 
         # create the OM problem
@@ -91,7 +92,7 @@ class TestLCOEstack:
                 "test",
                 "system",
                 "LCOE_stack",
-                "test_LCOE_stack_pyrite.npz",
+                "test_LCOE_LB_stack_pyrite.npz",
             ),
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
