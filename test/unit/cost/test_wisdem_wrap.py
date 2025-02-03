@@ -172,8 +172,6 @@ class TestOrbit:
         )
 
 
-
-
 class TestPlantFinance:
 
     def setup_method(self):
