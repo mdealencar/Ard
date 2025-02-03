@@ -86,7 +86,14 @@ class TestLCOE_LB_stack:
         # check the data against a pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            "test_LCOE_LB_stack_pyrite.npz",
+            Path(
+                Path(ard.__file__).parent,
+                "..",
+                "test",
+                "system",
+                "LCOE_stack",
+                "test_LCOE_LB_stack_pyrite.npz",
+            ),
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
@@ -165,7 +172,14 @@ class TestLCOE_OFFSHORE_FB_stack:
         # check the data against a pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            "test_LCOE_OFFSHORE_FB_stack_pyrite.npz",
+            Path(
+                Path(ard.__file__).parent,
+                "..",
+                "test",
+                "system",
+                "LCOE_stack",
+                "test_LCOE_OFFSHORE_FB_stack_pyrite.npz",
+            ),
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
@@ -243,7 +257,14 @@ class TestLCOE_OFFSHORE_FL_stack:
         # check the data against a pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            "test_LCOE_OFFSHORE_FL_stack_pyrite.npz",
+            Path(
+                Path(ard.__file__).parent,
+                "..",
+                "test",
+                "system",
+                "LCOE_stack",
+                "test_LCOE_OFFSHORE_FL_stack_pyrite.npz",
+            ),
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
