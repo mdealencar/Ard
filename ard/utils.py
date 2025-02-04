@@ -7,15 +7,30 @@ import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
-def distance_point_to_lineseg(x_C, y_C, x_A, y_A, x_B, y_B, k_logistic=100.0):
-    L2 = (x_B - x_A) ** 2 + (y_B - y_A) ** 2
-    t = ((x_C - x_A) * (x_B - x_A) + (y_C - y_A) * (y_B - y_A)) / L2
-    x_P = x_A + t * (x_B - x_A)
-    y_P = y_A + t * (y_B - y_A)
+def distance_point_to_lineseg(point_x: float, point_y: float, line_a_x: float, line_a_y: float, line_b_x: float, line_b_y: float, k_logistic: float=100.0) -> float:
+    """Find the distance between a point and a finite line segment
 
-    d_CA = np.sqrt((x_C - x_A) ** 2 + (y_C - y_A) ** 2)
-    d_CB = np.sqrt((x_C - x_B) ** 2 + (y_C - y_B) ** 2)
-    d_CP = np.sqrt((x_C - x_P) ** 2 + (y_C - y_P) ** 2)
+    Args:
+        point_x (float): x coordinate of the point of interest
+        point_y (float): y coordinate of the point of interest
+        line_a_x (float): x coordinate of point A of the line AB
+        line_a_y (float): y coordinate of point A of the line AB
+        line_b_x (float): x coordinate of point B of the line AB
+        line_b_y (float): y coordinate of point B of the line AB
+        k_logistic (float, optional): _description_. Defaults to 100.0.
+
+    Returns:
+        float: distance from the point of interest to line AB
+    """
+
+    L2 = (line_b_x - line_a_x) ** 2 + (line_b_y - line_a_y) ** 2
+    t = ((point_x - line_a_x) * (line_b_x - line_a_x) + (point_y - line_a_y) * (line_b_y - line_a_y)) / L2
+    x_P = line_a_x + t * (line_b_x - line_a_x)
+    y_P = line_a_y + t * (line_b_y - line_a_y)
+
+    d_CA = np.sqrt((point_x - line_a_x) ** 2 + (point_y - line_a_y) ** 2)
+    d_CB = np.sqrt((point_x - line_b_x) ** 2 + (point_y - line_b_y) ** 2)
+    d_CP = np.sqrt((point_x - x_P) ** 2 + (point_y - y_P) ** 2)
 
     soft_filter_t0 = (
         1.0 / (1.0 + np.exp(-k_logistic * (t - 0.0)))
@@ -30,24 +45,6 @@ def distance_point_to_lineseg(x_C, y_C, x_A, y_A, x_B, y_B, k_logistic=100.0):
         + d_CA * (1.0 - soft_filter_t0)
         + d_CB * (1.0 - soft_filter_t1)
     )
-
-def smoothmin(target, alpha_smoothmin=10.0):
-    if False:
-        kernel_smoothmin = alpha_smoothmin * np.array(target)  # basic
-    elif False:
-        kernel_smoothmin = np.maximum(
-            alpha_smoothmin * np.array(target), -500.0
-        )  # target buffer to prevent overflow
-    else:
-        kernel_overflow_max = -500.0
-        target = alpha_smoothmin * np.array(target)
-        eps_smu = 1e-6
-        kernel_smoothmin = 0.5 * (
-            kernel_overflow_max
-            + np.array(target)
-            + np.sqrt((kernel_overflow_max - target) ** 2 + eps_smu)
-        )
-    return 1 / alpha_smoothmin * np.log(np.mean(np.exp(kernel_smoothmin)))
 
 def smooth_max(x:np.ndarray, s:float=10.0) -> float:
     """Non-overflowing version of Smooth Max function (see ref 3 and 4 below). 
