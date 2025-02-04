@@ -7,6 +7,30 @@ import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
+def distance_point_to_lineseg(x_C, y_C, x_A, y_A, x_B, y_B, k_logistic=100.0):
+    L2 = (x_B - x_A) ** 2 + (y_B - y_A) ** 2
+    t = ((x_C - x_A) * (x_B - x_A) + (y_C - y_A) * (y_B - y_A)) / L2
+    x_P = x_A + t * (x_B - x_A)
+    y_P = y_A + t * (y_B - y_A)
+
+    d_CA = np.sqrt((x_C - x_A) ** 2 + (y_C - y_A) ** 2)
+    d_CB = np.sqrt((x_C - x_B) ** 2 + (y_C - y_B) ** 2)
+    d_CP = np.sqrt((x_C - x_P) ** 2 + (y_C - y_P) ** 2)
+
+    soft_filter_t0 = (
+        1.0 / (1.0 + np.exp(-k_logistic * (t - 0.0)))
+        if (-k_logistic * t < 100)
+        else 0.0
+    )
+    soft_filter_t1 = (
+        1.0 / (1.0 + np.exp(-k_logistic * (1.0 - t))) if (k_logistic * t < 100) else 0.0
+    )
+    return (
+        d_CP * (soft_filter_t0) * (soft_filter_t1)
+        + d_CA * (1.0 - soft_filter_t0)
+        + d_CB * (1.0 - soft_filter_t1)
+    )
+
 def smoothmin(target, alpha_smoothmin=10.0):
     if False:
         kernel_smoothmin = alpha_smoothmin * np.array(target)  # basic
@@ -55,12 +79,8 @@ def smooth_max(x:np.ndarray, s:float=10.0) -> float:
     # get the indices of x
     indices = np.arange(0, len(x), dtype=int)
 
-    # remove the index of the maximum value
-    # indices = np.delete(indices, max_ind)
-
     # LogSumExp with smoothing factor s
-    # import pdb; pdb.set_trace()
-    exponential = np.exp(s*(x[indices != max_ind] - max_val))
+    exponential = np.exp(s*(np.array(x)[indices != max_ind] - max_val))
     r = (np.log(1.0 + np.sum([exponential])) + s*max_val)/s
 
     return r
