@@ -2,6 +2,7 @@ import copy
 from os import PathLike
 from pathlib import Path
 import yaml
+import jax.numpy as jnp
 
 import numpy as np
 
@@ -46,7 +47,7 @@ def distance_point_to_lineseg(point_x: float, point_y: float, line_a_x: float, l
         + d_CB * (1.0 - soft_filter_t1)
     )
 
-def smooth_max(x:np.ndarray, s:float=10.0) -> float:
+def smooth_max(x:jnp.ndarray, s:float=10.0) -> float:
     """Non-overflowing version of Smooth Max function (see ref 3 and 4 below). 
     Calculates the smoothmax (a.k.a. softmax or LogSumExponential) of the elements in x.
 
@@ -70,15 +71,15 @@ def smooth_max(x:np.ndarray, s:float=10.0) -> float:
     """
 
     # get the maximum value and the index of maximum value
-    max_ind = np.argmax(x)
+    max_ind = jnp.argmax(x)
     max_val = x[max_ind]
     
     # get the indices of x
-    indices = np.arange(0, len(x), dtype=int)
+    indices = jnp.arange(0, len(x), dtype=int)
 
     # LogSumExp with smoothing factor s
-    exponential = np.exp(s*(np.array(x)[indices != max_ind] - max_val))
-    r = (np.log(1.0 + np.sum([exponential])) + s*max_val)/s
+    exponential = jnp.exp(s*(jnp.array(x)[indices != max_ind] - max_val))
+    r = (jnp.log(1.0 + jnp.sum(exponential)) + s*max_val)/s
 
     return r
 
