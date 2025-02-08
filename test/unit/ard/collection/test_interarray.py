@@ -102,8 +102,8 @@ class TestInterarrayCollection:
     def test_compute(self):
 
         # set in the variables
-        X_turbines = 130.0*self.farm_spec["xD_farm"]
-        Y_turbines = 130.0*self.farm_spec["yD_farm"]
+        X_turbines = 130.0 * self.farm_spec["xD_farm"]
+        Y_turbines = 130.0 * self.farm_spec["yD_farm"]
         X_substations = self.farm_spec["x_substations"]
         Y_substations = self.farm_spec["y_substations"]
         self.prob.set_val("interarray_coll.x_turbines", X_turbines)
@@ -120,7 +120,9 @@ class TestInterarrayCollection:
 
         # collect data to validate
         validation_data = {
-            "length_cables": self.prob.get_val("interarray_coll.length_cables", units="km"),
+            "length_cables": self.prob.get_val(
+                "interarray_coll.length_cables", units="km"
+            ),
             "load_cables": self.prob.get_val("interarray_coll.load_cables"),
         }
 

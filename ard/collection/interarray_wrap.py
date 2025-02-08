@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt  # DEBUG!!!!!
+
 # import openmdao.api as om
 
 from interarray.importer import load_repository
@@ -85,16 +86,18 @@ class InterarrayCollection(templates.CollectionTemplate):
 
         # roll up the coordinates into a form that interarray
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
-        x_min = np.min(XY_turbines[:,0]) - 0.25*np.ptp(XY_turbines[:,0])
-        x_max = np.max(XY_turbines[:,0]) + 0.25*np.ptp(XY_turbines[:,0])
-        y_min = np.min(XY_turbines[:,1]) - 0.25*np.ptp(XY_turbines[:,1])
-        y_max = np.max(XY_turbines[:,1]) + 0.25*np.ptp(XY_turbines[:,1])
-        XY_boundaries = np.array([
-            [x_max, y_max],
-            [x_min, y_max],
-            [x_min, y_min],
-            [x_max, y_min],
-        ])
+        x_min = np.min(XY_turbines[:, 0]) - 0.25 * np.ptp(XY_turbines[:, 0])
+        x_max = np.max(XY_turbines[:, 0]) + 0.25 * np.ptp(XY_turbines[:, 0])
+        y_min = np.min(XY_turbines[:, 1]) - 0.25 * np.ptp(XY_turbines[:, 1])
+        y_max = np.max(XY_turbines[:, 1]) + 0.25 * np.ptp(XY_turbines[:, 1])
+        XY_boundaries = np.array(
+            [
+                [x_max, y_max],
+                [x_min, y_max],
+                [x_min, y_min],
+                [x_max, y_min],
+            ]
+        )
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
 
         # HIGHS solver
