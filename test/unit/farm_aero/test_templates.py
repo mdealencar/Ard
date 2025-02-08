@@ -33,7 +33,10 @@ class TestFarmAeroTemplate:
         self.prob.setup()
 
     def test_setup(self):
-        "make sure the modeling_options has what we need for farmaero"
+        """
+        make sure the modeling_options has what we need for farmaero
+        """
+
         assert "modeling_options" in [k for k, _ in self.fa_temp.options.items()]
 
         assert "farm" in self.fa_temp.options["modeling_options"].keys()
@@ -41,7 +44,7 @@ class TestFarmAeroTemplate:
 
         # context manager to spike the warning since we aren't running the model yet
         with pytest.warns(Warning) as warning:
-            # make sure that the outputs in the component match what we planned
+            # make sure that the inputs in the component match what we planned
             input_list = [k for k, v in self.fa_temp.list_inputs()]
             for var_to_check in [
                 "x_turbines",
@@ -104,7 +107,7 @@ class TestBatchFarmPowerTemplate:
 
         # context manager to spike the warning since we aren't running the model yet
         with pytest.warns(Warning) as warning:
-            # make sure that the outputs in the component match what we planned
+            # make sure that the inputs in the component match what we planned
             input_list = [k for k, v in self.bfp_temp.list_inputs()]
             for var_to_check in [
                 "x_turbines",
