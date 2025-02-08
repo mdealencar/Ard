@@ -118,9 +118,6 @@ class InterarrayCollection(templates.CollectionTemplate):
             name=name_case,
             handle=name_case,
         )
-        gplot(L)  # DEBUG!!!!!
-        plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
-        print(L.graph)  # DEBUG!!!!!
 
         # create a planar embedding for presolve
         P, A = make_planar_embedding(L)

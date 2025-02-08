@@ -99,7 +99,7 @@ class TestInterarrayCollection:
             ]:
                 assert var_to_check in output_list
 
-    def test_compute(self):
+    def test_compute_pyrite(self):
 
         # set in the variables
         X_turbines = 130.0 * self.farm_spec["xD_farm"]
