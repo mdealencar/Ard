@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt  # DEBUG!!!!!
 # import openmdao.api as om
 
 from interarray.importer import load_repository
@@ -67,6 +67,12 @@ class InterarrayCollection(templates.CollectionTemplate):
         """Setup of OM component."""
         super().setup()
 
+    def setup_partials(self):
+        """Setup of OM component gradients."""
+
+        # raise NotImplementedError("IMPLEMENT ME!!!!! -cfrontin")
+        self.declare_partials("*", "*", method="fd")  # DEBUG!!!!!
+
     def compute(self, inputs, outputs):
         """
         Computation for the OM component.
@@ -78,15 +84,28 @@ class InterarrayCollection(templates.CollectionTemplate):
         capacity = 8  # maximum load on a chain
 
         # roll up the coordinates into a form that interarray
-        XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]])
-        XY_boundaries = np.vstack([[], []])
-        XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]])
+        XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
+        x_min = np.min(XY_turbines[:,0]) - 0.25*np.ptp(XY_turbines[:,0])
+        x_max = np.max(XY_turbines[:,0]) + 0.25*np.ptp(XY_turbines[:,0])
+        y_min = np.min(XY_turbines[:,1]) - 0.25*np.ptp(XY_turbines[:,1])
+        y_max = np.max(XY_turbines[:,1]) + 0.25*np.ptp(XY_turbines[:,1])
+        XY_boundaries = np.array([
+            [x_max, y_max],
+            [x_min, y_max],
+            [x_min, y_min],
+            [x_max, y_min],
+        ])
+        XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
 
         # HIGHS solver
         highs_solver = pyo.SolverFactory("appsi_highs")
         highs_solver.available(), type(highs_solver)
 
         # start the network definition
+        print(f"XY_turbines.shape: {XY_turbines.shape}")
+        print(f"XY_boundaries.shape: {XY_boundaries.shape}")
+        print(f"XY_substations.shape: {XY_substations.shape}")
+        print(f'inputs["x_substations"]: {inputs["x_substations"]}')
         L = L_from_site(
             T=len(XY_turbines),
             B=len(XY_boundaries),
@@ -96,6 +115,9 @@ class InterarrayCollection(templates.CollectionTemplate):
             name=name_case,
             handle=name_case,
         )
+        gplot(L)  # DEBUG!!!!!
+        plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
+        print(L.graph)  # DEBUG!!!!!
 
         # create a planar embedding for presolve
         P, A = make_planar_embedding(L)
@@ -133,6 +155,8 @@ class InterarrayCollection(templates.CollectionTemplate):
         lengths = []
         loads = []
         edges = H.edges()
+        self.graph = H
+
         for edge in edges:
             lengths.append(edges[edge]["length"])
             loads.append(edges[edge]["load"])

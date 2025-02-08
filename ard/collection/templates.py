@@ -59,8 +59,8 @@ class CollectionTemplate(om.ExplicitComponent):
         self.add_input("y_substations", np.zeros((self.N_substations,)))
 
         # set up outputs for the collection system
-        self.add_output("length_cables", np.array([]), units="m")
-        self.add_output("load_cables", np.array([]))
+        self.add_output("length_cables", np.zeros((self.N_turbines,)), units="m")
+        self.add_output("load_cables", np.zeros((self.N_turbines,)))
 
     def compute(self, inputs, outputs):
         """

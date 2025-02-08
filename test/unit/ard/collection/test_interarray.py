@@ -1,11 +1,16 @@
+from pathlib import Path
 import os
 
 import numpy as np
+import matplotlib.pyplot as plt
 import openmdao.api as om
 
 import pytest
 
+from interarray.plotting import gplot
+
 import ard.utils
+import ard.test_utils
 import ard.collection.interarray_wrap as ard_inter
 
 
@@ -14,13 +19,13 @@ class TestInterarrayCollection:
     def setup_method(self):
 
         # create the farm layout specification
-        farm_spec = {}
-        farm_spec["xD_farm"], farm_spec["yD_farm"] = [
+        self.farm_spec = {}
+        self.farm_spec["xD_farm"], self.farm_spec["yD_farm"] = [
             7 * v.flatten()
             for v in np.meshgrid(np.linspace(-2, 2, 5), np.linspace(-2, 2, 5))
         ]
-        farm_spec["x_substations"] = np.array([-500.0, 500.0])
-        farm_spec["y_substations"] = np.array([-500.0, 500.0])
+        self.farm_spec["x_substations"] = np.array([-500.0, 500.0])
+        self.farm_spec["y_substations"] = np.array([-500.0, 500.0])
 
         # specify the configuration/specification files to use
         filename_turbine_spec = os.path.abspath(
@@ -37,8 +42,8 @@ class TestInterarrayCollection:
         # set up the modeling options
         modeling_options = {
             "farm": {
-                "N_turbines": len(farm_spec["xD_farm"]),
-                "N_substations": len(farm_spec["x_substations"]),
+                "N_turbines": len(self.farm_spec["xD_farm"]),
+                "N_substations": len(self.farm_spec["x_substations"]),
             },
             "turbine": data_turbine_spec,
         }
@@ -96,4 +101,43 @@ class TestInterarrayCollection:
 
     def test_compute(self):
 
-        raise NotImplementedError("IMPLEMENT ME!!!!! -cfrontin")
+        # set in the variables
+        X_turbines = 130.0*self.farm_spec["xD_farm"]
+        Y_turbines = 130.0*self.farm_spec["yD_farm"]
+        X_substations = self.farm_spec["x_substations"]
+        Y_substations = self.farm_spec["y_substations"]
+        self.prob.set_val("interarray_coll.x_turbines", X_turbines)
+        self.prob.set_val("interarray_coll.y_turbines", Y_turbines)
+        self.prob.set_val("interarray_coll.x_substations", X_substations)
+        self.prob.set_val("interarray_coll.y_substations", Y_substations)
+
+        # run interarray
+        self.prob.run_model()
+
+        # # DEBUG!!!!! viz for verification
+        # gplot(self.interarray_coll.graph)
+        # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
+
+        # collect data to validate
+        validation_data = {
+            "length_cables": self.prob.get_val("interarray_coll.length_cables", units="km"),
+            "load_cables": self.prob.get_val("interarray_coll.load_cables"),
+        }
+
+        # validate data against pyrite file
+        ard.test_utils.pyrite_validator(
+            validation_data,
+            Path(
+                os.path.join(
+                    os.path.split(__file__)[0],
+                    "test_interarray_pyrite.npz",
+                )
+            ),
+            # rtol_val=5e-3,
+            # rewrite=True,  # uncomment to write new pyrite file
+        )
+
+    def test_compute_partials(self):
+
+        pass  # DEBUG!!!!!
+        # raise NotImplementedError("IMPLEMENT ME!!!!! -cfrontin")
