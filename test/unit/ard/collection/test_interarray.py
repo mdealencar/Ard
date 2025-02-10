@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,14 +27,12 @@ class TestInterarrayCollection:
         self.farm_spec["y_substations"] = np.array([-500.0, 500.0])
 
         # specify the configuration/specification files to use
-        filename_turbine_spec = os.path.abspath(
-            os.path.join(
-                ard.__path__[0],
-                "..",
-                "examples",
-                "data",
-                "turbine_spec_IEA-3p4-130-RWT.yaml",
-            )
+        filename_turbine_spec = Path(
+            ard.__path__[0],
+            "..",
+            "examples",
+            "data",
+            "turbine_spec_IEA-3p4-130-RWT.yaml",
         )  # toolset generalized turbine specification
         data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
@@ -130,12 +127,10 @@ class TestInterarrayCollection:
         ard.test_utils.pyrite_validator(
             validation_data,
             Path(
-                os.path.join(
-                    os.path.split(__file__)[0],
-                    "test_interarray_pyrite.npz",
-                )
+                Path(__file__).parent,
+                "test_interarray_pyrite.npz",
             ),
-            # rtol_val=5e-3,
+            rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )
 

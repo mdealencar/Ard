@@ -99,6 +99,9 @@ class InterarrayCollection(templates.CollectionTemplate):
             ]
         )
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
+        print(f"DEBUG!!!!! XY_turbines\n{XY_turbines}")
+        print(f"DEBUG!!!!! XY_boundaries\n{XY_boundaries}")
+        print(f"DEBUG!!!!! XY_substations\n{XY_substations}")
 
         # HIGHS solver
         highs_solver = pyo.SolverFactory("appsi_highs")
@@ -108,7 +111,6 @@ class InterarrayCollection(templates.CollectionTemplate):
         print(f"XY_turbines.shape: {XY_turbines.shape}")
         print(f"XY_boundaries.shape: {XY_boundaries.shape}")
         print(f"XY_substations.shape: {XY_substations.shape}")
-        print(f'inputs["x_substations"]: {inputs["x_substations"]}')
         L = L_from_site(
             T=len(XY_turbines),
             B=len(XY_boundaries),
