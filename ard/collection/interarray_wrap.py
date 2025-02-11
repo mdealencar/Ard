@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt  # DEBUG!!!!!
 
 # import openmdao.api as om
 
@@ -20,6 +19,18 @@ import ard.collection.templates as templates
 import logging
 
 logging.getLogger("interarray").setLevel(logging.INFO)
+
+
+# custom length calculation
+def distance_function(x0, y0, x1, y1):
+    return ((x1 - x0)**2 + (y1 - y0)**2)**0.5
+def distance_function_deriv(x0, y0, x1, y1):
+    return np.array([
+        ((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(x1 - x0),
+        ((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(y1 - y0),
+        -((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(x1 - x0),
+        -((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(y1 - y0),
+    ])
 
 
 class InterarrayCollection(templates.CollectionTemplate):
@@ -71,8 +82,7 @@ class InterarrayCollection(templates.CollectionTemplate):
     def setup_partials(self):
         """Setup of OM component gradients."""
 
-        # raise NotImplementedError("IMPLEMENT ME!!!!! -cfrontin")
-        self.declare_partials("*", "*", method="fd")  # DEBUG!!!!!
+        self.declare_partials("*", "*", method="exact")
 
     def compute(self, inputs, outputs):
         """
@@ -99,18 +109,12 @@ class InterarrayCollection(templates.CollectionTemplate):
             ]
         )
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
-        print(f"DEBUG!!!!! XY_turbines\n{XY_turbines}")
-        print(f"DEBUG!!!!! XY_boundaries\n{XY_boundaries}")
-        print(f"DEBUG!!!!! XY_substations\n{XY_substations}")
 
         # HIGHS solver
         highs_solver = pyo.SolverFactory("appsi_highs")
         highs_solver.available(), type(highs_solver)
 
         # start the network definition
-        print(f"XY_turbines.shape: {XY_turbines.shape}")
-        print(f"XY_boundaries.shape: {XY_boundaries.shape}")
-        print(f"XY_substations.shape: {XY_substations.shape}")
         L = L_from_site(
             T=len(XY_turbines),
             B=len(XY_boundaries),
@@ -162,5 +166,55 @@ class InterarrayCollection(templates.CollectionTemplate):
         for edge in edges:
             lengths.append(edges[edge]["length"])
             loads.append(edges[edge]["load"])
+
+        # pack and ship
         outputs["length_cables"] = np.array(lengths)
         outputs["load_cables"] = np.array(loads)
+
+    def compute_partials(self, inputs, J):
+
+        # re-load the key variables back as locals
+        XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
+        XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
+        print(self.graph)
+        H = self.graph
+        edges = H.edges()
+
+        J["length_cables", "x_turbines"] = 0.0
+        J["length_cables", "y_turbines"] = 0.0
+        J["length_cables", "x_substations"] = 0.0
+        J["length_cables", "y_substations"] = 0.0
+        J["load_cables", "x_turbines"] = 0.0
+        J["load_cables", "y_turbines"] = 0.0
+        J["load_cables", "x_substations"] = 0.0
+        J["load_cables", "y_substations"] = 0.0
+
+        for idx_edge, edge in enumerate(edges):
+            e0, e1 = edge
+            x0, y0 = XY_substations[self.N_substations+e0,:] if e0 < 0 else XY_turbines[e0,:]
+            x1, y1 = XY_substations[self.N_substations+e1,:] if e1 < 0 else XY_turbines[e1,:]
+            assert np.isclose(
+                edges[edge]['length'], distance_function(x0, y0, x1, y1)
+            )  # make sure my distance_function matches
+
+            # get the derivative function
+            dLdx0, dLdy0, dLdx1, dLdy1 = distance_function_deriv(x0, y0, x1, y1)
+
+            if e0 >= 0:
+                J["length_cables", "x_turbines"][idx_edge, e0] -= dLdx0
+                J["length_cables", "y_turbines"][idx_edge, e0] -= dLdy0
+            else:
+                J["length_cables", "x_substations"][idx_edge, self.N_substations+e0] -= dLdx0
+                J["length_cables", "y_substations"][idx_edge, self.N_substations+e0] -= dLdy0
+            if e1 >= 0:
+                J["length_cables", "x_turbines"][idx_edge, e1] -= dLdx1
+                J["length_cables", "y_turbines"][idx_edge, e1] -= dLdy1
+            else:
+                J["length_cables", "x_substations"][idx_edge, self.N_substations+e1] -= dLdx1
+                J["length_cables", "y_substations"][idx_edge, self.N_substations+e1] -= dLdy1
+
+        # assert J["length_cables", "x_turbines"].shape == (self.N_turbines, self.N_turbines)
+        # assert J["length_cables", "y_turbines"].shape == (self.N_turbines, self.N_turbines)
+        # assert J["length_cables", "x_substations"].shape == (self.N_turbines, self.N_substations)
+        # assert J["length_cables", "y_substations"].shape == (self.N_turbines, self.N_substations)
+        # raise NotImplementedError("FINISH ME!!!!!")

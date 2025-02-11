@@ -1,8 +1,10 @@
+import copy
 from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
 import openmdao.api as om
+from openmdao.utils.assert_utils import assert_check_partials
 
 import pytest
 
@@ -12,6 +14,12 @@ import ard.utils
 import ard.test_utils
 import ard.collection.interarray_wrap as ard_inter
 
+
+class TestDistanceFunctions:
+
+    def test_function(self):
+
+        pass
 
 class TestInterarrayCollection:
 
@@ -23,6 +31,8 @@ class TestInterarrayCollection:
             7 * v.flatten()
             for v in np.meshgrid(np.linspace(-2, 2, 5), np.linspace(-2, 2, 5))
         ]
+        # self.farm_spec["x_substations"] = np.array([0.0])
+        # self.farm_spec["y_substations"] = np.array([0.0])
         self.farm_spec["x_substations"] = np.array([-500.0, 500.0])
         self.farm_spec["y_substations"] = np.array([-500.0, 500.0])
 
@@ -37,10 +47,12 @@ class TestInterarrayCollection:
         data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
         # set up the modeling options
-        modeling_options = {
+        self.N_turbines = len(self.farm_spec["xD_farm"])
+        self.N_substations = len(self.farm_spec["x_substations"])
+        self.modeling_options = modeling_options = {
             "farm": {
-                "N_turbines": len(self.farm_spec["xD_farm"]),
-                "N_substations": len(self.farm_spec["x_substations"]),
+                "N_turbines": self.N_turbines,
+                "N_substations": self.N_substations,
             },
             "turbine": data_turbine_spec,
         }
@@ -134,7 +146,58 @@ class TestInterarrayCollection:
             # rewrite=True,  # uncomment to write new pyrite file
         )
 
-    def test_compute_partials(self):
+    def test_compute_partials_mini(self):
+        """
+        run a really small case so that qualititative changes do not occur s.t.
+        we can validate the differences using the OM built-ins
+        """
 
-        pass  # DEBUG!!!!!
-        # raise NotImplementedError("IMPLEMENT ME!!!!! -cfrontin")
+        # deep copy modeling options and adjust
+        modeling_options = copy.deepcopy(self.modeling_options)
+        modeling_options["farm"]["N_turbines"] = 5
+        modeling_options["farm"]["N_substations"] = 1
+
+        # create the OpenMDAO model
+        model = om.Group()
+        interarray_coll_mini = model.add_subsystem(
+            "interarray_coll",
+            ard_inter.InterarrayCollection(
+                modeling_options=modeling_options,
+            ),
+        )
+
+        prob = om.Problem(model)
+        prob.setup()
+        # set in the variables
+        theta_turbines = np.linspace(0.0, 2*np.pi, modeling_options["farm"]["N_turbines"]+1)[:-1]
+        X_turbines = 7.0 * 130.0 * np.sin(theta_turbines)
+        Y_turbines = 7.0 * 130.0 * np.cos(theta_turbines)
+        X_substations = np.array([0.0])
+        Y_substations = np.array([0.0])
+        prob.set_val("interarray_coll.x_turbines", X_turbines)
+        prob.set_val("interarray_coll.y_turbines", Y_turbines)
+        prob.set_val("interarray_coll.x_substations", X_substations)
+        prob.set_val("interarray_coll.y_substations", Y_substations)
+
+        # run interarray
+        prob.run_model()
+
+        # # DEBUG!!!!! viz for verification
+        # gplot(interarray_coll_mini.graph)
+        # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
+
+        if False:  # for hand-debugging
+            J0 = prob.compute_totals("interarray_coll.length_cables", "interarray_coll.x_turbines")
+            prob.model.approx_totals()
+            J0p = prob.compute_totals("interarray_coll.length_cables", "interarray_coll.x_turbines")
+
+            print("J0:")
+            print(J0)
+            print("\n\n\n\n\nJ0p:")
+            print(J0p)
+
+            assert False
+
+        # automated OpenMDAO fails because it re-runs the network work
+        cpJ = prob.check_partials(out_stream=None)
+        assert_check_partials(cpJ, rtol=1.0e-3)
