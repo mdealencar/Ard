@@ -228,8 +228,6 @@ class TestInterarrayCollection:
         s_turbines = np.array([1, 2, 3, 4, 5])
         X_turbines = 7.0 * 130.0 * s_turbines
         Y_turbines = np.log(7.0 * 130.0 * s_turbines)
-        print(f"DEBUG!!!!! X_turbines: {X_turbines}")
-        print(f"DEBUG!!!!! Y_turbines: {Y_turbines}")
         X_substations = np.array([-3.5 * 130.0])
         Y_substations = np.array([-3.5 * 130.0])
         prob.set_val("interarray_coll.x_turbines", X_turbines)
