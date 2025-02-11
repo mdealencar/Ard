@@ -15,15 +15,14 @@ import ard.glue.prototype as glue
 import ard.cost.wisdem_wrap as cost_wisdem
 
 
-class TestLCOE_OFL_stack:
+class TestLCOE_OFB_stack:
 
     def setup_method(self):
 
         # create the wind query
         wind_rose_wrg = floris.wind_data.WindRoseWRG(
             Path(
-                Path(ard.__file__).parent,
-                "..",
+                Path(ard.__file__).parents[1],
                 "examples",
                 "data",
                 "wrg_example.wrg",
@@ -36,8 +35,7 @@ class TestLCOE_OFL_stack:
 
         # specify the configuration/specification files to use
         filename_turbine_spec = Path(
-            Path(ard.__file__).parent,
-            "..",
+            Path(ard.__file__).parents[1],
             "examples",
             "data",
             "turbine_spec_IEA-22-284-RWT.yaml",
@@ -50,7 +48,7 @@ class TestLCOE_OFL_stack:
             "site_depth": 50.0,
             "turbine": data_turbine_spec,
             "offshore": True,
-            "floating": True,
+            "floating": False,
         }
 
         # create the OM problem
@@ -89,12 +87,12 @@ class TestLCOE_OFL_stack:
         ard.test_utils.pyrite_validator(
             test_data,
             Path(
-                Path(ard.__file__).parent,
-                "..",
+                Path(ard.__file__).parents[1],
                 "test",
                 "system",
+                "ard",
                 "LCOE_stack",
-                "test_LCOE_OFL_stack_pyrite.npz",
+                "test_LCOE_OFB_stack_pyrite.npz",
             ),
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,

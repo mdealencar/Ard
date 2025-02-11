@@ -22,8 +22,7 @@ class TestLCOE_LB_stack:
         # create the wind query
         wind_rose_wrg = floris.wind_data.WindRoseWRG(
             Path(
-                Path(ard.__file__).parent,
-                "..",
+                Path(ard.__file__).parents[1],
                 "examples",
                 "data",
                 "wrg_example.wrg",
@@ -87,10 +86,10 @@ class TestLCOE_LB_stack:
         ard.test_utils.pyrite_validator(
             test_data,
             Path(
-                Path(ard.__file__).parent,
-                "..",
+                Path(ard.__file__).parents[1],
                 "test",
                 "system",
+                "ard",
                 "LCOE_stack",
                 "test_LCOE_LB_stack_pyrite.npz",
             ),

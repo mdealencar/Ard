@@ -8,7 +8,7 @@ from openmdao.utils.assert_utils import assert_check_partials
 
 import pytest
 
-extra_name = pytest.importorskip("interarray")
+interarray = pytest.importorskip("interarray")
 
 from interarray.plotting import gplot
 
