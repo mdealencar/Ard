@@ -138,10 +138,11 @@ class TestInterarrayCollection:
             # rewrite=True,  # uncomment to write new pyrite file
         )
 
-    def test_compute_partials_mini(self):
+    def test_compute_partials_mini_pentagon(self):
         """
         run a really small case so that qualititative changes do not occur s.t.
-        we can validate the differences using the OM built-ins
+        we can validate the differences using the OM built-ins; use a pentagon
+        with a centered substation so there is no chaining.
         """
 
         # deep copy modeling options and adjust
@@ -168,6 +169,69 @@ class TestInterarrayCollection:
         Y_turbines = 7.0 * 130.0 * np.cos(theta_turbines)
         X_substations = np.array([0.0])
         Y_substations = np.array([0.0])
+        prob.set_val("interarray_coll.x_turbines", X_turbines)
+        prob.set_val("interarray_coll.y_turbines", Y_turbines)
+        prob.set_val("interarray_coll.x_substations", X_substations)
+        prob.set_val("interarray_coll.y_substations", Y_substations)
+
+        # run interarray
+        prob.run_model()
+
+        # # DEBUG!!!!! viz for verification
+        # gplot(interarray_coll_mini.graph)
+        # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
+
+        if False:  # for hand-debugging
+            J0 = prob.compute_totals(
+                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+            )
+            prob.model.approx_totals()
+            J0p = prob.compute_totals(
+                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+            )
+
+            print("J0:")
+            print(J0)
+            print("\n\n\n\n\nJ0p:")
+            print(J0p)
+
+            assert False
+
+        # automated OpenMDAO fails because it re-runs the network work
+        cpJ = prob.check_partials(out_stream=None)
+        assert_check_partials(cpJ, rtol=1.0e-3)
+
+    def test_compute_partials_mini_line(self):
+        """
+        run a really small case so that qualititative changes do not occur s.t.
+        we can validate the differences using the OM built-ins; use a linear
+        layout with a continuing substation so there is no variation.
+        """
+
+        # deep copy modeling options and adjust
+        modeling_options = copy.deepcopy(self.modeling_options)
+        modeling_options["farm"]["N_turbines"] = 5
+        modeling_options["farm"]["N_substations"] = 1
+
+        # create the OpenMDAO model
+        model = om.Group()
+        interarray_coll_mini = model.add_subsystem(
+            "interarray_coll",
+            ard_inter.InterarrayCollection(
+                modeling_options=modeling_options,
+            ),
+        )
+
+        prob = om.Problem(model)
+        prob.setup()
+        # set in the variables
+        s_turbines = np.array([1, 2, 3, 4, 5])
+        X_turbines = 7.0 * 130.0 * s_turbines
+        Y_turbines = np.log(7.0 * 130.0 * s_turbines)
+        print(f"DEBUG!!!!! X_turbines: {X_turbines}")
+        print(f"DEBUG!!!!! Y_turbines: {Y_turbines}")
+        X_substations = np.array([-3.5 * 130.0])
+        Y_substations = np.array([-3.5 * 130.0])
         prob.set_val("interarray_coll.x_turbines", X_turbines)
         prob.set_val("interarray_coll.y_turbines", Y_turbines)
         prob.set_val("interarray_coll.x_substations", X_substations)

@@ -224,9 +224,7 @@ class InterarrayCollection(templates.CollectionTemplate):
                 J["length_cables", "x_turbines"][idx_edge, e1] -= dLdx1
                 J["length_cables", "y_turbines"][idx_edge, e1] -= dLdy1
             else:
-                J["length_cables", "x_substations"][
-                    idx_edge, self.N_substations + e1
-                ] -= dLdx1
-                J["length_cables", "y_substations"][
-                    idx_edge, self.N_substations + e1
-                ] -= dLdy1
+                raise Exception(
+                    "implementation assumes NetworkX roots can only appear as "
+                    + "first node in an edge! this assumption appears to be false."
+                )
