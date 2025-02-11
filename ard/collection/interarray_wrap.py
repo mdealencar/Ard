@@ -1,7 +1,5 @@
 import numpy as np
 
-# import openmdao.api as om
-
 from interarray.importer import load_repository
 from interarray.plotting import gplot
 from interarray.mesh import make_planar_embedding
@@ -212,9 +210,3 @@ class InterarrayCollection(templates.CollectionTemplate):
             else:
                 J["length_cables", "x_substations"][idx_edge, self.N_substations+e1] -= dLdx1
                 J["length_cables", "y_substations"][idx_edge, self.N_substations+e1] -= dLdy1
-
-        # assert J["length_cables", "x_turbines"].shape == (self.N_turbines, self.N_turbines)
-        # assert J["length_cables", "y_turbines"].shape == (self.N_turbines, self.N_turbines)
-        # assert J["length_cables", "x_substations"].shape == (self.N_turbines, self.N_substations)
-        # assert J["length_cables", "y_substations"].shape == (self.N_turbines, self.N_substations)
-        # raise NotImplementedError("FINISH ME!!!!!")

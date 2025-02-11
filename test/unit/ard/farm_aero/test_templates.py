@@ -14,7 +14,7 @@ class TestFarmAeroTemplate:
     def setup_method(self):
         self.modeling_options = {
             "farm": {
-                "N_turbines": 25,
+                "N_turbines": 4,
             },
             "turbine": {
                 "geometry": {
@@ -56,7 +56,7 @@ class TestFarmAeroTemplate:
     def test_compute(self):
 
         # make sure that an attempt to compute on the un-specialized class fails
-        with pytest.raises(Exception):
+        with pytest.raises(NotImplementedError):
             x_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             y_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             yaw_turbines = np.zeros_like(x_turbines)
@@ -71,7 +71,7 @@ class TestBatchFarmPowerTemplate:
     def setup_method(self):
         self.modeling_options = {
             "farm": {
-                "N_turbines": 25,
+                "N_turbines": 4,
             },
             "turbine": {
                 "geometry": {
@@ -128,7 +128,7 @@ class TestBatchFarmPowerTemplate:
     def test_compute(self):
 
         # make sure that an attempt to compute on the un-specialized class fails
-        with pytest.raises(Exception):
+        with pytest.raises(NotImplementedError):
             x_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             y_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             yaw_turbines = np.zeros_like(x_turbines)
@@ -143,7 +143,7 @@ class TestFarmAEPTemplate:
     def setup_method(self):
         self.modeling_options = {
             "farm": {
-                "N_turbines": 25,
+                "N_turbines": 4,
             },
             "turbine": {
                 "geometry": {
@@ -201,7 +201,7 @@ class TestFarmAEPTemplate:
     def test_compute(self):
 
         # make sure that an attempt to compute on the un-specialized class fails
-        with pytest.raises(Exception):
+        with pytest.raises(NotImplementedError):
             x_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             y_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             yaw_turbines = np.zeros_like(x_turbines)

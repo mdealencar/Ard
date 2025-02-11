@@ -15,12 +15,6 @@ import ard.test_utils
 import ard.collection.interarray_wrap as ard_inter
 
 
-class TestDistanceFunctions:
-
-    def test_function(self):
-
-        pass
-
 class TestInterarrayCollection:
 
     def setup_method(self):
@@ -31,8 +25,6 @@ class TestInterarrayCollection:
             7 * v.flatten()
             for v in np.meshgrid(np.linspace(-2, 2, 5), np.linspace(-2, 2, 5))
         ]
-        # self.farm_spec["x_substations"] = np.array([0.0])
-        # self.farm_spec["y_substations"] = np.array([0.0])
         self.farm_spec["x_substations"] = np.array([-500.0, 500.0])
         self.farm_spec["y_substations"] = np.array([-500.0, 500.0])
 

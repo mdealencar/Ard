@@ -11,8 +11,8 @@ class TestCollectionTemplate:
     def setup_method(self):
         self.modeling_options = {
             "farm": {
-                "N_turbines": 25,
-                "N_substations": 1,
+                "N_turbines": 4,
+                "N_substations": 2,
             },
         }
 
@@ -61,7 +61,7 @@ class TestCollectionTemplate:
     def test_compute(self):
 
         # make sure that an attempt to compute on the un-specialized class fails
-        with pytest.raises(Exception):
+        with pytest.raises(NotImplementedError):
             x_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             y_turbines = 7.0 * 130.0 * np.arange(-2, 2, 1)
             x_substations = np.array([-1, 1]) * [3.5 * 130.0]
