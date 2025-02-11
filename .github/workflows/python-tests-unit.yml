@@ -28,6 +28,17 @@ jobs:
         python -m pip install --upgrade pip
         pip install .[dev]
 
+    - name: Install PythonCDT & interarray
+      run: |
+        mkdir dependencies
+        mv dependencies
+        git clone git@github.com:mdealencar/interarray.git
+        git clone --recurse-submodules https://github.com/artem-ogre/PythonCDT.git
+        cd PythonCDT
+        pip install .
+        cd ../interarray
+        pip install .
+
     - name: Install Ard
       run: |
         pip install .[dev]
