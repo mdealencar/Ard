@@ -35,8 +35,7 @@ class TestLCOE_LB_stack:
 
         # specify the configuration/specification files to use
         filename_turbine_spec = Path(
-            Path(ard.__file__).parent,
-            "..",
+            Path(ard.__file__).parents[1],
             "examples",
             "data",
             "turbine_spec_IEA-3p4-130-RWT.yaml",
