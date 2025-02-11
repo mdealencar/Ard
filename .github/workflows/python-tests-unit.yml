@@ -37,7 +37,9 @@ jobs:
         cd PythonCDT
         pip install .
         cd ../interarray
+        pip install -r requirements.txt
         pip install .
+        cd ../..
 
     - name: Install Ard
       run: |
