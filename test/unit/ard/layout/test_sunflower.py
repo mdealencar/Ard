@@ -84,10 +84,10 @@ class TestSunflowerFarm:
 
         # make sure the effective spacings get values
         assert np.isclose(
-            self.prob.get_val("spacing_effective_primary"), self.D_rotor*spacing
+            self.prob.get_val("spacing_effective_primary"), self.D_rotor * spacing
         )  # machine prec by definition
         assert np.isclose(
-            self.prob.get_val("spacing_effective_secondary"), self.D_rotor*spacing
+            self.prob.get_val("spacing_effective_secondary"), self.D_rotor * spacing
         )  # machine prec by definition
 
         # collect data to validate
@@ -118,10 +118,10 @@ class TestSunflowerFarm:
 
         # make sure the effective spacings get values
         assert np.isclose(
-            self.prob.get_val("spacing_effective_primary"), self.D_rotor*spacing
+            self.prob.get_val("spacing_effective_primary"), self.D_rotor * spacing
         )  # machine prec by definition
         assert np.isclose(
-            self.prob.get_val("spacing_effective_secondary"), self.D_rotor*spacing
+            self.prob.get_val("spacing_effective_secondary"), self.D_rotor * spacing
         )  # machine prec by definition
 
         # collect data to validate
@@ -163,4 +163,4 @@ class TestSunflowerFarm:
             d_mean_NN = np.mean(np.min(dist_mtx, axis=0))
 
             # target spacing should set mean nearest-neighbor distance
-            assert np.isclose(self.D_rotor*spacing/1e3, d_mean_NN)
+            assert np.isclose(self.D_rotor * spacing / 1e3, d_mean_NN)

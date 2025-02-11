@@ -21,14 +21,18 @@ logging.getLogger("interarray").setLevel(logging.INFO)
 
 # custom length calculation
 def distance_function(x0, y0, x1, y1):
-    return ((x1 - x0)**2 + (y1 - y0)**2)**0.5
+    return ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+
+
 def distance_function_deriv(x0, y0, x1, y1):
-    return np.array([
-        ((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(x1 - x0),
-        ((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(y1 - y0),
-        -((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(x1 - x0),
-        -((x1 - x0)**2 + (y1 - y0)**2)**(-0.5)*(y1 - y0),
-    ])
+    return np.array(
+        [
+            ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** (-0.5) * (x1 - x0),
+            ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** (-0.5) * (y1 - y0),
+            -(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** (-0.5)) * (x1 - x0),
+            -(((x1 - x0) ** 2 + (y1 - y0) ** 2) ** (-0.5)) * (y1 - y0),
+        ]
+    )
 
 
 class InterarrayCollection(templates.CollectionTemplate):
@@ -189,10 +193,18 @@ class InterarrayCollection(templates.CollectionTemplate):
 
         for idx_edge, edge in enumerate(edges):
             e0, e1 = edge
-            x0, y0 = XY_substations[self.N_substations+e0,:] if e0 < 0 else XY_turbines[e0,:]
-            x1, y1 = XY_substations[self.N_substations+e1,:] if e1 < 0 else XY_turbines[e1,:]
+            x0, y0 = (
+                XY_substations[self.N_substations + e0, :]
+                if e0 < 0
+                else XY_turbines[e0, :]
+            )
+            x1, y1 = (
+                XY_substations[self.N_substations + e1, :]
+                if e1 < 0
+                else XY_turbines[e1, :]
+            )
             assert np.isclose(
-                edges[edge]['length'], distance_function(x0, y0, x1, y1)
+                edges[edge]["length"], distance_function(x0, y0, x1, y1)
             )  # make sure my distance_function matches
 
             # get the derivative function
@@ -202,11 +214,19 @@ class InterarrayCollection(templates.CollectionTemplate):
                 J["length_cables", "x_turbines"][idx_edge, e0] -= dLdx0
                 J["length_cables", "y_turbines"][idx_edge, e0] -= dLdy0
             else:
-                J["length_cables", "x_substations"][idx_edge, self.N_substations+e0] -= dLdx0
-                J["length_cables", "y_substations"][idx_edge, self.N_substations+e0] -= dLdy0
+                J["length_cables", "x_substations"][
+                    idx_edge, self.N_substations + e0
+                ] -= dLdx0
+                J["length_cables", "y_substations"][
+                    idx_edge, self.N_substations + e0
+                ] -= dLdy0
             if e1 >= 0:
                 J["length_cables", "x_turbines"][idx_edge, e1] -= dLdx1
                 J["length_cables", "y_turbines"][idx_edge, e1] -= dLdy1
             else:
-                J["length_cables", "x_substations"][idx_edge, self.N_substations+e1] -= dLdx1
-                J["length_cables", "y_substations"][idx_edge, self.N_substations+e1] -= dLdy1
+                J["length_cables", "x_substations"][
+                    idx_edge, self.N_substations + e1
+                ] -= dLdx1
+                J["length_cables", "y_substations"][
+                    idx_edge, self.N_substations + e1
+                ] -= dLdy1

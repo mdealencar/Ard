@@ -161,7 +161,9 @@ class TestInterarrayCollection:
         prob = om.Problem(model)
         prob.setup()
         # set in the variables
-        theta_turbines = np.linspace(0.0, 2*np.pi, modeling_options["farm"]["N_turbines"]+1)[:-1]
+        theta_turbines = np.linspace(
+            0.0, 2 * np.pi, modeling_options["farm"]["N_turbines"] + 1
+        )[:-1]
         X_turbines = 7.0 * 130.0 * np.sin(theta_turbines)
         Y_turbines = 7.0 * 130.0 * np.cos(theta_turbines)
         X_substations = np.array([0.0])
@@ -179,9 +181,13 @@ class TestInterarrayCollection:
         # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
 
         if False:  # for hand-debugging
-            J0 = prob.compute_totals("interarray_coll.length_cables", "interarray_coll.x_turbines")
+            J0 = prob.compute_totals(
+                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+            )
             prob.model.approx_totals()
-            J0p = prob.compute_totals("interarray_coll.length_cables", "interarray_coll.x_turbines")
+            J0p = prob.compute_totals(
+                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+            )
 
             print("J0:")
             print(J0)
