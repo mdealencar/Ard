@@ -112,3 +112,83 @@ class TestUtils:
         test_result = smooth_min_grad(test_list)
         
         assert test_result == pytest.approx([1, 0, 0, 0], rel=1E-6)
+
+    def test_distance_point_to_lineseg_nd_point_to_point(self):
+        """
+        Test for a point to point calculation
+        """
+
+        test_point = np.array([5,5,5])
+        test_start = np.array([0,0,0])
+        test_end = np.array([0,0,0])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == 8.660254037844387
+
+    def test_distance_point_to_lineseg_nd_point_on_segment(self):
+        """
+        Test for a point exactly on the line segment
+        """
+
+        test_point = np.array([3,3,3])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == 0.0
+
+    def test_distance_point_to_lineseg_nd_point_near_end(self):
+        """
+        Test for a point near the end of the line segment
+        """
+
+        test_point = np.array([6,6,6])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == 1.7320508075688772
+
+    def test_distance_point_to_lineseg_nd_point_near_start(self):
+        """
+        Test for a point near the start of the line segment
+        """
+
+        test_point = np.array([-1,-1,-2])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == 2.449489742783178
+
+    def test_distance_point_to_lineseg_nd_point_near_middle(self):
+        """
+        Test for a point near the middle of the line segment
+        """
+
+        test_point = np.array([5,5,2])
+        test_start = np.array([0,0,0])
+        test_end = np.array([0,0,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == 7.0710678118654755
+
+    def test_distance_point_to_lineseg_nd_grad(self):
+        """
+        Test for gradient for a point near the middle of the line segment
+        """
+
+        test_point = np.array([5,0,2], dtype=float)
+        test_start = np.array([0,0,0], dtype=float)
+        test_end = np.array([0,0,5], dtype=float)
+
+        distance_point_to_lineseg_nd_grad = grad(utils.distance_point_to_lineseg_nd, [0])
+        
+        tr_dp = distance_point_to_lineseg_nd_grad(test_point, test_start, test_end)
+
+        assert np.all(tr_dp == np.array([1, 0, 0]))

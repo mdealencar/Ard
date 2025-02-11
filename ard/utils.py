@@ -24,7 +24,9 @@ def distance_point_to_lineseg(point_x: float, point_y: float, line_a_x: float, l
         float: distance from the point of interest to line AB
     """
 
+    # length of the line segment squared
     L2 = (line_b_x - line_a_x) ** 2 + (line_b_y - line_a_y) ** 2
+
     t = ((point_x - line_a_x) * (line_b_x - line_a_x) + (point_y - line_a_y) * (line_b_y - line_a_y)) / L2
     x_P = line_a_x + t * (line_b_x - line_a_x)
     y_P = line_a_y + t * (line_b_y - line_a_y)
@@ -46,6 +48,37 @@ def distance_point_to_lineseg(point_x: float, point_y: float, line_a_x: float, l
         + d_CA * (1.0 - soft_filter_t0)
         + d_CB * (1.0 - soft_filter_t1)
     )
+
+def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, segment_end: np.ndarray) -> float:
+    
+    # get the vector of the line segment
+    segment_vector = segment_end - segment_start
+
+    # if the segment is a point, then get the distance to that point
+    if jnp.all(segment_vector == 0):
+        distance = jnp.linalg.norm(point)
+
+    else:
+        # calculate the distance to the starting point
+        start_to_point_vector = point - segment_start
+
+        # calculate the unit vector projection of the start to point vector on the line segment
+        projection = jnp.dot(start_to_point_vector, segment_vector) / jnp.dot(segment_vector, segment_vector)
+
+        # if projection is outside the segment, then the unit projection will be negative and the start is the closest point
+        if projection < 0:
+            closest_point = segment_start
+        # if the project is greater than 1, then the end point is the clost point
+        elif projection > 1:
+            closest_point = segment_end
+        # otherwise, find the point of the intersection of the line and a perpendicular intersect through the point
+        else:
+            closest_point = segment_start + projection*segment_vector
+
+        # the distance from the point to the line is the distance from the point to the closest point on the line
+        distance = jnp.linalg.norm(point - closest_point)
+
+    return distance
 
 def smooth_max(x:jnp.ndarray, s:float=10.0) -> float:
     """Non-overflowing version of Smooth Max function (see ref 3 and 4 below). 
