@@ -175,7 +175,6 @@ class InterarrayCollection(templates.CollectionTemplate):
         outputs["total_length_cables"] = np.sum(outputs["length_cables"])
         outputs["max_load_cables"] = np.max(outputs["load_cables"])
 
-
     def compute_partials(self, inputs, J):
 
         # re-load the key variables back as locals
@@ -221,7 +220,9 @@ class InterarrayCollection(templates.CollectionTemplate):
             # get the derivative function
             dLdx0, dLdy0, dLdx1, dLdy1 = distance_function_deriv(x0, y0, x1, y1)
 
-            print(f"DEBUG!!!!! J['total_length_cables', 'x_turbines'].shape: {J['total_length_cables', 'x_turbines'].shape}")
+            print(
+                f"DEBUG!!!!! J['total_length_cables', 'x_turbines'].shape: {J['total_length_cables', 'x_turbines'].shape}"
+            )
 
             if e0 >= 0:
                 J["length_cables", "x_turbines"][idx_edge, e0] -= dLdx0
@@ -229,10 +230,18 @@ class InterarrayCollection(templates.CollectionTemplate):
                 J["total_length_cables", "x_turbines"][0, e0] -= dLdx0
                 J["total_length_cables", "y_turbines"][0, e0] -= dLdy0
             else:
-                J["length_cables", "x_substations"][idx_edge, self.N_substations + e0] -= dLdx0
-                J["length_cables", "y_substations"][idx_edge, self.N_substations + e0] -= dLdy0
-                J["total_length_cables", "x_substations"][0, self.N_substations + e0] -= dLdx0
-                J["total_length_cables", "y_substations"][0, self.N_substations + e0] -= dLdy0
+                J["length_cables", "x_substations"][
+                    idx_edge, self.N_substations + e0
+                ] -= dLdx0
+                J["length_cables", "y_substations"][
+                    idx_edge, self.N_substations + e0
+                ] -= dLdy0
+                J["total_length_cables", "x_substations"][
+                    0, self.N_substations + e0
+                ] -= dLdx0
+                J["total_length_cables", "y_substations"][
+                    0, self.N_substations + e0
+                ] -= dLdy0
             if e1 >= 0:
                 J["length_cables", "x_turbines"][idx_edge, e1] -= dLdx1
                 J["length_cables", "y_turbines"][idx_edge, e1] -= dLdy1
@@ -243,4 +252,3 @@ class InterarrayCollection(templates.CollectionTemplate):
                     "implementation assumes NetworkX roots can only appear as "
                     + "first node in an edge! this assumption appears to be false."
                 )
-
