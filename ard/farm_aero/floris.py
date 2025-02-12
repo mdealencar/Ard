@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import numpy as np
@@ -48,7 +47,7 @@ class FLORISFarmComponent:
 
         self.case_title = self.options["case_title"]
         self.dir_floris = Path("case_files", self.case_title, "floris_inputs")
-        os.makedirs(self.dir_floris, exist_ok=True)
+        self.dir_floris.mkdir(exist_ok=True)
 
     def compute(self, inputs):
         """
