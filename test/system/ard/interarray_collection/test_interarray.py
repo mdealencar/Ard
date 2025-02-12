@@ -116,7 +116,9 @@ class TestInterarrayLayout:
                 "interarray_coll.length_cables", units="km"
             ),
             "load_cables": self.prob.get_val("interarray_coll.load_cables"),
-            "total_length_cables": self.prob.get_val("interarray_coll.total_length_cables"),
+            "total_length_cables": self.prob.get_val(
+                "interarray_coll.total_length_cables"
+            ),
             "max_load_cables": self.prob.get_val("interarray_coll.max_load_cables"),
         }
 
