@@ -47,7 +47,7 @@ class FLORISFarmComponent:
 
         self.case_title = self.options["case_title"]
         self.dir_floris = Path("case_files", self.case_title, "floris_inputs")
-        self.dir_floris.mkdir(exist_ok=True)
+        self.dir_floris.mkdir(parents=True, exist_ok=True)
 
     def compute(self, inputs):
         """
