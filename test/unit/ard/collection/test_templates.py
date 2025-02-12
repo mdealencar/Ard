@@ -55,6 +55,8 @@ class TestCollectionTemplate:
             for var_to_check in [
                 "length_cables",
                 "load_cables",
+                "total_length_cables",
+                "max_load_cables",
             ]:
                 assert var_to_check in output_list
 

@@ -34,11 +34,15 @@ class CollectionTemplate(om.ExplicitComponent):
     Outputs
     -------
     length_cables : np.ndarray
-        a 1D numpy array that holds the lengths of all of the cables necessary to
-        collect energy generated
+        a 1D numpy array that holds the lengths of each of the cables necessary
+        to collect energy generated, with length `N_turbines`
     load_cables : np.ndarray
         a 1D numpy array that holds the load integer (i.e. total number of
-        turbines) collected up to this point of the cable
+        turbines) collected up to each cable, with length `N_turbines`
+    total_length_cables : float
+        the total length of cables to collect energy generated
+    max_load_cables : np.ndarray
+        the maximum cable capacity required by the system
     """
 
     def initialize(self):
@@ -61,6 +65,8 @@ class CollectionTemplate(om.ExplicitComponent):
         # set up outputs for the collection system
         self.add_output("length_cables", np.zeros((self.N_turbines,)), units="m")
         self.add_output("load_cables", np.zeros((self.N_turbines,)))
+        self.add_output("total_length_cables", 0.0, units="m")
+        self.add_output("max_load_cables", 0.0)
 
     def compute(self, inputs, outputs):
         """

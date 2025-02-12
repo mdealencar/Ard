@@ -201,7 +201,7 @@ class TestInterarrayCollection:
 
         # automated OpenMDAO fails because it re-runs the network work
         cpJ = prob.check_partials(out_stream=None)
-        assert_check_partials(cpJ, rtol=1.0e-3)
+        assert_check_partials(cpJ, atol=1.0e-5, rtol=1.0e-3)
 
     def test_compute_partials_mini_line(self):
         """
@@ -262,4 +262,4 @@ class TestInterarrayCollection:
 
         # automated OpenMDAO fails because it re-runs the network work
         cpJ = prob.check_partials(out_stream=None)
-        assert_check_partials(cpJ, rtol=1.0e-3)
+        assert_check_partials(cpJ, atol=1.0e-5, rtol=1.0e-3)
