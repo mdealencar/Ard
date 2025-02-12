@@ -220,10 +220,6 @@ class InterarrayCollection(templates.CollectionTemplate):
             # get the derivative function
             dLdx0, dLdy0, dLdx1, dLdy1 = distance_function_deriv(x0, y0, x1, y1)
 
-            print(
-                f"DEBUG!!!!! J['total_length_cables', 'x_turbines'].shape: {J['total_length_cables', 'x_turbines'].shape}"
-            )
-
             if e0 >= 0:
                 J["length_cables", "x_turbines"][idx_edge, e0] -= dLdx0
                 J["length_cables", "y_turbines"][idx_edge, e0] -= dLdy0
