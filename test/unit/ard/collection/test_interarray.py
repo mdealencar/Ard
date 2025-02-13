@@ -132,10 +132,7 @@ class TestInterarrayCollection:
         # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             validation_data,
-            Path(
-                Path(__file__).parent,
-                "test_interarray_pyrite.npz",
-            ),
+            Path(__file__).parent / "test_interarray_pyrite.npz",
             rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )

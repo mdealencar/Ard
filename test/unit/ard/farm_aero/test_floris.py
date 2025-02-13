@@ -118,10 +118,7 @@ class TestFLORISBatchPower:
         # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             validation_data,
-            Path(
-                Path(__file__).parent,
-                "test_floris_batch_pyrite.npz",
-            ),
+            Path(__file__).parent / "test_floris_batch_pyrite.npz",
             rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )
@@ -148,11 +145,11 @@ class TestFLORISAEP:
         ]
 
         # specify the configuration/specification files to use
-        filename_turbine_spec = Path(
-            Path(ard.__file__).parents[1],
-            "examples",
-            "data",
-            "turbine_spec_IEA-3p4-130-RWT.yaml",
+        filename_turbine_spec = (
+            Path(ard.__file__).parents[1]
+            / "examples"
+            / "data"
+            / "turbine_spec_IEA-3p4-130-RWT.yaml"
         )  # toolset generalized turbine specification
         data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
@@ -229,10 +226,7 @@ class TestFLORISAEP:
         # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            Path(
-                Path(__file__).parent,
-                "test_floris_aep_pyrite.npz",
-            ),
+            Path(__file__).parent / "test_floris_aep_pyrite.npz",
             rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )
