@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from jax import grad
+from jax.test_util import check_grads
 import ard.utils as utils
 
 
@@ -101,6 +102,11 @@ class TestUtils:
         
         assert test_result == pytest.approx([0, 0, 1, 0], rel=1E-6)
 
+        try:
+            check_grads(utils.smooth_max, ([test_list]), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+
     def test_smooth_min_grad(self):
         """
         Check that the smooth min function is differentiable and the gradient
@@ -192,3 +198,44 @@ class TestUtils:
         tr_dp = distance_point_to_lineseg_nd_grad(test_point, test_start, test_end)
 
         assert np.all(tr_dp == np.array([1, 0, 0]))
+
+        try:
+            check_grads(utils.distance_point_to_lineseg_nd, (test_point, test_start, test_end), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+
+    def test_distance_lineseg_to_lineseg_nd_parallel(self):
+        """
+        Test distance between line segments 3d for parallel lines
+        """
+
+        line_a = np.array([np.array([0, 0, 0]), np.array([0, 0, 5])])
+        line_b = np.array([np.array([5, 0, 0]), np.array([5, 0, 5])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == 5.0
+
+    def test_distance_lineseg_to_lineseg_nd_intersect(self):
+        """
+        Test distance between line segments 3d for intersecting lines
+        """
+
+        line_a = np.array([np.array([0, 0, 0]), np.array([0, 0, 5])])
+        line_b = np.array([np.array([0, 0, 0]), np.array([5, 0, 5])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == 0.0
+
+    def test_distance_lineseg_to_lineseg_nd_skew(self):
+        """
+        Test distance between line segments 3d for skew lines
+        """
+
+        line_a = np.array([np.array([0, 0, 0]), np.array([0, 5, 5])])
+        line_b = np.array([np.array([5, 5, 0]), np.array([5, 0, 5])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == 5.0

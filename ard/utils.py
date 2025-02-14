@@ -49,11 +49,72 @@ def distance_point_to_lineseg(point_x: float, point_y: float, line_a_x: float, l
         + d_CB * (1.0 - soft_filter_t1)
     )
 
+def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
+
+    # [1] Numerical Recipes: The Art of Scientific Computing by Press, et al. 3rd edition
+    line_a_vector = line_a_end - line_a_start 
+    line_b_vector = line_b_end - line_b_start
+    # check if line a is a point and get distance accordingly
+    if jnp.all(line_a_vector) == 0.0:
+        distance = distance_point_to_lineseg_nd(line_a_start, line_b_start, line_b_end)
+    # check if line b is a point and get distance accordingly
+    elif jnp.all(line_b_vector) == 0.0:
+        distance = distance_point_to_lineseg_nd(line_b_start, line_a_start, line_a_end)
+    # get distance between the line segments
+    else:
+        a = line_a_start
+        v = line_a_end
+        x = line_b_start
+        u = line_b_end
+
+        # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
+        denominator = jnp.linalg.norm(jnp.cross(u,x))**2
+        s_numerator = jnp.linalg.det(a - x, u, jnp.linalg.cross(u, v))
+        t_numerator = jnp.linalg.det(a - x, v, jnp.linalg.cross(u, v))
+
+        s = s_numerator/denominator
+        t = t_numerator/denominator
+
+        # Get closest point along the lines 
+        # if s > 1, use end point of line a by setting s to 1
+        if s > 1:
+            closest_point_line_a = line_a_end
+        # if s < 0, use start point of line a by setting s to 0
+        elif s < 0:
+            closest_point_line_a = line_a_start
+        # otherwise compute the closest point on line a using the parametric form of the line segment
+        else:
+            closest_point_line_a = a + s*v
+        # if t > 1, use end point of line b by setting t to 1
+        if t > 1:
+            closest_point_line_b = line_b_end
+        # if t < 1, use start point of line b by setting t to 0
+        elif t < 0:
+            closest_point_line_b = line_b_start
+        # otherwise compute the closest point on line a using the parametric form of the line segment
+        else:
+            closest_point_line_b = x + t*u
+
+        # the distance between the line segments is the distance between the closest points
+        distance = jnp.linalg.norm(closest_point_line_b - closest_point_line_a)
+
+    return distance
+
 def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, segment_end: np.ndarray) -> float:
+    """Find the distance from a point to a finite line segment in N-Dimensions
+
+    Args:
+        point (np.ndarray): point of interest [x,y,...]
+        segment_start (np.ndarray): start point of line segment [x,y,...]
+        segment_end (np.ndarray): end point of line segment [x,y,...]
+
+    Returns:
+        distance (float): shortest distance between the point and finite line segment
+    """
     
     # get the vector of the line segment
     segment_vector = segment_end - segment_start
-    print("HERE")
+
     # if the segment is a point, then get the distance to that point
     if jnp.all(segment_vector == 0):
         distance = jnp.linalg.norm(point)
