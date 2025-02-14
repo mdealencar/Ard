@@ -53,7 +53,7 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
     
     # get the vector of the line segment
     segment_vector = segment_end - segment_start
-
+    print("HERE")
     # if the segment is a point, then get the distance to that point
     if jnp.all(segment_vector == 0):
         distance = jnp.linalg.norm(point)
