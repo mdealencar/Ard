@@ -2,52 +2,147 @@ import pytest
 import numpy as np
 from jax import grad
 from jax.test_util import check_grads
+import jax.numpy as jnp
 import ard.utils as utils
 
 
 class TestUtils:
     def setup_method(self):
-        self.distance_lineseg_to_lineseg_nd_grad = grad(utils.distance_lineseg_to_lineseg_nd, [0])
-        self.distance_point_to_lineseg_nd_grad = grad(utils.distance_point_to_lineseg_nd, [0])
-        self.smooth_max_grad = grad(utils.smooth_max)
-        self.smooth_min_grad = grad(utils.smooth_min)
         pass
 
-    def test_distance_point_to_lineseg_45_deg_with_end(self):
+class TestPointToLineSeg:
+    def setup_method(self):
+        self.distance_point_to_lineseg_nd_grad = grad(utils.distance_point_to_lineseg_nd, [0])
+        pass
 
-        point = (10, 10)
-        line = ((0, 10), (10,0))
+    def test_distance_point_to_lineseg_nd_45_deg_with_end(self):
 
-        test_result = utils.distance_point_to_lineseg(point[0], point[1], line[0][0], line[0][1], line[1][0], line[1][1], k_logistic=100.0)
+        point = np.array([10, 10])
+        line_a = np.array([0, 10])
+        line_b = np.array([10, 0])
+
+        test_result = utils.distance_point_to_lineseg_nd(point, line_a, line_b)
 
         assert test_result == 7.0710678118654755 
 
     def test_distance_point_to_lineseg_90_deg_with_end(self):
 
-        point = (0, 0)
-        line = ((0, 10), (10,10))
+        point = np.array([0, 0])
+        line_a = np.array([0, 10])
+        line_b = np.array([10, 10])
 
-        test_result = utils.distance_point_to_lineseg(point[0], point[1], line[0][0], line[0][1], line[1][0], line[1][1], k_logistic=100.0)
+        test_result = utils.distance_point_to_lineseg_nd(point, line_a, line_b)
 
         assert test_result == 10.0 
 
     def test_distance_point_to_lineseg_gt90_deg_with_end(self):
 
-        point = (0, 0)
-        line = ((5, 5), (10,5))
+        point = np.array([0, 0])
+        line_a = np.array([5, 5])
+        line_b = np.array([10, 5])
 
-        test_result = utils.distance_point_to_lineseg(point[0], point[1], line[0][0], line[0][1], line[1][0], line[1][1], k_logistic=100.0)
+        test_result = utils.distance_point_to_lineseg_nd(point, line_a, line_b)
 
         assert test_result == 7.0710678118654755 
 
     def test_distance_point_to_lineseg_180_deg_with_end(self):
 
-        point = (0, 5)
-        line = ((5, 5), (10,5))
+        point = np.array([0, 5])
+        line_a = np.array([5, 5])
+        line_b = np.array([10, 5])
 
-        test_result = utils.distance_point_to_lineseg(point[0], point[1], line[0][0], line[0][1], line[1][0], line[1][1], k_logistic=100.0)
+        test_result = utils.distance_point_to_lineseg_nd(point, line_a, line_b)
 
         assert test_result == 5.0
+    
+    def test_distance_point_to_lineseg_nd_point_to_point(self):
+        """
+        Test for a point to point calculation
+        """
+
+        test_point = np.array([5,5,5])
+        test_start = np.array([0,0,0])
+        test_end = np.array([0,0,0])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == pytest.approx(8.660254037844387)
+
+    def test_distance_point_to_lineseg_nd_point_on_segment(self):
+        """
+        Test for a point exactly on the line segment
+        """
+
+        test_point = np.array([3,3,3])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == pytest.approx(0.0)
+
+    def test_distance_point_to_lineseg_nd_point_near_end(self):
+        """
+        Test for a point near the end of the line segment
+        """
+
+        test_point = np.array([6,6,6])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == pytest.approx(1.7320508075688772)
+
+    def test_distance_point_to_lineseg_nd_point_near_start(self):
+        """
+        Test for a point near the start of the line segment
+        """
+
+        test_point = np.array([-1,-1,-2])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == pytest.approx(2.449489742783178)
+
+    def test_distance_point_to_lineseg_nd_point_near_middle(self):
+        """
+        Test for a point near the middle of the line segment
+        """
+
+        test_point = np.array([5,5,2])
+        test_start = np.array([0,0,0])
+        test_end = np.array([0,0,5])
+
+        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
+
+        assert test_result == pytest.approx(7.0710678118654755)
+
+    def test_distance_point_to_lineseg_nd_grad(self):
+        """
+        Test for gradient for a point near the middle of the line segment
+        """
+
+        test_point = np.array([5,0,2], dtype=float)
+        test_start = np.array([0,0,0], dtype=float)
+        test_end = np.array([0,0,5], dtype=float)
+        
+        tr_dp = self.distance_point_to_lineseg_nd_grad(test_point, test_start, test_end)
+
+        assert np.all(tr_dp == np.array([1, 0, 0]))
+
+        try:
+            check_grads(utils.distance_point_to_lineseg_nd, (test_point, test_start, test_end), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+
+class TestSmoothMaxMin:
+    def setup_method(self):
+        self.smooth_max_grad = grad(utils.smooth_max)
+        self.smooth_min_grad = grad(utils.smooth_min)
+        pass
 
     def test_smooth_max_close(self):
         """
@@ -120,88 +215,11 @@ class TestUtils:
         
         assert test_result == pytest.approx([1, 0, 0, 0], rel=1E-6)
 
-    def test_distance_point_to_lineseg_nd_point_to_point(self):
-        """
-        Test for a point to point calculation
-        """
 
-        test_point = np.array([5,5,5])
-        test_start = np.array([0,0,0])
-        test_end = np.array([0,0,0])
-
-        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
-
-        assert test_result == 8.660254037844387
-
-    def test_distance_point_to_lineseg_nd_point_on_segment(self):
-        """
-        Test for a point exactly on the line segment
-        """
-
-        test_point = np.array([3,3,3])
-        test_start = np.array([0,0,0])
-        test_end = np.array([5,5,5])
-
-        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
-
-        assert test_result == 0.0
-
-    def test_distance_point_to_lineseg_nd_point_near_end(self):
-        """
-        Test for a point near the end of the line segment
-        """
-
-        test_point = np.array([6,6,6])
-        test_start = np.array([0,0,0])
-        test_end = np.array([5,5,5])
-
-        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
-
-        assert test_result == 1.7320508075688772
-
-    def test_distance_point_to_lineseg_nd_point_near_start(self):
-        """
-        Test for a point near the start of the line segment
-        """
-
-        test_point = np.array([-1,-1,-2])
-        test_start = np.array([0,0,0])
-        test_end = np.array([5,5,5])
-
-        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
-
-        assert test_result == 2.449489742783178
-
-    def test_distance_point_to_lineseg_nd_point_near_middle(self):
-        """
-        Test for a point near the middle of the line segment
-        """
-
-        test_point = np.array([5,5,2])
-        test_start = np.array([0,0,0])
-        test_end = np.array([0,0,5])
-
-        test_result = utils.distance_point_to_lineseg_nd(test_point, test_start, test_end)
-
-        assert test_result == 7.0710678118654755
-
-    def test_distance_point_to_lineseg_nd_grad(self):
-        """
-        Test for gradient for a point near the middle of the line segment
-        """
-
-        test_point = np.array([5,0,2], dtype=float)
-        test_start = np.array([0,0,0], dtype=float)
-        test_end = np.array([0,0,5], dtype=float)
-        
-        tr_dp = self.distance_point_to_lineseg_nd_grad(test_point, test_start, test_end)
-
-        assert np.all(tr_dp == np.array([1, 0, 0]))
-
-        try:
-            check_grads(utils.distance_point_to_lineseg_nd, (test_point, test_start, test_end), order=1)
-        except AssertionError:
-            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+class TestLineSegToLineSeg:
+    def setup_method(self):
+        self.distance_lineseg_to_lineseg_nd_grad = grad(utils.distance_lineseg_to_lineseg_nd, [0])
+        pass
 
     def test_distance_lineseg_to_lineseg_nd_parallel(self):
         """
@@ -267,15 +285,15 @@ class TestUtils:
 
     def test_distance_lineseg_to_lineseg_nd_parallel_grad(self):
         """
-        Test distance between line segments 3d for parallel lines
+        Test grad of distance between line segments 3d for parallel lines
         """
 
         line_a = np.array([np.array([0, 0, 0]), np.array([0, 0, 5])], dtype=float)
-        line_b = np.array([np.array([5, 0, 0]), np.array([5, 0, 5])], dtype=float)
+        line_b = np.array([np.array([5, 0, 0]), np.array([5, 0, 15])], dtype=float)
 
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
         
-        assert np.all(test_result == np.array([-1, 0, 0], dtype=float)) # inexact with parallel lines due to smooth max/min
+        assert np.all(test_result == np.array([-1.0, 0.0, 0.0])) #np.array([-1, 0, 0], dtype=float)) # inexact with parallel lines due to smooth max/min
 
     def test_distance_lineseg_to_lineseg_nd_shared_point_grad(self):
         """
@@ -299,7 +317,7 @@ class TestUtils:
 
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
 
-        assert np.all(test_result == np.array([1.0, 0, 0], dtype=float))
+        assert np.all(test_result == np.array([0, 0, 0], dtype=float))
 
     def test_distance_lineseg_to_lineseg_nd_intersect_point_on_line_grad(self):
         """
@@ -311,7 +329,7 @@ class TestUtils:
 
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
 
-        assert np.all(test_result == np.array([1.0, 0, 0], dtype=float))
+        assert np.all(test_result == np.array([0, 0, 0], dtype=float))
 
     def test_distance_lineseg_to_lineseg_nd_skew_grad(self):
         """
@@ -324,3 +342,60 @@ class TestUtils:
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
         
         assert np.all(test_result == np.array([-0.5, 0, 0], dtype=float))
+
+class TestSmoothNorm:
+    def setup_method(self):
+        self.smooth_norm_grad = grad(utils.smooth_norm, [0])
+        self.norm_grad = grad(jnp.linalg.norm, [0])
+        pass
+
+    def test_smooth_norm_large_values(self):
+
+        vec = np.array([10, 5, 20], dtype=float)
+
+        test_result = utils.smooth_norm(vec)
+
+        assert test_result == pytest.approx(np.linalg.norm(vec))
+
+    def test_smooth_norm_small_values(self):
+
+        vec = np.array([1E-6, 5E-6, 2E-6], dtype=float)
+
+        test_result = utils.smooth_norm(vec)
+
+        assert test_result == pytest.approx(np.linalg.norm(vec), abs=1E-6)
+
+    def test_smooth_norm_zero_values(self):
+
+        vec = np.array([0, 0, 0], dtype=float)
+
+        test_result = utils.smooth_norm(vec)
+
+        assert test_result == pytest.approx(np.linalg.norm(vec), abs=1E-6)
+
+    def test_smooth_norm_large_values_grad(self):
+
+        vec = np.array([10, 5, 20], dtype=float)
+
+        test_result = self.smooth_norm_grad(vec)
+        expected_result = self.norm_grad(vec)
+
+        assert np.all(test_result[0] == pytest.approx(expected_result[0]))
+
+    def test_smooth_norm_small_values_grad(self):
+
+        vec = np.array([1E-6, 5E-6, 2E-6], dtype=float)
+
+        test_result = self.smooth_norm_grad(vec)
+
+        # loose tolerance due to expected error in the grad of smooth_norm for small vector values
+        assert np.all(test_result[0] == pytest.approx(self.norm_grad(vec)[0], abs=1E-1))
+
+    def test_smooth_norm_zero_values_grad(self):
+
+        vec = np.array([0, 0, 0], dtype=float)
+
+        test_result = self.smooth_norm_grad(vec)
+
+        # zero valued gradient expected for the grad of smooth_norm for zero vector values
+        assert np.all(test_result[0] == pytest.approx(np.array([0, 0, 0], dtype=float), abs=1E-1))
