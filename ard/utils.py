@@ -49,8 +49,9 @@ from wisdem.inputs.validation import load_yaml
 #         + d_CB * (1.0 - soft_filter_t1)
 #     )
 
-def _distance_lineseg_to_lineseg_coplanar_no_intersect_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
-    """Returns the distance between two finite line segments assuming the segments are coplanar and do not intersect. It is up to the user to check the intersect condition
+def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
+    """Returns the distance between two finite line segments assuming the segments are coplanar. 
+    It is up to the user to check the required condition.
 
     Args:
         line_a_start (np.ndarray): start point of line a
@@ -61,28 +62,27 @@ def _distance_lineseg_to_lineseg_coplanar_no_intersect_nd(line_a_start: np.ndarr
     Returns:
         distance (float): the distance between the lines
     """
-    # check that inputs are coplanar
-    
-    if jnp.linalg.vecdot((line_b_start - line_a_start), (jnp.linalg.cross(line_a_end, line_b_end))) != 0.0:
-        raise(ValueError("The two lines provided must be coplanar"))
-    
+
     # get distance between all pairs of end points
     a_start_to_b = distance_point_to_lineseg_nd(line_a_start, line_b_start, line_b_end)
     a_end_to_b = distance_point_to_lineseg_nd(line_a_end, line_b_start, line_b_end)
     b_start_to_a = distance_point_to_lineseg_nd(line_b_start, line_a_start, line_a_end)
     b_end_to_a = distance_point_to_lineseg_nd(line_b_end, line_a_start, line_a_end)
 
-    distances = jnp.array([a_start_to_b, a_end_to_b, b_start_to_a, b_end_to_a])
-
-    # import pdb; pdb.set_trace()
-
-    distance = smooth_min(distances)
-
+    distance = smooth_min(jnp.array([a_start_to_b, a_end_to_b, b_start_to_a, b_end_to_a]))
+    
     return distance
 
-def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
+def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray, tol=0.0) -> float:
 
     # [1] Numerical Recipes: The Art of Scientific Computing by Press, et al. 3rd edition
+
+    if len(line_b_end) == 2:
+        line_a_start = jnp.pad(line_a_start, (0, 1))
+        line_a_end = jnp.pad(line_a_end, (0, 1))
+        line_b_start = jnp.pad(line_b_start, (0, 1))
+        line_b_end = jnp.pad(line_b_end, (0, 1))
+
     line_a_vector = line_a_end - line_a_start 
     line_b_vector = line_b_end - line_b_start
 
@@ -94,64 +94,73 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
     elif jnp.all(line_b_vector == 0.0):
         distance = distance_point_to_lineseg_nd(line_b_start, line_a_start, line_a_end)
     
-    # check if any points are shared and return the appropriate distance in a differentiable way
-    elif jnp.all(line_a_start == line_b_start) or jnp.all(line_a_start == line_b_end) or jnp.all(line_a_end == line_b_start) or jnp.all(line_a_end == line_b_end):
-        points_a = jnp.array([line_a_start, line_a_end])
-        points_b = jnp.array([line_b_start, line_b_end])
-        distance = np.nan
-        for p_a in points_a:
-            for p_b in points_b:
-                if jnp.all(p_a == p_b):
-                    # This will give the correct distance and approximate derivatives. If multiple points are the same, then this may lead to more incorrect derivatives
-                    distance = sum((p_b - p_a)**2)
-                    break
-
     # get distance between the line segments
     else:
         a = line_a_start
-        v = line_a_end - line_a_start
+        v = line_a_vector
         x = line_b_start
-        u = line_b_end - line_b_start
+        u = line_b_vector
 
         # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
-        denominator = smooth_norm(jnp.cross(u, v))**2
+        if len(v) == 2:
+            denominator = jnp.cross(v, line_b_start - line_b_end)
+        else:
+            denominator = smooth_norm(jnp.cross(u, v))**2
 
-        # denominator goes to zero when lines are parallel, so a different method must be used
-        if denominator == 0.0:
-            distance = _distance_lineseg_to_lineseg_coplanar_no_intersect_nd(line_a_start=line_a_start, line_a_end=line_a_end, line_b_start=line_b_start, line_b_end=line_b_end)
+        # denominator goes to zero when lines are parallel, so a different method must be used, which is also needed for 2d
+        if denominator <= tol:
+            # import pdb; pdb.set_trace()
+            distance = _distance_lineseg_to_lineseg_coplanar(line_a_start=line_a_start, line_a_end=line_a_end, line_b_start=line_b_start, line_b_end=line_b_end)
     
         else:
-            s_numerator = jnp.linalg.det(jnp.array([a - x, u, jnp.linalg.cross(u, v)]).T)
-            
-            t_numerator = jnp.linalg.det(jnp.array([a - x, v, jnp.linalg.cross(u, v)]).T)
+            # special case for 2d due to the determinant in the 3d version
+            if len(v) == 2:
+                s_numerator = jnp.cross(line_b_start - line_b_end, line_a_start - line_b_start)
+                t_numerator = jnp.cross(line_a_start - line_b_start, v)
+            else:
+                s_numerator = jnp.linalg.det(jnp.array([a - x, u, jnp.cross(u, v)]).T)
+                t_numerator = jnp.linalg.det(jnp.array([a - x, v, jnp.cross(u, v)]).T)
 
             s = s_numerator/denominator
             t = t_numerator/denominator
 
-            # Get closest point along the lines 
+            # import pdb; pdb.set_trace()
 
-            # if s > 1, use end point of line a by setting s to 1
+            # Get closest point along the lines 
+            # if s > 1, use end point of line a
             if s > 1:
                 closest_point_line_a = line_a_end
-            # if s < 0, use start point of line a by setting s to 0
+            # if s < 0, use start point of line a
             elif s < 0:
                 closest_point_line_a = line_a_start
             # otherwise compute the closest point on line a using the parametric form of the line segment
             else:
                 closest_point_line_a = a + s*v
 
-            # if t > 1, use end point of line b by setting t to 1
+            # if t > 1, use end point of line b
             if t > 1:
                 closest_point_line_b = line_b_end
-            # if t < 1, use start point of line b by setting t to 0
+            # if t < 1, use start point of line b
             elif t < 0:
                 closest_point_line_b = line_b_start
             # otherwise compute the closest point on line a using the parametric form of the line segment
             else:
                 closest_point_line_b = x + t*u
 
-            # the distance between the line segments is the distance between the closest points
+            # the distance between the line segments is the distance between the closest points (in many cases)
             distance = smooth_norm(closest_point_line_b - closest_point_line_a)
+
+            # there are cases where the intersection point found by s and t will lead to incorrect distances
+            if s > 1 or s < 1:
+                distance_a_to_b = distance_point_to_lineseg_nd(closest_point_line_a, line_b_start, line_b_end)
+                if t > 1 or t < 1:
+                    distance_b_to_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
+                    distance = smooth_min(jnp.array([distance, distance_a_to_b, distance_b_to_a]))
+                else:
+                    distance = smooth_min(jnp.array([distance, distance_a_to_b]))
+            elif t > 1 or t < 1:
+                distance_b_to_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
+                distance = smooth_min(jnp.array([distance, distance_b_to_a]))
 
     return distance
 
@@ -172,10 +181,7 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
 
     # if the segment is a point, then get the distance to that point
     if jnp.all(segment_vector == 0):
-        if np.all((segment_start - point) == 0.0):
-            return 
         distance = smooth_norm(segment_start - point)
-
     else:
         # calculate the distance to the starting point
         start_to_point_vector = point - segment_start
@@ -186,7 +192,7 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
         # if projection is outside the segment, then the unit projection will be negative and the start is the closest point
         if projection < 0:
             closest_point = segment_start
-        # if the project is greater than 1, then the end point is the closest point
+        # if the projection is greater than 1, then the end point is the closest point
         elif projection > 1:
             closest_point = segment_end
         # otherwise, find the point of the intersection of the line and a perpendicular intersect through the point
@@ -252,7 +258,7 @@ def smooth_min(x:np.ndarray, s:float=1000.0) -> float:
 def smooth_norm(vec: np.ndarray, buf: float=1E-12) -> float:
     """Smooth version of the Frobenius, or 2, norm. This version is nearly equivalent to the 2-norm with the 
     maximum absolute error corresponding to the order of the buffer value. The maximum error in the gradient is near unity, but 
-    the error is generally about twice the error in the absolute fidelity. The key benefit of the smooth norm is 
+    the error is generally about twice the error in the absolute value. The key benefit of the smooth norm is 
     that it is differentiable near zero, while the standard norm is undefined.
 
     Args:

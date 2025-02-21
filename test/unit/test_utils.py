@@ -221,6 +221,151 @@ class TestLineSegToLineSeg:
         self.distance_lineseg_to_lineseg_nd_grad = grad(utils.distance_lineseg_to_lineseg_nd, [0])
         pass
 
+    def test_distance_lineseg_to_lineseg_nd_parallel_2d(self):
+        """
+        Test distance between line segments 2d for parallel lines
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])])
+        line_b = np.array([np.array([5, 0]), np.array([5, 5])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == pytest.approx(5.0, rel=1E-1) # inexact with parallel lines due to smooth max/min
+
+    def test_distance_lineseg_to_lineseg_nd_shared_point_2d(self):
+        """
+        Test distance between line segments 2d for intersecting lines with a shared point
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])])
+        line_b = np.array([np.array([0, 0]), np.array([5, 5])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == pytest.approx(0.0, abs=1E-2)
+
+    def test_distance_lineseg_to_lineseg_nd_intersect_2d(self):
+        """
+        Test distance between line segments 2d for intersecting lines without a shared end point
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([5, 5])])
+        line_b = np.array([np.array([0, 5]), np.array([5, 0])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == pytest.approx(0.0, abs=1E-2)
+
+    def test_distance_lineseg_to_lineseg_nd_intersect_point_on_line_2d(self):
+        """
+        Test distance between line segments 2d for intersecting lines with an end point of one line on the other line
+        """
+
+        line_a = np.array([np.array([2.5, 2.5]), np.array([5, 5])])
+        line_b = np.array([np.array([0, 5]), np.array([5, 0])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert test_result == pytest.approx(0.0, abs=1E-2)
+
+    def test_distance_lineseg_to_lineseg_nd_skew_2d(self):
+        """
+        Test distance between line segments 2d for skew lines
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])])
+        line_b = np.array([np.array([5, 5]), np.array([8, -10])])
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert test_result == pytest.approx(5.0, rel=1E-3)
+
+    def test_distance_lineseg_to_lineseg_nd_skew_2d_2(self):
+        """
+        Test gradient of the distance between line segments in 2d for skew lines
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])], dtype=float)
+        line_b = np.array([np.array([5.0, 2.5]), np.array([10, 15])], dtype=float)
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert test_result == pytest.approx(5.0)
+
+    def test_distance_lineseg_to_lineseg_nd_parallel_grad_2d(self):
+        """
+        Test grad of distance between line segments 2d for parallel lines
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])], dtype=float)
+        line_b = np.array([np.array([5, 0]), np.array([0, 15])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert np.all(test_result == np.array([0.0, 0.0])) # goes to zero due to smooth_norm
+
+    def test_distance_lineseg_to_lineseg_nd_shared_point_grad_2d(self):
+        """
+        Test distance between line segments 2d for intersecting lines with a shared point
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])], dtype=float)
+        line_b = np.array([np.array([0, 0]), np.array([5, 5])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert np.all(test_result == np.array([0, 0], dtype=float))
+
+    def test_distance_lineseg_to_lineseg_nd_intersect_grad_2d(self):
+        """
+        Test distance between line segments 2d for intersecting lines without a shared end point
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([5, 5])], dtype=float)
+        line_b = np.array([np.array([0, 5]), np.array([5, 0])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+
+        assert np.all(test_result == np.array([0, 0], dtype=float))
+
+    def test_distance_lineseg_to_lineseg_nd_intersect_point_on_line_grad_2d(self):
+        """
+        Test distance between line segments 2d for intersecting lines with an end point of one line on the other line
+        """
+
+        line_a = np.array([np.array([2.5, 2.5]), np.array([5, 5])], dtype=float)
+        line_b = np.array([np.array([0, 5]), np.array([5, 0])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert np.all(test_result == np.array([0, 0], dtype=float))
+
+    def test_distance_lineseg_to_lineseg_nd_skew_grad_2d(self):
+        """
+        Test gradient of the distance between line segments in 2d for skew lines
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 5])], dtype=float)
+        line_b = np.array([np.array([5.0, 2.5]), np.array([10, 15])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert np.all(test_result[0] == pytest.approx(np.array([-0.5, 0.0], dtype=float)))
+
+    def test_distance_lineseg_to_lineseg_nd_2d_skew_grad(self):
+        """
+        Test distance between line segments 2d for skew lines
+        """
+
+        line_a = np.array([np.array([0, 0]), np.array([0, 10])], dtype=float)
+        line_b = np.array([np.array([5, 0]), np.array([6, 15])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert np.all(test_result == np.array([-1, 0], dtype=float))
+
+
     def test_distance_lineseg_to_lineseg_nd_parallel(self):
         """
         Test distance between line segments 3d for parallel lines
@@ -279,21 +424,19 @@ class TestLineSegToLineSeg:
 
         test_result = utils.distance_lineseg_to_lineseg_nd(line_a_start=line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
         
-        assert test_result == 5.0
-
-    #     ###################
+        assert test_result == pytest.approx(5.0, rel=1E-3)
 
     def test_distance_lineseg_to_lineseg_nd_parallel_grad(self):
         """
         Test grad of distance between line segments 3d for parallel lines
         """
 
-        line_a = np.array([np.array([0, 0, 0]), np.array([0, 0, 5])], dtype=float)
+        line_a = np.array([np.array([0.0, 0, 0]), np.array([0, 0, 5])], dtype=float)
         line_b = np.array([np.array([5, 0, 0]), np.array([5, 0, 15])], dtype=float)
 
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
         
-        assert np.all(test_result == np.array([-1.0, 0.0, 0.0])) #np.array([-1, 0, 0], dtype=float)) # inexact with parallel lines due to smooth max/min
+        assert np.all(test_result == np.array([-1.0, 0.0, 0.0]))
 
     def test_distance_lineseg_to_lineseg_nd_shared_point_grad(self):
         """
