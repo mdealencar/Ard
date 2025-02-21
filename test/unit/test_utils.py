@@ -293,6 +293,18 @@ class TestLineSegToLineSeg:
         
         assert test_result == pytest.approx(5.0)
 
+    def test_distance_lineseg_to_lineseg_nd_skew_2d_3(self):
+        """
+        Test gradient of the distance between line segments in 2d for skew lines
+        """
+
+        line_a = np.array([np.array([5.0, 2.5]), np.array([10, 15])], dtype=float)
+        line_b = np.array([np.array([0, 0]), np.array([0, 5])], dtype=float)
+
+        test_result = utils.distance_lineseg_to_lineseg_nd(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert test_result == pytest.approx(5.0)
+
     def test_distance_lineseg_to_lineseg_nd_parallel_grad_2d(self):
         """
         Test grad of distance between line segments 2d for parallel lines
@@ -364,6 +376,18 @@ class TestLineSegToLineSeg:
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
         
         assert np.all(test_result == np.array([-1, 0], dtype=float))
+
+    def test_distance_lineseg_to_lineseg_nd_2d_skew_grad(self):
+        """
+        Test distance between line segments 2d for skew lines
+        """
+
+        line_b = np.array([np.array([0, 0]), np.array([0, 10])], dtype=float)
+        line_a = np.array([np.array([5, 0]), np.array([6, 15])], dtype=float)
+
+        test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
+        
+        assert np.all(test_result == np.array([1, 0], dtype=float))
 
 
     def test_distance_lineseg_to_lineseg_nd_parallel(self):
