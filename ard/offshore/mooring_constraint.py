@@ -1,5 +1,6 @@
-import numpy as np
-
+import jax.numpy as jnp
+from ard.utils import distance_point_to_lineseg_nd, smooth_min
+import openmdao.api as om
 
 class MooringConstraint(om.ExplicitComponent):
     """
@@ -48,19 +49,19 @@ class MooringConstraint(om.ExplicitComponent):
 
         # set up inputs and outputs for mooring system
         self.add_input(
-            "x_turbines", np.zeros((self.N_turbines,)), units="km"
+            "x_turbines", jnp.zeros((self.N_turbines,)), units="km"
         )  # x location of the mooring platform in km w.r.t. reference coordinates
         self.add_input(
-            "y_turbines", np.zeros((self.N_turbines,)), units="km"
+            "y_turbines", jnp.zeros((self.N_turbines,)), units="km"
         )  # y location of the mooring platform in km w.r.t. reference coordinates
         self.add_input(
             "x_anchors",
-            np.zeros((self.N_turbines, self.N_anchors)),
+            jnp.zeros((self.N_turbines, self.N_anchors)),
             units="km",
         )  # x location of the mooring platform in km w.r.t. reference coordinates
         self.add_input(
             "y_anchors",
-            np.zeros((self.N_turbines, self.N_anchors)),
+            jnp.zeros((self.N_turbines, self.N_anchors)),
             units="km",
         )  # y location of the mooring platform in km w.r.t. reference coordinates
         # ADD ADDITIONAL (DESIGN VARIABLE) INPUTS HERE!!!!!
@@ -99,3 +100,16 @@ class MooringConstraint(om.ExplicitComponent):
 
         # replace the below with the final values
         outputs["violation_distance"] = None
+
+def distance_point_to_mooring(point, P_mooring):
+
+    N_moorings = P_mooring.shape[0] - 1
+    distance_moorings = jnp.zeros(N_moorings)
+
+    distance_moorings = jnp.array([
+        distance_point_to_lineseg_nd(point, 
+                                     jnp.array(P_mooring[0]), 
+                                     jnp.array(P_mooring[i])) for i in jnp.arange(1, N_moorings+1)
+                                ])
+
+    return smooth_min(jnp.array(distance_moorings))

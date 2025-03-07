@@ -8,47 +8,6 @@ import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
-# def distance_point_to_lineseg(point_x: float, point_y: float, line_a_x: float, line_a_y: float, line_b_x: float, line_b_y: float, k_logistic: float=100.0) -> float:
-#     """Find the distance between a point and a finite line segment
-
-#     Args:
-#         point_x (float): x coordinate of the point of interest
-#         point_y (float): y coordinate of the point of interest
-#         line_a_x (float): x coordinate of point A of the line AB
-#         line_a_y (float): y coordinate of point A of the line AB
-#         line_b_x (float): x coordinate of point B of the line AB
-#         line_b_y (float): y coordinate of point B of the line AB
-#         k_logistic (float, optional): _description_. Defaults to 100.0.
-
-#     Returns:
-#         float: distance from the point of interest to line AB
-#     """
-
-#     # length of the line segment squared
-#     L2 = (line_b_x - line_a_x) ** 2 + (line_b_y - line_a_y) ** 2
-
-#     t = ((point_x - line_a_x) * (line_b_x - line_a_x) + (point_y - line_a_y) * (line_b_y - line_a_y)) / L2
-#     x_P = line_a_x + t * (line_b_x - line_a_x)
-#     y_P = line_a_y + t * (line_b_y - line_a_y)
-
-#     d_CA = np.sqrt((point_x - line_a_x) ** 2 + (point_y - line_a_y) ** 2)
-#     d_CB = np.sqrt((point_x - line_b_x) ** 2 + (point_y - line_b_y) ** 2)
-#     d_CP = np.sqrt((point_x - x_P) ** 2 + (point_y - y_P) ** 2)
-
-#     soft_filter_t0 = (
-#         1.0 / (1.0 + np.exp(-k_logistic * (t - 0.0)))
-#         if (-k_logistic * t < 100)
-#         else 0.0
-#     )
-#     soft_filter_t1 = (
-#         1.0 / (1.0 + np.exp(-k_logistic * (1.0 - t))) if (k_logistic * t < 100) else 0.0
-#     )
-#     return (
-#         d_CP * (soft_filter_t0) * (soft_filter_t1)
-#         + d_CA * (1.0 - soft_filter_t0)
-#         + d_CB * (1.0 - soft_filter_t1)
-#     )
-
 def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
     """Returns the distance between two finite line segments assuming the segments are coplanar. 
     It is up to the user to check the required condition.
@@ -74,9 +33,22 @@ def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: 
     return distance
 
 def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray, tol=0.0) -> float:
+    """Find the distance between two line segments in 2d or 3d. This method is primarily based on reference [1].
 
-    # [1] Numerical Recipes: The Art of Scientific Computing by Press, et al. 3rd edition
+    [1] Numerical Recipes: The Art of Scientific Computing by Press, et al. 3rd edition
 
+    Args:
+        line_a_start (np.ndarray): The start point of line segment "a" as either [x,y,z] or [x,y]
+        line_a_end (np.ndarray): The end point of line segment "a" as either [x,y,z] or [x,y]
+        line_b_start (np.ndarray): The start point of line segment "b" as either [x,y,z] or [x,y]
+        line_b_end (np.ndarray): The end point of line segment "b" as either [x,y,z] or [x,y]
+        tol (float, optional): If denominator in key equation is less than or equal tol, then an alternative method is used. Defaults to 0.0.
+
+    Returns:
+        float: Distance between the two line segments
+    """
+
+    # if 2d given, then pad with zeros to get 3d points
     if len(line_b_end) == 2:
         line_a_start = jnp.pad(line_a_start, (0, 1))
         line_a_end = jnp.pad(line_a_end, (0, 1))
@@ -124,8 +96,6 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
             s = s_numerator/denominator
             t = t_numerator/denominator
 
-            # import pdb; pdb.set_trace()
-
             # Get closest point along the lines 
             # if s > 1, use end point of line a
             if s > 1:
@@ -150,7 +120,7 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
             # the distance between the line segments is the distance between the closest points (in many cases)
             distance = smooth_norm(closest_point_line_b - closest_point_line_a)
 
-            # there are cases where the intersection point found by s and t will lead to incorrect distances
+            # handle cases where the intersection point found by s and t will lead to incorrect distances.
             if s > 1 or s < 1:
                 distance_a_to_b = distance_point_to_lineseg_nd(closest_point_line_a, line_b_start, line_b_end)
                 if t > 1 or t < 1:
