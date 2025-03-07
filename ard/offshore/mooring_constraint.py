@@ -109,7 +109,7 @@ def distance_point_to_mooring(point, P_mooring):
     distance_moorings = jnp.array([
         distance_point_to_lineseg_nd(point, 
                                      jnp.array(P_mooring[0]), 
-                                     jnp.array(P_mooring[i])) for i in jnp.arange(1, N_moorings+1)
+                                     jnp.array(P_mooring[i])) for i in range(1, N_moorings+1)
                                 ])
 
-    return smooth_min(jnp.array(distance_moorings))
+    return smooth_min(distance_moorings)
