@@ -119,7 +119,6 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     
 
     N_moorings = P_mooring.shape[0] - 1
-    distance_moorings = jnp.zeros(N_moorings)
 
     distance_moorings = jnp.array([
         distance_point_to_lineseg_nd(point, 
