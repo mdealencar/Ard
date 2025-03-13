@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from jax import grad
+from jax import grad, jacobian
 from jax.test_util import check_grads
 import jax.numpy as jnp
 import ard.utils as utils
@@ -9,6 +9,132 @@ import ard.utils as utils
 class TestUtils:
     def setup_method(self):
         pass
+
+class TestGetClosestPoint:
+    def setup_method(self):
+        self.get_closest_point_jac = jacobian(utils.get_closest_point, [0])
+        pass
+
+    def test_get_closest_point_45_deg_with_end(self):
+
+        point = np.array([10, 10])
+        line_a = np.array([0, 10])
+        line_b = np.array([10, 0])
+        line_vector = line_b - line_a
+
+        test_result = utils.get_closest_point(point, line_a, line_b, line_vector)
+
+        assert np.all(test_result == np.array([5, 5]))
+
+    def test_get_closest_point_90_deg_with_end(self):
+
+        point = np.array([0, 0])
+        line_a = np.array([0, 10])
+        line_b = np.array([10, 10])
+        line_vector = line_b - line_a
+
+        test_result = utils.get_closest_point(point, line_a, line_b, line_vector)
+
+        assert np.all(test_result == line_a)
+
+    def test_get_closest_point_gt90_deg_with_end(self):
+
+        point = np.array([0, 0])
+        line_a = np.array([5, 5])
+        line_b = np.array([10, 5])
+        line_vector = line_b - line_a
+
+        test_result = utils.get_closest_point(point, line_a, line_b, line_vector)
+
+        assert np.all(test_result == line_a)
+
+    def test_get_closest_point_180_deg_with_end(self):
+
+        point = np.array([0, 5])
+        line_a = np.array([5, 5])
+        line_b = np.array([10, 5])
+        line_vector = line_b - line_a
+
+        test_result = utils.get_closest_point(point, line_a, line_b, line_vector)
+
+        assert np.all(test_result == line_a)
+
+    def test_get_closest_point_point_on_segment(self):
+        """
+        Test for a point exactly on the line segment
+        """
+
+        test_point = np.array([3,3,3])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+        line_vector = test_end - test_start
+
+        test_result = utils.get_closest_point(test_point, test_start, test_end, line_vector)
+
+        assert np.all(test_result == test_point)
+
+    def test_get_closest_point_point_near_end(self):
+        """
+        Test for a point near the end of the line segment
+        """
+
+        test_point = np.array([6,6,6])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+        line_vector = test_end - test_start
+
+        test_result = utils.get_closest_point(test_point, test_start, test_end, line_vector)
+
+        assert np.all(test_result == test_end)
+
+    def test_get_closest_point_point_near_start(self):
+        """
+        Test for a point near the start of the line segment
+        """
+
+        test_point = np.array([-1,-1,-2])
+        test_start = np.array([0,0,0])
+        test_end = np.array([5,5,5])
+        line_vector = test_end - test_start
+
+        test_result = utils.get_closest_point(test_point, test_start, test_end, line_vector)
+
+        assert np.all(test_result == test_start)
+
+    def test_get_closest_point_point_near_middle(self):
+        """
+        Test for a point near the middle of the line segment
+        """
+
+        test_point = np.array([5,5,2])
+        test_start = np.array([0,0,0])
+        test_end = np.array([0,0,5])
+        line_vector = test_end - test_start
+
+        test_result = utils.get_closest_point(test_point, test_start, test_end, line_vector)
+
+        assert np.all(test_result == np.array([0, 0, 2]))
+
+    def test_get_closest_point_jac(self):
+        """
+        Test for gradient for a point near the middle of the line segment
+        """
+
+        test_point = np.array([5,0,2], dtype=float)
+        test_start = np.array([0,0,0], dtype=float)
+        test_end = np.array([0,0,5], dtype=float)
+        line_vector = test_end - test_start
+        
+        tr_dp = self.get_closest_point_jac(test_point, test_start, test_end, line_vector)
+        
+        assert np.all(tr_dp == np.array([[0, 0, 0],
+                                         [0, 0, 0],
+                                         [0, 0, 1]]))
+
+        try:
+            check_grads(utils.get_closest_point, (test_point, test_start, test_end, line_vector), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
 
 class TestPointToLineSeg:
     def setup_method(self):

@@ -3,12 +3,13 @@ from os import PathLike
 from pathlib import Path
 import yaml
 import jax.numpy as jnp
-from jax import jit
+from jax import jit, lax
 
 import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
+@jit
 def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
     """Returns the distance between two finite line segments assuming the segments are coplanar. 
     It is up to the user to check the required condition.
@@ -75,10 +76,7 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
         u = line_b_vector
 
         # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
-        if len(v) == 2:
-            denominator = jnp.cross(v, line_b_start - line_b_end)
-        else:
-            denominator = smooth_norm(jnp.cross(u, v))**2
+        denominator = smooth_norm(jnp.cross(u, v))**2
 
         # denominator goes to zero when lines are parallel, so a different method must be used, which is also needed for 2d
         if denominator <= tol:
@@ -86,16 +84,17 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
             distance = _distance_lineseg_to_lineseg_coplanar(line_a_start=line_a_start, line_a_end=line_a_end, line_b_start=line_b_start, line_b_end=line_b_end)
     
         else:
-            # special case for 2d due to the determinant in the 3d version
-            if len(v) == 2:
-                s_numerator = jnp.cross(line_b_start - line_b_end, line_a_start - line_b_start)
-                t_numerator = jnp.cross(line_a_start - line_b_start, v)
-            else:
+            @jit
+            def calc_st(a, x, u, v, denominator):
                 s_numerator = jnp.linalg.det(jnp.array([a - x, u, jnp.cross(u, v)]).T)
                 t_numerator = jnp.linalg.det(jnp.array([a - x, v, jnp.cross(u, v)]).T)
 
-            s = s_numerator/denominator
-            t = t_numerator/denominator
+                s = s_numerator/denominator
+                t = t_numerator/denominator
+
+                return s, t
+            
+            s, t = calc_st(a, x, u, v, denominator)
 
             # Get closest point along the lines 
             # if s > 1, use end point of line a
@@ -135,6 +134,7 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
 
     return distance
 
+@jit
 def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, segment_end: np.ndarray) -> float:
     """Find the distance from a point to a finite line segment in N-Dimensions
 
@@ -146,34 +146,71 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
     Returns:
         distance (float): shortest distance between the point and finite line segment
     """
+
+    def if_point_to_point(inputs):
+        point = inputs[0]
+        segment_start = inputs[1]
+        return smooth_norm(jnp.subtract(segment_start, point))
     
+    def if_point_to_line_seg(inputs):
+        point = inputs[0]
+        segment_start = inputs[1]
+        segment_end = inputs[2]
+        segment_vector = inputs[3]
+
+        # get the closest point on the line segment to the point of interest
+        closest_point = get_closest_point(point, segment_start, segment_end, segment_vector)
+        
+        # the distance from the point to the line is the distance from the point to the closest point on the line
+        return smooth_norm(jnp.subtract(point, closest_point))
+
     # get the vector of the line segment
     segment_vector = segment_end - segment_start
 
     # if the segment is a point, then get the distance to that point
-    if jnp.all(segment_vector == 0):
-        distance = smooth_norm(segment_start - point)
-    else:
-        # calculate the distance to the starting point
-        start_to_point_vector = point - segment_start
-
-        # calculate the unit vector projection of the start to point vector on the line segment
-        projection = jnp.dot(start_to_point_vector, segment_vector) / jnp.dot(segment_vector, segment_vector)
-
-        # if projection is outside the segment, then the unit projection will be negative and the start is the closest point
-        if projection < 0:
-            closest_point = segment_start
-        # if the projection is greater than 1, then the end point is the closest point
-        elif projection > 1:
-            closest_point = segment_end
-        # otherwise, find the point of the intersection of the line and a perpendicular intersect through the point
-        else:
-            closest_point = segment_start + projection*segment_vector
-
-        # the distance from the point to the line is the distance from the point to the closest point on the line
-        distance = smooth_norm(point - closest_point)
-
+    distance = lax.cond(jnp.all(segment_vector == 0), if_point_to_point, if_point_to_line_seg, [point, segment_start, segment_end, segment_vector])
+        
     return distance
+
+@jit
+def get_closest_point(point: np.ndarray, segment_start: np.ndarray, segment_end: np.ndarray, segment_vector: np.ndarray) -> np.ndarray:
+    """Get the closest point on the line segment to the point of interest in N-Dimensions
+
+    Args:
+        point (np.ndarray): point of interest [x,y,...]
+        segment_start (np.ndarray): start point of line segment [x,y,...]
+        segment_end (np.ndarray): end point of line segment [x,y,...]
+        segment_vector (np.ndarray): segment_end - segment_start
+
+    Returns:
+        np.ndarray: closest point on the line segment to the point of interest
+    """
+    
+    # calculate the distance to the starting point
+    start_to_point_vector = point - segment_start
+
+    # calculate the unit vector projection of the start to point vector on the line segment
+    projection = jnp.divide(jnp.dot(start_to_point_vector, segment_vector), jnp.dot(segment_vector, segment_vector))
+
+    def lt_0(inputs) -> np.ndarray:
+        segment_start = inputs[1]
+        return jnp.array(segment_start, dtype=float)
+    
+    def gt_1(inputs) -> np.ndarray:
+        segment_end = inputs[2]
+        return jnp.array(segment_end, dtype=float)
+    
+    def gt_0(inputs) -> np.ndarray:
+        projection = inputs[0]
+        return lax.cond(projection > 1, gt_1, lt_1_gt_0, inputs)
+    
+    def lt_1_gt_0(inputs) -> np.ndarray:
+        projection = inputs[0]
+        segment_start = inputs[1]
+        segment_vector = inputs[3]
+        return jnp.array(segment_start + projection*segment_vector, dtype=float)
+
+    return lax.cond(projection < 0, lt_0, gt_0, [projection, segment_start, segment_end, segment_vector])
 
 @jit
 def smooth_max(x:jnp.ndarray, s:float=1000.0) -> float:
