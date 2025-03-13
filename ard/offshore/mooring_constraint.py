@@ -126,7 +126,6 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     
     return smooth_min(distance_moorings)
 
-
 def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray) -> float:
     """Calculate the distance from one mooring to another. Moorings are defined with center point first
         followed by anchor points in no specific order.
@@ -140,7 +139,7 @@ def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray
     Returns:
         float: shortest distance between the two sets of moorings
     """
-            
+
     p_center_A = P_mooring_A[0]
     p_center_B = P_mooring_B[0]
     distance_moorings_b = jnp.array([[distance_lineseg_to_lineseg_nd(
@@ -149,5 +148,5 @@ def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray
         p_center_B,
         point_anchor_B
         ) for point_anchor_B in P_mooring_B[1:]] for point_anchor_A in P_mooring_A[1:]])
-    
+
     return smooth_min(jnp.array([smooth_min(d) for d in distance_moorings_b]))
