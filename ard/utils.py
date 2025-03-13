@@ -3,6 +3,7 @@ from os import PathLike
 from pathlib import Path
 import yaml
 import jax.numpy as jnp
+from jax import jit
 
 import numpy as np
 
@@ -174,6 +175,7 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
 
     return distance
 
+@jit
 def smooth_max(x:jnp.ndarray, s:float=1000.0) -> float:
     """Non-overflowing version of Smooth Max function (see ref 3 and 4 below). 
     Calculates the smoothmax (a.k.a. softmax or LogSumExponential) of the elements in x.
@@ -200,16 +202,14 @@ def smooth_max(x:jnp.ndarray, s:float=1000.0) -> float:
     # get the maximum value and the index of maximum value
     max_ind = jnp.argmax(x)
     max_val = x[max_ind]
-    
-    # get the indices of x
-    indices = jnp.arange(0, len(x), dtype=int)
 
     # LogSumExp with smoothing factor s
-    exponential = jnp.exp(s*(jnp.array(x)[indices != max_ind] - max_val))
+    exponential = jnp.exp(s*(jnp.delete(x, max_ind, assume_unique_indices=True) - max_val))
     r = (jnp.log(1.0 + jnp.sum(exponential)) + s*max_val)/s
 
     return r
 
+@jit
 def smooth_min(x:np.ndarray, s:float=1000.0) -> float:
     """ Finds smooth min using the `smooth_max` function
 
@@ -225,6 +225,7 @@ def smooth_min(x:np.ndarray, s:float=1000.0) -> float:
 
     return -smooth_max(x=-x, s=s)
 
+@jit
 def smooth_norm(vec: np.ndarray, buf: float=1E-12) -> float:
     """Smooth version of the Frobenius, or 2, norm. This version is nearly equivalent to the 2-norm with the 
     maximum absolute error corresponding to the order of the buffer value. The maximum error in the gradient is near unity, but 

@@ -1,6 +1,6 @@
 import numpy as np
 import jax.numpy as jnp
-from ard.utils import distance_point_to_lineseg_nd, smooth_min
+from ard.utils import distance_point_to_lineseg_nd, smooth_min, distance_lineseg_to_lineseg_nd
 import openmdao.api as om
 
 class MooringConstraint(om.ExplicitComponent):
@@ -116,14 +116,38 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     Returns:
         float: The shortest distance from the point of interest to the set of mooring lines.
     """
-    
 
-    N_moorings = P_mooring.shape[0] - 1
-
+    p_center = P_mooring[0]
     distance_moorings = jnp.array([
         distance_point_to_lineseg_nd(point, 
-                                     jnp.array(P_mooring[0]), 
-                                     jnp.array(P_mooring[i])) for i in range(1, N_moorings+1)
+                                     jnp.array(p_center), 
+                                     jnp.array(p_anchor)) for p_anchor in P_mooring[1:]
                                 ])
-
+    
     return smooth_min(distance_moorings)
+
+
+def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray) -> float:
+    """Calculate the distance from one mooring to another. Moorings are defined with center point first
+        followed by anchor points in no specific order.
+
+    Args:
+        P_mooring_A (np.ndarray): ndarray of points of mooring A of shape (npoints, nd) (e.g. (4, (x, y, z))).
+            Center point must come first.
+        P_mooring_B (np.ndarray): ndarray of points of mooring B of shape (npoints, nd) (e.g. (4, (x, y, z))).
+            Center point must come first.
+
+    Returns:
+        float: shortest distance between the two sets of moorings
+    """
+            
+    p_center_A = P_mooring_A[0]
+    p_center_B = P_mooring_B[0]
+    distance_moorings_b = jnp.array([[distance_lineseg_to_lineseg_nd(
+        p_center_A,
+        point_anchor_A,
+        p_center_B,
+        point_anchor_B
+        ) for point_anchor_B in P_mooring_B[1:]] for point_anchor_A in P_mooring_A[1:]])
+    
+    return smooth_min(jnp.array([smooth_min(d) for d in distance_moorings_b]))
