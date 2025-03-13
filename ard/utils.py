@@ -34,6 +34,7 @@ def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: 
     
     return distance
 
+@jit
 def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray, tol=0.0) -> float:
     """Find the distance between two line segments in 2d or 3d. This method is primarily based on reference [1].
 
@@ -50,88 +51,118 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
         float: Distance between the two line segments
     """
 
-    # if 2d given, then pad with zeros to get 3d points
-    if len(line_b_end) == 2:
-        line_a_start = jnp.pad(line_a_start, (0, 1))
-        line_a_end = jnp.pad(line_a_end, (0, 1))
-        line_b_start = jnp.pad(line_b_start, (0, 1))
-        line_b_end = jnp.pad(line_b_end, (0, 1))
-
-    line_a_vector = line_a_end - line_a_start 
-    line_b_vector = line_b_end - line_b_start
-
-    # check if line a is a point and get distance accordingly
-    if jnp.all(line_a_vector == 0.0):
-        distance = distance_point_to_lineseg_nd(line_a_start, line_b_start, line_b_end)
-
-    # check if line b is a point and get distance accordingly
-    elif jnp.all(line_b_vector == 0.0):
-        distance = distance_point_to_lineseg_nd(line_b_start, line_a_start, line_a_end)
+    def a_is_point(inputs0):
+        line_a_start = inputs0[0]
+        line_b_start = inputs0[2]
+        line_b_end = inputs0[3]
+        return distance_point_to_lineseg_nd(line_a_start, line_b_start, line_b_end)
     
-    # get distance between the line segments
-    else:
-        a = line_a_start
-        v = line_a_vector
-        x = line_b_start
-        u = line_b_vector
-
-        # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
-        denominator = smooth_norm(jnp.cross(u, v))**2
-
-        # denominator goes to zero when lines are parallel, so a different method must be used, which is also needed for 2d
-        if denominator <= tol:
-            # import pdb; pdb.set_trace()
-            distance = _distance_lineseg_to_lineseg_coplanar(line_a_start=line_a_start, line_a_end=line_a_end, line_b_start=line_b_start, line_b_end=line_b_end)
+    def b_is_point(inputs0):
+        line_a_start = inputs0[0]
+        line_a_end = inputs0[1]
+        line_b_start = inputs0[2]
+        return distance_point_to_lineseg_nd(line_b_start, line_a_start, line_a_end)
     
-        else:
-            @jit
-            def calc_st(a, x, u, v, denominator):
-                s_numerator = jnp.linalg.det(jnp.array([a - x, u, jnp.cross(u, v)]).T)
-                t_numerator = jnp.linalg.det(jnp.array([a - x, v, jnp.cross(u, v)]).T)
+    def a_is_not_point(inputs0):
+        line_b_vector = inputs0[5]
+        return lax.cond(jnp.all(line_b_vector == 0.0), b_is_point, a_and_b_are_lines, inputs0)
+    
+    def a_and_b_are_lines(inputs0):
 
-                s = s_numerator/denominator
-                t = t_numerator/denominator
+        def denom_lt_tol(inputs1):
+            line_a_start = inputs[0]
+            line_a_end = inputs[1]
+            line_b_start = inputs[2]
+            line_b_end = inputs[3]
+            return _distance_lineseg_to_lineseg_coplanar(line_a_start=line_a_start, line_a_end=line_a_end, line_b_start=line_b_start, line_b_end=line_b_end)
 
-                return s, t
-            
-            s, t = calc_st(a, x, u, v, denominator)
+        def denom_gt_tol(inputs1):
+            line_a_start = inputs1[0]
+            line_a_end = inputs1[1]
+            line_b_start = inputs1[2]
+            line_b_end = inputs1[3]
+            line_a_vector = inputs1[4]
+            line_b_vector = inputs1[5]
+            denominator = inputs1[6]
+
+            a = line_a_start
+            v = line_a_vector
+            x = line_b_start
+            u = line_b_vector
+
+            s_numerator = jnp.linalg.det(jnp.array([a - x, u, jnp.cross(u, v)]).T)
+            t_numerator = jnp.linalg.det(jnp.array([a - x, v, jnp.cross(u, v)]).T)
+
+            s = s_numerator/denominator
+            t = t_numerator/denominator
 
             # Get closest point along the lines 
-            # if s > 1, use end point of line a
-            if s > 1:
-                closest_point_line_a = line_a_end
-            # if s < 0, use start point of line a
-            elif s < 0:
-                closest_point_line_a = line_a_start
-            # otherwise compute the closest point on line a using the parametric form of the line segment
-            else:
-                closest_point_line_a = a + s*v
+            # if s or t > 1, use end point of line
+            def st_gt_1(inputs23):
+                line_end = inputs23[1]
+                return jnp.array(line_end, dtype=float)
+            # if s or t < 0, use start point of line
+            def st_lt_0(inputs23):
+                line_start = inputs23[0]
+                return jnp.array(line_start, dtype=float)
+            # otherwise compute the closest point on line using the parametric form of the line segment
+            def st_gt_0_lt_1(inputs23):
+                line_start = inputs23[0]
+                line_vector = inputs23[2]
+                s = inputs23[3]
+                return jnp.array(line_start + s*line_vector, dtype=float)
+            def st_lt_1(inputs23):
+                st = inputs23[3]
+                return lax.cond(st < 0, st_lt_0, st_gt_0_lt_1, inputs23)
 
-            # if t > 1, use end point of line b
-            if t > 1:
-                closest_point_line_b = line_b_end
-            # if t < 1, use start point of line b
-            elif t < 0:
-                closest_point_line_b = line_b_start
-            # otherwise compute the closest point on line a using the parametric form of the line segment
-            else:
-                closest_point_line_b = x + t*u
+            # get closest point on lines a and b to each other
+            inputs2 = [line_a_start, line_a_end, line_a_vector, s]
+            closest_point_line_a = lax.cond(s > 1, st_gt_1, st_lt_1, inputs2)[0]
+            inputs3 = [line_b_start, line_b_end, line_b_vector, t]
+            closest_point_line_b = lax.cond(t > 1, st_gt_1, st_lt_1, inputs3)[0]
 
             # the distance between the line segments is the distance between the closest points (in many cases)
             distance = smooth_norm(closest_point_line_b - closest_point_line_a)
 
-            # handle cases where the intersection point found by s and t will lead to incorrect distances.
-            if s > 1 or s < 1:
-                distance_a_to_b = distance_point_to_lineseg_nd(closest_point_line_a, line_b_start, line_b_end)
-                if t > 1 or t < 1:
-                    distance_b_to_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
-                    distance = smooth_min(jnp.array([distance, distance_a_to_b, distance_b_to_a]))
-                else:
-                    distance = smooth_min(jnp.array([distance, distance_a_to_b]))
-            elif t > 1 or t < 1:
-                distance_b_to_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
-                distance = smooth_min(jnp.array([distance, distance_b_to_a]))
+            # check point to line distances
+            distance_a_to_b = distance_point_to_lineseg_nd(closest_point_line_a, line_b_start, line_b_end)
+            distance_b_to_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
 
+            # the true shortest distance is the min of these three, accounting for corner cases
+            distance = smooth_min(jnp.array([distance, distance_a_to_b, distance_b_to_a]))
+
+            return distance
+        
+        line_a_start = inputs0[0]
+        line_a_end = inputs0[1]
+        line_b_start = inputs0[2]
+        line_b_end = inputs0[3]
+        line_a_vector = inputs0[4]
+        line_b_vector = inputs0[5]
+
+        # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
+        denominator = smooth_norm(jnp.cross(line_b_vector, line_a_vector))**2
+
+        inputs1 = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector, denominator]
+
+        distance = lax.cond(denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1)
+        
+        return distance
+
+    # if 2d given, then pad with zeros to get 3d points
+    pad_width = len(line_a_start)
+    line_a_start = jnp.pad(line_a_start, (0, 3-pad_width))
+    line_a_end = jnp.pad(line_a_end, (0, 3-pad_width))
+    line_b_start = jnp.pad(line_b_start, (0, 3-pad_width))
+    line_b_end = jnp.pad(line_b_end, (0, 3-pad_width))
+
+    line_a_vector = line_a_end - line_a_start 
+    line_b_vector = line_b_end - line_b_start
+
+    inputs = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector]
+
+    distance = lax.cond(jnp.all(line_a_vector == 0.0), a_is_point, a_is_not_point, inputs)
+    
     return distance
 
 @jit
@@ -209,7 +240,7 @@ def get_closest_point(point: np.ndarray, segment_start: np.ndarray, segment_end:
         segment_start = inputs[1]
         segment_vector = inputs[3]
         return jnp.array(segment_start + projection*segment_vector, dtype=float)
-
+    # import pdb; pdb.set_trace()
     return lax.cond(projection < 0, lt_0, gt_0, [projection, segment_start, segment_end, segment_vector])
 
 @jit

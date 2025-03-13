@@ -1,5 +1,6 @@
 import numpy as np
 import jax.numpy as jnp
+from jax import jit
 from ard.utils import distance_point_to_lineseg_nd, smooth_min, distance_lineseg_to_lineseg_nd
 import openmdao.api as om
 
@@ -102,6 +103,7 @@ class MooringConstraint(om.ExplicitComponent):
         # replace the below with the final values
         outputs["violation_distance"] = None
 
+@jit
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
     """Find the distance from a point to a set of mooring lines for a single floating wind turbine.
         While arguments may be given in either 2d ([x,y]) or 3d ([x,y,z]), the point of interest 
