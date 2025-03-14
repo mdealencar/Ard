@@ -29,34 +29,6 @@ class TestMooringConstraint3Turbines3Anchors:
 
         self.prob0 = prob 
 
-        xt_in1 = np.array([0, 20])
-        yt_in1 = np.array([0, 0])
-        xa_in1 = np.array([[3], [17]])
-        ya_in1 = np.array([[0], [0]])
-        modeling_options1 = {"farm": {"N_turbines": 2},
-                                 "platform": {"N_anchors": 1}
-        }
-
-        prob1 = om.Problem(model=om.Group())
-        prob1.model.add_subsystem("mc", mc.MooringConstraint(modeling_options=modeling_options1), promotes=["*"])
-
-        prob1.model.set_input_defaults("x_turbines", xt_in1, units="km")
-        prob1.model.set_input_defaults("y_turbines", yt_in1, units="km")
-        prob1.model.set_input_defaults("x_anchors", xa_in1, units="km")
-        prob1.model.set_input_defaults("y_anchors", ya_in1, units="km")
-        prob1.setup()
-        prob1.run_model()
-        totals1 = prob.compute_totals(of=['violation_distance'], wrt=['x_turbines', 'y_turbines', 'x_anchors', 'y_anchors'])
-        
-        totals_expected1 = {('violation_distance', 'x_turbines'): np.array([[0.0, 0.0]]),
-                          ('violation_distance', 'y_turbines'): np.array([[0.0, 0.0]]),
-                          ('violation_distance', 'x_anchors'): np.array([[-1.0, 1.0]]),
-                          ('violation_distance', 'y_anchors'): np.array([[0.0, 0.0]])}
-        
-        self.prob1 = prob1 
-        self.totals1 = totals1
-        self.totals_expected1 = totals_expected1
-
     def test_mooring_constraint_component_output(self):
         assert np.all(self.prob0["violation_distance"] == pytest.approx(np.array([10.0, 30.0, 10.0]), rel=1E-3))
     
@@ -64,10 +36,10 @@ class TestMooringConstraint2Turbines1Anchors:
     def setup_method(self):
         xt_in1 = np.array([0, 20])
         yt_in1 = np.array([0, 0])
-        xa_in1 = np.array([[3], [17]])
-        ya_in1 = np.array([[0], [0]])
+        xa_in1 = np.array([[-3, 3], [17, 23]])
+        ya_in1 = np.array([[0, 0], [0, 0]])
         modeling_options1 = {"farm": {"N_turbines": 2},
-                                 "platform": {"N_anchors": 1}
+                                 "platform": {"N_anchors": 2}
         }
 
         prob1 = om.Problem(model=om.Group())
@@ -83,8 +55,8 @@ class TestMooringConstraint2Turbines1Anchors:
         
         totals_expected1 = {('violation_distance', 'x_turbines'): np.array([[0.0, 0.0]]),
                           ('violation_distance', 'y_turbines'): np.array([[0.0, 0.0]]),
-                          ('violation_distance', 'x_anchors'): np.array([[-1.0, 1.0]]),
-                          ('violation_distance', 'y_anchors'): np.array([[0.0, 0.0]])}
+                          ('violation_distance', 'x_anchors'): np.array([[0.0, -1.0, 1.0, 0.0]]),
+                          ('violation_distance', 'y_anchors'): np.array([[0.0, 0.0, 0.0, 0.0]])}
         
         self.prob1 = prob1 
         self.totals1 = totals1

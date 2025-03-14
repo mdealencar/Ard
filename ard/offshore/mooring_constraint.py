@@ -87,14 +87,9 @@ class MooringConstraint(om.ExplicitComponent):
         y_turbines = inputs["y_turbines"]
         x_anchors = inputs["x_anchors"]
         y_anchors = inputs["y_anchors"]
-        print(x_turbines)
-        print(y_turbines)
-        print(x_anchors)
-        print(y_anchors)
-
+        
         # TODO extend this to allow for 3d, which should just require a version of the mooring_constraint_xy function in 3d
         distances = mooring_constraint_xy(x_turbines, y_turbines, x_anchors, y_anchors)
-        print(distances)
 
         # replace the below with the final values
         outputs["violation_distance"] = distances
@@ -108,8 +103,6 @@ class MooringConstraint(om.ExplicitComponent):
         y_anchors = inputs["y_anchors"]
 
         jacobian = mooring_constraint_xy_jac(x_turbines, y_turbines, x_anchors, y_anchors)
-
-        print(jacobian)
 
         partials["violation_distance", "x_turbines"] = jacobian[0]
         partials["violation_distance", "y_turbines"] = jacobian[1]
