@@ -128,6 +128,7 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     
     return smooth_min(distance_moorings)
 
+@jit
 def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray) -> float:
     """Calculate the distance from one mooring to another. Moorings are defined with center point first
         followed by anchor points in no specific order.

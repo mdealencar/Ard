@@ -639,7 +639,7 @@ class TestLineSegToLineSeg:
 
         test_result = self.distance_lineseg_to_lineseg_nd_grad(line_a[0], line_a_end=line_a[1], line_b_start=line_b[0], line_b_end=line_b[1])
         
-        assert np.all(test_result == np.array([-0.25, 0, 0], dtype=float))
+        assert np.all(test_result == np.array([-0.5, 0, 0], dtype=float))
 
         try:
             check_grads(utils.distance_lineseg_to_lineseg_nd, (line_a[0], line_a[1], line_b[0], line_b[1]), order=1)

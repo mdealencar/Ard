@@ -265,10 +265,10 @@ class TestDistanceMooringToMooring:
         test_result = self.distance_mooring_to_mooring_grad(P_moorings_A, P_moorings_B)
 
         # expect error due to smooth functions
-        assert test_result[0] == pytest.approx(np.array([[-1/3, 0.0],
+        assert test_result[0] == pytest.approx(np.array([[0.0, 0.0],
                                                       [0.0, 0.0],
                                                       [0.0, 0.0],
-                                                      [-2/3, 0.0]]))
+                                                      [-1.0, 0.0]]))
         try:
             check_grads(mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1)
         except AssertionError:
@@ -335,7 +335,7 @@ class TestDistanceMooringToMooring:
         # assert test_result[0] == pytest.approx(np.array([[0.0, 0.0, 0.0],
         #                                               [0.0, 0.0, 0.0],
         #                                               [0.0, 0.0, 0.0],
-                                                    #   [-1.0, 0.0, 0.0]]))
+        #                                               [-1.0, 0.0, 0.0]]))
         
         try:
             check_grads(mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1)

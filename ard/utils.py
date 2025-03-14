@@ -124,13 +124,6 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
             # the distance between the line segments is the distance between the closest points (in many cases)
             distance = smooth_norm(closest_point_line_b - closest_point_line_a)
 
-            # check point to line distances
-            distance_a_to_b = distance_point_to_lineseg_nd(closest_point_line_a, line_b_start, line_b_end)
-            distance_b_to_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
-
-            # the true shortest distance is the min of these three, accounting for corner cases
-            distance = smooth_min(jnp.array([distance, distance_a_to_b, distance_b_to_a]))
-
             return distance
         
         line_a_start = inputs0[0]
