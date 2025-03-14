@@ -5,11 +5,12 @@ import yaml
 import jax.numpy as jnp
 from jax import jit, lax
 
+import jax 
+
 import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
-@jit
 def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray) -> float:
     """Returns the distance between two finite line segments assuming the segments are coplanar. 
     It is up to the user to check the required condition.
@@ -33,8 +34,8 @@ def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: 
     distance = smooth_min(jnp.array([a_start_to_b, a_end_to_b, b_start_to_a, b_end_to_a]))
     
     return distance
+_distance_lineseg_to_lineseg_coplanar = jit(_distance_lineseg_to_lineseg_coplanar)
 
-@jit
 def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray, tol=0.0) -> float:
     """Find the distance between two line segments in 2d or 3d. This method is primarily based on reference [1].
 
@@ -51,39 +52,39 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
         float: Distance between the two line segments
     """
 
-    def a_is_point(inputs0):
-        line_a_start = inputs0[0]
-        line_b_start = inputs0[2]
-        line_b_end = inputs0[3]
+    def a_is_point(inputs0i)->float:
+        line_a_start = inputs0i[0]
+        line_b_start = inputs0i[2]
+        line_b_end = inputs0i[3]
         return distance_point_to_lineseg_nd(line_a_start, line_b_start, line_b_end)
     
-    def b_is_point(inputs0):
-        line_a_start = inputs0[0]
-        line_a_end = inputs0[1]
-        line_b_start = inputs0[2]
+    def b_is_point(inputs0i)->float:
+        line_a_start = inputs0i[0]
+        line_a_end = inputs0i[1]
+        line_b_start = inputs0i[2]
         return distance_point_to_lineseg_nd(line_b_start, line_a_start, line_a_end)
     
-    def a_is_not_point(inputs0):
-        line_b_vector = inputs0[5]
-        return lax.cond(jnp.all(line_b_vector == 0.0), b_is_point, a_and_b_are_lines, inputs0)
+    def a_is_not_point(inputs0i)->float:
+        line_b_vector = inputs0i[5]
+        return lax.cond(jnp.all(line_b_vector == 0.0), b_is_point, a_and_b_are_lines, inputs0i)
     
-    def a_and_b_are_lines(inputs0):
+    def a_and_b_are_lines(inputs0i)->float:
 
-        def denom_lt_tol(inputs1):
-            line_a_start = inputs[0]
-            line_a_end = inputs[1]
-            line_b_start = inputs[2]
-            line_b_end = inputs[3]
+        def denom_lt_tol(inputs1i)->float:
+            line_a_start = inputs1i[0]
+            line_a_end = inputs1i[1]
+            line_b_start = inputs1i[2]
+            line_b_end = inputs1i[3]
             return _distance_lineseg_to_lineseg_coplanar(line_a_start=line_a_start, line_a_end=line_a_end, line_b_start=line_b_start, line_b_end=line_b_end)
 
-        def denom_gt_tol(inputs1):
-            line_a_start = inputs1[0]
-            line_a_end = inputs1[1]
-            line_b_start = inputs1[2]
-            line_b_end = inputs1[3]
-            line_a_vector = inputs1[4]
-            line_b_vector = inputs1[5]
-            denominator = inputs1[6]
+        def denom_gt_tol(inputs1i)->float:
+            line_a_start = inputs1i[0]
+            line_a_end = inputs1i[1]
+            line_b_start = inputs1i[2]
+            line_b_end = inputs1i[3]
+            line_a_vector = inputs1i[4]
+            line_b_vector = inputs1i[5]
+            denominator = inputs1i[6]
 
             a = line_a_start
             v = line_a_vector
@@ -98,47 +99,52 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
 
             # Get closest point along the lines 
             # if s or t > 1, use end point of line
-            def st_gt_1(inputs23):
-                line_end = inputs23[1]
+            def st_gt_1(inputs23i)->np.ndarray:
+                line_end = inputs23i[1]
                 return jnp.array(line_end, dtype=float)
             # if s or t < 0, use start point of line
-            def st_lt_0(inputs23):
-                line_start = inputs23[0]
+            def st_lt_0(inputs23i)->np.ndarray:
+                line_start = inputs23i[0]
                 return jnp.array(line_start, dtype=float)
             # otherwise compute the closest point on line using the parametric form of the line segment
-            def st_gt_0_lt_1(inputs23):
-                line_start = inputs23[0]
-                line_vector = inputs23[2]
-                s = inputs23[3]
-                return jnp.array(line_start + s*line_vector, dtype=float)
-            def st_lt_1(inputs23):
-                st = inputs23[3]
-                return lax.cond(st < 0, st_lt_0, st_gt_0_lt_1, inputs23)
+            def st_gt_0_lt_1(inputs23i)->np.ndarray:
+                line_start = inputs23i[0]
+                line_vector = inputs23i[2]
+                st = inputs23i[3]
+                return jnp.array(line_start + st*line_vector, dtype=float)
+            def st_lt_1(inputs23i)->np.ndarray:
+                st = inputs23i[3]
+                return lax.cond(st < 0, st_lt_0, st_gt_0_lt_1, inputs23i)
 
             # get closest point on lines a and b to each other
-            inputs2 = [line_a_start, line_a_end, line_a_vector, s]
-            closest_point_line_a = lax.cond(s > 1, st_gt_1, st_lt_1, inputs2)[0]
-            inputs3 = [line_b_start, line_b_end, line_b_vector, t]
-            closest_point_line_b = lax.cond(t > 1, st_gt_1, st_lt_1, inputs3)[0]
+            inputs2o = [line_a_start, line_a_end, line_a_vector, s]
+            closest_point_line_a = lax.cond(s > 1, st_gt_1, st_lt_1, inputs2o)
+            inputs3o = [line_b_start, line_b_end, line_b_vector, t]
+            closest_point_line_b = lax.cond(t > 1, st_gt_1, st_lt_1, inputs3o)
 
             # the distance between the line segments is the distance between the closest points (in many cases)
-            distance = smooth_norm(closest_point_line_b - closest_point_line_a)
+            parametric_distance = smooth_norm(closest_point_line_b - closest_point_line_a)
+
+            # parametric approach can miss cases, so compare with point to line distances
+            distance_point_a_line_b = distance_point_to_lineseg_nd(closest_point_line_a, line_b_start, line_b_end)
+            distance_point_b_line_a = distance_point_to_lineseg_nd(closest_point_line_b, line_a_start, line_a_end)
+            distance = smooth_min(jnp.array([parametric_distance, distance_point_a_line_b, distance_point_b_line_a]))
 
             return distance
         
-        line_a_start = inputs0[0]
-        line_a_end = inputs0[1]
-        line_b_start = inputs0[2]
-        line_b_end = inputs0[3]
-        line_a_vector = inputs0[4]
-        line_b_vector = inputs0[5]
+        line_a_start = inputs0i[0]
+        line_a_end = inputs0i[1]
+        line_b_start = inputs0i[2]
+        line_b_end = inputs0i[3]
+        line_a_vector = inputs0i[4]
+        line_b_vector = inputs0i[5]
 
         # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
         denominator = smooth_norm(jnp.cross(line_b_vector, line_a_vector))**2
 
-        inputs1 = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector, denominator]
+        inputs1o = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector, denominator]
 
-        distance = lax.cond(denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1)
+        distance = lax.cond(denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1o)
         
         return distance
 
@@ -152,13 +158,13 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
     line_a_vector = line_a_end - line_a_start 
     line_b_vector = line_b_end - line_b_start
 
-    inputs = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector]
+    inputs0o = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector]
 
-    distance = lax.cond(jnp.all(line_a_vector == 0.0), a_is_point, a_is_not_point, inputs)
+    distance = lax.cond(jnp.all(line_a_vector == 0.0), a_is_point, a_is_not_point, inputs0o)
     
     return distance
+distance_lineseg_to_lineseg_nd = jit(distance_lineseg_to_lineseg_nd)
 
-@jit
 def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, segment_end: np.ndarray) -> float:
     """Find the distance from a point to a finite line segment in N-Dimensions
 
@@ -171,12 +177,12 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
         distance (float): shortest distance between the point and finite line segment
     """
 
-    def if_point_to_point(inputs):
+    def if_point_to_point(inputs)->float:
         point = inputs[0]
         segment_start = inputs[1]
         return smooth_norm(jnp.subtract(segment_start, point))
     
-    def if_point_to_line_seg(inputs):
+    def if_point_to_line_seg(inputs)->float:
         point = inputs[0]
         segment_start = inputs[1]
         segment_end = inputs[2]
@@ -195,8 +201,8 @@ def distance_point_to_lineseg_nd(point: np.ndarray, segment_start: np.ndarray, s
     distance = lax.cond(jnp.all(segment_vector == 0), if_point_to_point, if_point_to_line_seg, [point, segment_start, segment_end, segment_vector])
         
     return distance
+distance_point_to_lineseg_nd = jit(distance_point_to_lineseg_nd)
 
-@jit
 def get_closest_point(point: np.ndarray, segment_start: np.ndarray, segment_end: np.ndarray, segment_vector: np.ndarray) -> np.ndarray:
     """Get the closest point on the line segment to the point of interest in N-Dimensions
 
@@ -233,10 +239,10 @@ def get_closest_point(point: np.ndarray, segment_start: np.ndarray, segment_end:
         segment_start = inputs[1]
         segment_vector = inputs[3]
         return jnp.array(segment_start + projection*segment_vector, dtype=float)
-    # import pdb; pdb.set_trace()
+    
     return lax.cond(projection < 0, lt_0, gt_0, [projection, segment_start, segment_end, segment_vector])
+get_closest_point = jit(get_closest_point)
 
-@jit
 def smooth_max(x:jnp.ndarray, s:float=1000.0) -> float:
     """Non-overflowing version of Smooth Max function (see ref 3 and 4 below). 
     Calculates the smoothmax (a.k.a. softmax or LogSumExponential) of the elements in x.
@@ -269,8 +275,8 @@ def smooth_max(x:jnp.ndarray, s:float=1000.0) -> float:
     r = (jnp.log(1.0 + jnp.sum(exponential)) + s*max_val)/s
 
     return r
+smooth_max = jit(smooth_max)
 
-@jit
 def smooth_min(x:np.ndarray, s:float=1000.0) -> float:
     """ Finds smooth min using the `smooth_max` function
 
@@ -285,8 +291,8 @@ def smooth_min(x:np.ndarray, s:float=1000.0) -> float:
     """
 
     return -smooth_max(x=-x, s=s)
+smooth_min = jit(smooth_min)
 
-@jit
 def smooth_norm(vec: np.ndarray, buf: float=1E-12) -> float:
     """Smooth version of the Frobenius, or 2, norm. This version is nearly equivalent to the 2-norm with the 
     maximum absolute error corresponding to the order of the buffer value. The maximum error in the gradient is near unity, but 
@@ -301,6 +307,7 @@ def smooth_norm(vec: np.ndarray, buf: float=1E-12) -> float:
         (float): normed result
     """
     return jnp.sqrt(buf**2 + jnp.sum(vec**2)) 
+smooth_norm = jit(smooth_norm)
 
 def load_turbine_spec(
     filename_turbine_spec: PathLike,

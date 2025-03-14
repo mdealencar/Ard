@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from jax import grad
+from jax import grad, jacobian
 from jax.test_util import check_grads
 import jax.numpy as jnp
 import ard.offshore.mooring_constraint as mc
@@ -130,6 +130,7 @@ class TestDistancePointToMooring:
 class TestDistanceMooringToMooring:
     def setup_method(self):
         self.distance_mooring_to_mooring_grad = grad(mc.distance_mooring_to_mooring, [0])
+        self.distance_mooring_to_mooring_jac = jacobian(mc.distance_mooring_to_mooring, [0])
         pass
 
     def test_distance_mooring_to_mooring_2d_near_end(self):
@@ -250,16 +251,16 @@ class TestDistanceMooringToMooring:
 
     def test_distance_mooring_to_mooring_2d_near_middle_grad(self):
 
-        P_moorings_A = jnp.array([[10, 10],
-                                [5, 5],
-                                [10, 15],
-                                [15, 5]
+        P_moorings_A = jnp.array([[100, 100],
+                                [50, 50],
+                                [100, 150],
+                                [150, 50]
                                 ], dtype=float)
 
-        P_moorings_B = jnp.array([[16, 0],
-                                [11, -5],
-                                [16, 5],
-                                [21, -5]
+        P_moorings_B = jnp.array([[160, 0],
+                                [110, -50],
+                                [160, 100],
+                                [210, -50]
                                 ], dtype=float)
 
         test_result = self.distance_mooring_to_mooring_grad(P_moorings_A, P_moorings_B)
@@ -325,6 +326,33 @@ class TestDistanceMooringToMooring:
 
         P_moorings_B = jnp.array([[16, 0, 0.0],
                                 [11, -5, 0.0],
+                                [16, 6, 0.0],
+                                [21, -5, 0.0]
+                                ], dtype=float)
+
+        test_result = self.distance_mooring_to_mooring_grad(P_moorings_A, P_moorings_B)
+
+        # expect error due to smooth functions
+        assert test_result[0] == pytest.approx(np.array([[0.0, 0.0, 0.0],
+                                                      [0.0, 0.0, 0.0],
+                                                      [0.0, 0.0, 0.0],
+                                                      [-1.0, 0.0, 0.0]]))
+
+        try:
+            check_grads(mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+
+    def test_distance_mooring_to_mooring_3d_near_middle_end_grad(self):
+
+        P_moorings_A = jnp.array([[10, 10, 0.0],
+                                [5, 5, 0.0],
+                                [10, 15, 0.0],
+                                [15, 5, 0.0]
+                                ], dtype=float)
+
+        P_moorings_B = jnp.array([[16, 0, 0.0],
+                                [11, -5, 0.0],
                                 [16, 5, 0.0],
                                 [21, -5, 0.0]
                                 ], dtype=float)
@@ -332,15 +360,10 @@ class TestDistanceMooringToMooring:
         test_result = self.distance_mooring_to_mooring_grad(P_moorings_A, P_moorings_B)
 
         # expect error due to smooth functions
-        # assert test_result[0] == pytest.approx(np.array([[0.0, 0.0, 0.0],
-        #                                               [0.0, 0.0, 0.0],
-        #                                               [0.0, 0.0, 0.0],
-        #                                               [-1.0, 0.0, 0.0]]))
-        
-        try:
-            check_grads(mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1)
-        except AssertionError:
-            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+        assert test_result[0] == pytest.approx(np.array([[0.0, 0.0, 0.0],
+                                                      [0.0, 0.0, 0.0],
+                                                      [0.0, 0.0, 0.0],
+                                                      [-1.0, 0.0, 0.0]]))
 
     def test_distance_mooring_to_mooring_3d_equal_grad(self):
 

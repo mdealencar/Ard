@@ -103,7 +103,6 @@ class MooringConstraint(om.ExplicitComponent):
         # replace the below with the final values
         outputs["violation_distance"] = None
 
-@jit
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
     """Find the distance from a point to a set of mooring lines for a single floating wind turbine.
         While arguments may be given in either 2d ([x,y]) or 3d ([x,y,z]), the point of interest 
@@ -127,8 +126,8 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
                                 ])
     
     return smooth_min(distance_moorings)
+distance_point_to_mooring = jit(distance_point_to_mooring)
 
-@jit
 def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray) -> float:
     """Calculate the distance from one mooring to another. Moorings are defined with center point first
         followed by anchor points in no specific order.
@@ -153,3 +152,4 @@ def distance_mooring_to_mooring(P_mooring_A: np.ndarray, P_mooring_B: np.ndarray
         ) for point_anchor_B in P_mooring_B[1:]] for point_anchor_A in P_mooring_A[1:]])
 
     return smooth_min(jnp.array([smooth_min(d) for d in distance_moorings_b]))
+distance_mooring_to_mooring = jit(distance_mooring_to_mooring)
