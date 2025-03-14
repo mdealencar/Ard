@@ -132,8 +132,8 @@ def convert_inputs_x_y_to_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_a
             xy = xy.at[i, j, 1].set(y_anchors[i, j-1])
 
     return xy
+convert_inputs_x_y_to_xy = jit(convert_inputs_x_y_to_xy)
 
-@jit
 def convert_inputs_x_y_z_to_xyz(x_turbines: np.ndarray, y_turbines: np.ndarray, z_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray, z_anchors: np.ndarray, ) -> np.ndarray:
     """Convert from inputs of x for turbines, y for turbines, z for turbines, x for anchors, y for anchors, and z for anchors to single array for mooring specification
     that is of shape (n_turbines, n_anchors+1, 3). for each set of points, the turbine position is given first followed by the anchor positions
@@ -164,6 +164,7 @@ def convert_inputs_x_y_z_to_xyz(x_turbines: np.ndarray, y_turbines: np.ndarray, 
             xyz = xyz.at[i, j, 2].set(z_anchors[i, j-1])
 
     return xyz
+convert_inputs_x_y_z_to_xyz = jit(convert_inputs_x_y_z_to_xyz)
 
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
     """Find the distance from a point to a set of mooring lines for a single floating wind turbine.
