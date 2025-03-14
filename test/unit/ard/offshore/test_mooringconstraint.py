@@ -9,6 +9,86 @@ class TestMooringConstraint:
     def setup_method(self):
         pass
 
+class TestMooringConstraintXY:
+    def setup_method(self):
+        pass
+
+    def test_mooring_constraint_xy(self):
+        xt_in = np.array([10, 30, 50])
+        yt_in = np.array([10, 10, 10])
+        xa_in = np.array([[5, 10, 15], [25, 30, 35], [45, 50, 55]])
+        ya_in = np.array([[5, 15, 5], [5, 15, 5], [5, 15, 5]])
+
+        test_result = mc.mooring_constraint_xy(xt_in, yt_in, xa_in, ya_in)
+
+        assert np.all(test_result == pytest.approx(np.array([10.0, 30.0, 10.0]), rel=1E-3))
+
+    def test_mooring_constraint_xy_grad(self):
+        xt_in = jnp.array([10, 30, 50], dtype=float)
+        yt_in = jnp.array([10, 10, 10], dtype=float)
+        xa_in = jnp.array([[5, 10, 15], [25, 30, 35], [45, 50, 55]], dtype=float)
+        ya_in = jnp.array([[5, 15, 5], [5, 15, 5], [5, 15, 5]], dtype=float)
+
+        try:
+            check_grads(mc.mooring_constraint_xy, (xt_in, yt_in, xa_in, ya_in), order=1, modes="fwd")
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+
+class TestCalcMooringDistances:
+    def setup_method(self):
+        pass
+
+    def test_calc_mooring_distances(self):
+        P_moorings_A = jnp.array([[10, 10],
+                                [5, 5],
+                                [10, 15],
+                                [15, 5]
+                                ], dtype=float)
+
+        P_moorings_B = jnp.array([[30, 10],
+                                [25, 5],
+                                [30, 15],
+                                [35, 5]
+                                ], dtype=float)
+        
+        P_moorings_C = jnp.array([[50, 10],
+                                [45, 5],
+                                [50, 15],
+                                [55, 5]
+                                ], dtype=float)
+        
+        mooring_points = jnp.array([P_moorings_A, P_moorings_B, P_moorings_C])
+
+        test_result = mc.calc_mooring_distances(mooring_points)
+
+        assert np.all(test_result == pytest.approx(np.array([10.0, 30.0, 10.0]), rel=1E-3))
+
+    def test_calc_mooring_distances_grad(self):
+        P_moorings_A = jnp.array([[10, 10],
+                                [5, 5],
+                                [10, 15],
+                                [15, 5]
+                                ], dtype=float)
+
+        P_moorings_B = jnp.array([[30, 10],
+                                [25, 5],
+                                [30, 15],
+                                [35, 5]
+                                ], dtype=float)
+        
+        P_moorings_C = jnp.array([[50, 10],
+                                [45, 5],
+                                [50, 15],
+                                [55, 5]
+                                ], dtype=float)
+
+        mooring_points = jnp.array([[P_moorings_A, P_moorings_B, P_moorings_C]])
+
+        try:
+            check_grads(mc.calc_mooring_distances, (mooring_points), order=1, modes="fwd")
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+        
 class TestConvertInputs_X_Y_To_XY:
 
     def setup_method(self):

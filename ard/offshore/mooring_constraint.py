@@ -1,9 +1,9 @@
 import numpy as np
 import jax.numpy as jnp
-from jax import jit, lax
+from jax import jit, grad
 from ard.utils import distance_point_to_lineseg_nd, smooth_min, distance_lineseg_to_lineseg_nd
 import openmdao.api as om
-import jax
+
 class MooringConstraint(om.ExplicitComponent):
     """
     A class to reduce complex mooring constraints into a simple violation lengthscale
@@ -47,6 +47,7 @@ class MooringConstraint(om.ExplicitComponent):
         self.modeling_options = self.options["modeling_options"]
         self.N_turbines = self.modeling_options["farm"]["N_turbines"]
         self.N_anchors = self.modeling_options["platform"]["N_anchors"]
+        self.N_distances = (self.N_turbines-1)*self.N_turbines/2
         # MANAGE ADDITIONAL LATENT VARIABLES HERE!!!!!
 
         # set up inputs and outputs for mooring system
@@ -70,7 +71,7 @@ class MooringConstraint(om.ExplicitComponent):
 
         self.add_output(
             "violation_distance",
-            0.0,
+            jnp.zeros(self.N_distances),
             units="km",
         )  # consolidated violation length
         # ADD ADDITIONAL (DESIGN VARIABLE) OUTPUTS HERE!!!!!
@@ -78,7 +79,7 @@ class MooringConstraint(om.ExplicitComponent):
     def setup_partials(self):
         """Derivative setup for the OpenMDAO component."""
         # the default (but not preferred!) derivatives are FDM
-        self.declare_partials("*", "*", method="fd")
+        self.declare_partials("*", "*", method="exact")
 
     def compute(self, inputs, outputs, discrete_inputs=None, discrete_outputs=None):
         """Computation for the OpenMDAO component."""
@@ -89,22 +90,73 @@ class MooringConstraint(om.ExplicitComponent):
         x_anchors = inputs["x_anchors"]
         y_anchors = inputs["y_anchors"]
 
-        ########################################################################
-        #
-        # this is where the magic will happen!
-        #
-        # here, the implementor will take the variables above and map them into
-        # the machinery for computing a mooring design for each of the turbines.
-        #
-        ########################################################################
-
-        raise NotImplementedError("This component is awaiting implementation!")
+        # TODO extend this to allow for 3d, which should just require a version of the mooring_constraint_xy function in 3d
+        distances = mooring_constraint_xy(x_turbines, y_turbines, x_anchors, y_anchors)
 
         # replace the below with the final values
-        outputs["violation_distance"] = None
+        outputs["violation_distance"] = distances
 
-# TODO for 3d we just need an xyz version of this function
-@jit
+    def compute_partials(self, inputs, partials, discrete_inputs=None):
+
+        # unpack the working variables
+        x_turbines = inputs["x_turbines"]
+        y_turbines = inputs["y_turbines"]
+        x_anchors = inputs["x_anchors"]
+        y_anchors = inputs["y_anchors"]
+
+        jacobian = mooring_constraint_xy_grad(x_turbines, y_turbines, x_anchors, y_anchors)
+
+        partials[]
+
+def mooring_constraint_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray):
+    """Mooring constraint calculation in 2 dimensions
+
+    Args:
+        x_turbines (np.ndarray): array of turbine x positions
+        y_turbines (np.ndarray): array of turbine y positions
+        x_anchors (np.ndarray): array of anchor x positions
+        y_anchors (np.ndarray): array of anchor y positions
+
+    Returns:
+        np.ndarray: 1D array of distances with length (n_turbines - 1)*n_turbines/2
+    """
+
+    # convert inputs
+    mooring_points = convert_inputs_x_y_to_xy(x_turbines, y_turbines, x_anchors, y_anchors)
+
+    # calculate minimum
+    distances = calc_mooring_distances(mooring_points)
+
+    return distances
+
+mooring_constraint_xy_grad = grad(mooring_constraint_xy)
+
+def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
+    """Calculate the minimum distances between each set of mooring lines
+
+    Args:
+        mooring_points (np.ndarray): array of mooring points of shape (n_turbines, n_anchors+1, n_dimensions) where n_dimensions may be 2 or 3
+
+    Returns:
+        np.ndarray: 1D array of distances with length (n_turbines - 1)*n_turbines/2
+    """
+
+    n_turbines = mooring_points.shape[0]
+    n_distances = int((n_turbines - 1)*n_turbines/2)
+
+    distances = jnp.zeros(n_distances)
+
+    k = 0
+    for i in range(0, mooring_points.shape[0]-1):
+        for j in range(mooring_points.shape[0]):
+            if i == j:
+                continue
+            distances = distances.at[k].set(distance_mooring_to_mooring(mooring_points[i], mooring_points[j]))
+            k += 1
+
+    return distances
+calc_mooring_distances = jit(calc_mooring_distances)
+
 def convert_inputs_x_y_to_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray) -> np.ndarray:
     """Convert from inputs of x for turbines, y for turbines, x for anchors, and y for anchors to single array for mooring specification
     that is of shape (n_turbines, n_anchors+1, 2). for each set of points, the turbine position is given first followed by the anchor positions
