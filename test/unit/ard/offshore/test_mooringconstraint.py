@@ -9,6 +9,86 @@ class TestMooringConstraint:
     def setup_method(self):
         pass
 
+class TestConvertInputs_X_Y_To_XY:
+
+    def setup_method(self):
+        self.distance_point_to_mooring_grad = grad(mc.convert_inputs_x_y_to_xy, [0])
+        pass 
+
+    def test_convert_inputs_x_y_to_xy(self):
+
+        xt_in = np.array([1, 10])
+        yt_in = np.array([2, 20])
+        xa_in = np.array([[3, 30, 300], [4, 40, 400]])
+        ya_in = np.array([[5, 50, 500], [6, 60, 600]])
+
+        pm_out_expected = np.array([[[  1,   2],
+                                     [  3,   5],
+                                     [ 30,  50],
+                                     [300, 500]],
+                                    [[ 10,  20],
+                                     [  4,   6],
+                                     [ 40,  60],
+                                     [400, 600]]], dtype=float)
+        
+        pm_out = mc.convert_inputs_x_y_to_xy(xt_in, yt_in, xa_in, ya_in)
+
+        assert np.all(pm_out == pm_out_expected)
+
+    def test_convert_inputs_x_y_to_xy_grad(self):
+
+        xt_in = jnp.array([1, 10], dtype=float)
+        yt_in = jnp.array([2, 20], dtype=float)
+        xa_in = jnp.array([[3, 30, 300], [4, 40, 400]], dtype=float)
+        ya_in = jnp.array([[5, 50, 500], [6, 60, 600]], dtype=float)
+
+        try:
+            check_grads(mc.convert_inputs_x_y_to_xy, (xt_in, yt_in, xa_in, ya_in), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
+
+
+class TestConvertInputs_X_Y_Z_To_XYZ:
+
+    def setup_method(self):
+        self.distance_point_to_mooring_grad = grad(mc.convert_inputs_x_y_z_to_xyz, [0])
+        pass 
+
+    def test_convert_inputs_x_y_z_to_xyz(self):
+
+        xt_in = np.array([1, 10], dtype=float)
+        yt_in = np.array([2, 20], dtype=float)
+        zt_in = np.array([7, 70], dtype=float)
+        xa_in = np.array([[3, 30, 300], [4, 40, 400]], dtype=float)
+        ya_in = np.array([[5, 50, 500], [6, 60, 600]], dtype=float)
+        za_in = np.array([[8, 80, 800], [9, 90, 900]], dtype=float)
+
+        pm_out_expected = np.array([[[  1,   2,   7],
+                                     [  3,   5,   8],
+                                     [ 30,  50,  80],
+                                     [300, 500, 800]],
+                                    [[ 10,  20,  70],
+                                     [  4,   6,   9],
+                                     [ 40,  60,  90],
+                                     [400, 600, 900]]], dtype=float)
+        
+        pm_out = mc.convert_inputs_x_y_z_to_xyz(xt_in, yt_in, zt_in, xa_in, ya_in, za_in)
+
+        assert np.all(pm_out == pm_out_expected)
+
+    def test_convert_inputs_x_y_z_to_xyz_grad(self):
+
+        xt_in = jnp.array([1, 10], dtype=float)
+        yt_in = jnp.array([2, 20], dtype=float)
+        zt_in = jnp.array([7, 70], dtype=float)
+        xa_in = jnp.array([[3, 30, 300], [4, 40, 400]], dtype=float)
+        ya_in = jnp.array([[5, 50, 500], [6, 60, 600]], dtype=float)
+        za_in = jnp.array([[8, 80, 800], [9, 90, 900]], dtype=float)
+
+        try:
+            check_grads(mc.convert_inputs_x_y_z_to_xyz, (xt_in, yt_in, zt_in, xa_in, ya_in, za_in), order=1)
+        except AssertionError:
+            pytest.fail("Unexpected AssertionError when checking gradients, gradients may be incorrect")
 
 class TestDistancePointToMooring:
     def setup_method(self):

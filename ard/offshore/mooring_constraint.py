@@ -1,9 +1,9 @@
 import numpy as np
 import jax.numpy as jnp
-from jax import jit
+from jax import jit, lax
 from ard.utils import distance_point_to_lineseg_nd, smooth_min, distance_lineseg_to_lineseg_nd
 import openmdao.api as om
-
+import jax
 class MooringConstraint(om.ExplicitComponent):
     """
     A class to reduce complex mooring constraints into a simple violation lengthscale
@@ -102,6 +102,68 @@ class MooringConstraint(om.ExplicitComponent):
 
         # replace the below with the final values
         outputs["violation_distance"] = None
+
+# TODO for 3d we just need an xyz version of this function
+@jit
+def convert_inputs_x_y_to_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray) -> np.ndarray:
+    """Convert from inputs of x for turbines, y for turbines, x for anchors, and y for anchors to single array for mooring specification
+    that is of shape (n_turbines, n_anchors+1, 2). for each set of points, the turbine position is given first followed by the anchor positions
+
+    Args:
+        x_turbines (np.ndarray): array of turbine x positions
+        y_turbines (np.ndarray): array of turbine y positions
+        x_anchors (np.ndarray): array of anchor x positions
+        y_anchors (np.ndarray): array of anchor y positions
+
+    Returns:
+        np.ndarray: all input information combined into a single array of shape (n_turbines, n_anchors+1, 2)
+    """
+
+    n_turbines = len(x_turbines)
+    n_anchors = x_anchors.shape[1]
+
+    xy = jnp.zeros((n_turbines, n_anchors+1, 2))
+
+    for i in jnp.arange(0, n_turbines):
+        xy = xy.at[i, 0, 0].set(x_turbines[i])
+        xy = xy.at[i, 0, 1].set(y_turbines[i])
+        for j in jnp.arange(1, n_anchors+1):
+            xy = xy.at[i, j, 0].set(x_anchors[i, j-1])
+            xy = xy.at[i, j, 1].set(y_anchors[i, j-1])
+
+    return xy
+
+@jit
+def convert_inputs_x_y_z_to_xyz(x_turbines: np.ndarray, y_turbines: np.ndarray, z_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray, z_anchors: np.ndarray, ) -> np.ndarray:
+    """Convert from inputs of x for turbines, y for turbines, z for turbines, x for anchors, y for anchors, and z for anchors to single array for mooring specification
+    that is of shape (n_turbines, n_anchors+1, 3). for each set of points, the turbine position is given first followed by the anchor positions
+
+    Args:
+        x_turbines (np.ndarray): array of turbine x positions
+        y_turbines (np.ndarray): array of turbine y positions
+        z_turbines (np.ndarray): array of turbine z positions
+        x_anchors (np.ndarray): array of anchor x positions
+        y_anchors (np.ndarray): array of anchor y positions
+        z_anchors (np.ndarray): array of anchor z positions
+
+    Returns:
+        np.ndarray: all input information combined into a single array of shape (n_turbines, n_anchors+1, 3)
+    """
+    n_turbines = len(x_turbines)
+    n_anchors = x_anchors.shape[1]
+
+    xyz = jnp.zeros((n_turbines, n_anchors+1, 3))
+
+    for i in jnp.arange(0, n_turbines):
+        xyz = xyz.at[i, 0, 0].set(x_turbines[i])
+        xyz = xyz.at[i, 0, 1].set(y_turbines[i])
+        xyz = xyz.at[i, 0, 2].set(z_turbines[i])
+        for j in jnp.arange(1, n_anchors+1):
+            xyz = xyz.at[i, j, 0].set(x_anchors[i, j-1])
+            xyz = xyz.at[i, j, 1].set(y_anchors[i, j-1])
+            xyz = xyz.at[i, j, 2].set(z_anchors[i, j-1])
+
+    return xyz
 
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
     """Find the distance from a point to a set of mooring lines for a single floating wind turbine.
