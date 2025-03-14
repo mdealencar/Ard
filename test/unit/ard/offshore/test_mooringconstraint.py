@@ -4,10 +4,103 @@ from jax import grad, jacobian
 from jax.test_util import check_grads
 import jax.numpy as jnp
 import ard.offshore.mooring_constraint as mc
+import openmdao.api as om
 
-class TestMooringConstraint:
+class TestMooringConstraint3Turbines3Anchors:
     def setup_method(self):
-        pass
+        xt_in = np.array([10, 30, 50])
+        yt_in = np.array([10, 10, 10])
+        xa_in = np.array([[5, 10, 15], [25, 30, 35], [45, 50, 55]])
+        ya_in = np.array([[5, 15, 5], [5, 15, 5], [5, 15, 5]])
+        modeling_options = {"farm": {"N_turbines": 3},
+                                 "platform": {"N_anchors": 3}
+        }
+
+
+        prob = om.Problem(model=om.Group())
+        prob.model.add_subsystem("mc", mc.MooringConstraint(modeling_options=modeling_options), promotes=["*"])
+
+        prob.model.set_input_defaults("x_turbines", xt_in, units="km")
+        prob.model.set_input_defaults("y_turbines", yt_in, units="km")
+        prob.model.set_input_defaults("x_anchors", xa_in, units="km")
+        prob.model.set_input_defaults("y_anchors", ya_in, units="km")
+        prob.setup()
+        prob.run_model()
+
+        self.prob0 = prob 
+
+        xt_in1 = np.array([0, 20])
+        yt_in1 = np.array([0, 0])
+        xa_in1 = np.array([[3], [17]])
+        ya_in1 = np.array([[0], [0]])
+        modeling_options1 = {"farm": {"N_turbines": 2},
+                                 "platform": {"N_anchors": 1}
+        }
+
+        prob1 = om.Problem(model=om.Group())
+        prob1.model.add_subsystem("mc", mc.MooringConstraint(modeling_options=modeling_options1), promotes=["*"])
+
+        prob1.model.set_input_defaults("x_turbines", xt_in1, units="km")
+        prob1.model.set_input_defaults("y_turbines", yt_in1, units="km")
+        prob1.model.set_input_defaults("x_anchors", xa_in1, units="km")
+        prob1.model.set_input_defaults("y_anchors", ya_in1, units="km")
+        prob1.setup()
+        prob1.run_model()
+        totals1 = prob.compute_totals(of=['violation_distance'], wrt=['x_turbines', 'y_turbines', 'x_anchors', 'y_anchors'])
+        
+        totals_expected1 = {('violation_distance', 'x_turbines'): np.array([[0.0, 0.0]]),
+                          ('violation_distance', 'y_turbines'): np.array([[0.0, 0.0]]),
+                          ('violation_distance', 'x_anchors'): np.array([[-1.0, 1.0]]),
+                          ('violation_distance', 'y_anchors'): np.array([[0.0, 0.0]])}
+        
+        self.prob1 = prob1 
+        self.totals1 = totals1
+        self.totals_expected1 = totals_expected1
+
+    def test_mooring_constraint_component_output(self):
+        assert np.all(self.prob0["violation_distance"] == pytest.approx(np.array([10.0, 30.0, 10.0]), rel=1E-3))
+    
+class TestMooringConstraint2Turbines1Anchors:
+    def setup_method(self):
+        xt_in1 = np.array([0, 20])
+        yt_in1 = np.array([0, 0])
+        xa_in1 = np.array([[3], [17]])
+        ya_in1 = np.array([[0], [0]])
+        modeling_options1 = {"farm": {"N_turbines": 2},
+                                 "platform": {"N_anchors": 1}
+        }
+
+        prob1 = om.Problem(model=om.Group())
+        prob1.model.add_subsystem("mc", mc.MooringConstraint(modeling_options=modeling_options1), promotes=["*"])
+
+        prob1.model.set_input_defaults("x_turbines", xt_in1, units="km")
+        prob1.model.set_input_defaults("y_turbines", yt_in1, units="km")
+        prob1.model.set_input_defaults("x_anchors", xa_in1, units="km")
+        prob1.model.set_input_defaults("y_anchors", ya_in1, units="km")
+        prob1.setup()
+        prob1.run_model()
+        totals1 = prob1.compute_totals(of=['violation_distance'], wrt=['x_turbines', 'y_turbines', 'x_anchors', 'y_anchors'])
+        
+        totals_expected1 = {('violation_distance', 'x_turbines'): np.array([[0.0, 0.0]]),
+                          ('violation_distance', 'y_turbines'): np.array([[0.0, 0.0]]),
+                          ('violation_distance', 'x_anchors'): np.array([[-1.0, 1.0]]),
+                          ('violation_distance', 'y_anchors'): np.array([[0.0, 0.0]])}
+        
+        self.prob1 = prob1 
+        self.totals1 = totals1
+        self.totals_expected1 = totals_expected1
+
+    def test_mooring_constraint_component_output(self):
+        assert np.all(self.prob1["violation_distance"] == pytest.approx(np.array([14.0]), rel=1E-3))
+    def test_mooring_constraint_component_jacobian0(self):
+        assert np.all(self.totals1[('violation_distance', 'x_turbines')] == pytest.approx(self.totals_expected1[('violation_distance', 'x_turbines')]))
+    def test_mooring_constraint_component_jacobian1(self):
+        assert np.all(self.totals1[('violation_distance', 'y_turbines')] == pytest.approx(self.totals_expected1[('violation_distance', 'y_turbines')]))
+    def test_mooring_constraint_component_jacobian2(self):
+        assert np.all(self.totals1[('violation_distance', 'x_anchors')] == pytest.approx(self.totals_expected1[('violation_distance', 'x_anchors')]))
+    def test_mooring_constraint_component_jacobian3(self):
+        assert np.all(self.totals1[('violation_distance', 'y_anchors')] == pytest.approx(self.totals_expected1[('violation_distance', 'y_anchors')]))
+
 
 class TestMooringConstraintXY:
     def setup_method(self):

@@ -1,14 +1,12 @@
 import numpy as np
 import jax.numpy as jnp
-from jax import jit, grad
+from jax import jit, jacobian
 from ard.utils import distance_point_to_lineseg_nd, smooth_min, distance_lineseg_to_lineseg_nd
 import openmdao.api as om
 
 class MooringConstraint(om.ExplicitComponent):
     """
     A class to reduce complex mooring constraints into a simple violation lengthscale
-
-    TODO
 
     Options
     -------
@@ -45,9 +43,9 @@ class MooringConstraint(om.ExplicitComponent):
 
         # load modeling options
         self.modeling_options = self.options["modeling_options"]
-        self.N_turbines = self.modeling_options["farm"]["N_turbines"]
-        self.N_anchors = self.modeling_options["platform"]["N_anchors"]
-        self.N_distances = (self.N_turbines-1)*self.N_turbines/2
+        self.N_turbines = int(self.modeling_options["farm"]["N_turbines"])
+        self.N_anchors = int(self.modeling_options["platform"]["N_anchors"])
+        self.N_distances = int((self.N_turbines-1)*self.N_turbines/2)
         # MANAGE ADDITIONAL LATENT VARIABLES HERE!!!!!
 
         # set up inputs and outputs for mooring system
@@ -89,9 +87,14 @@ class MooringConstraint(om.ExplicitComponent):
         y_turbines = inputs["y_turbines"]
         x_anchors = inputs["x_anchors"]
         y_anchors = inputs["y_anchors"]
+        print(x_turbines)
+        print(y_turbines)
+        print(x_anchors)
+        print(y_anchors)
 
         # TODO extend this to allow for 3d, which should just require a version of the mooring_constraint_xy function in 3d
         distances = mooring_constraint_xy(x_turbines, y_turbines, x_anchors, y_anchors)
+        print(distances)
 
         # replace the below with the final values
         outputs["violation_distance"] = distances
@@ -104,9 +107,14 @@ class MooringConstraint(om.ExplicitComponent):
         x_anchors = inputs["x_anchors"]
         y_anchors = inputs["y_anchors"]
 
-        jacobian = mooring_constraint_xy_grad(x_turbines, y_turbines, x_anchors, y_anchors)
+        jacobian = mooring_constraint_xy_jac(x_turbines, y_turbines, x_anchors, y_anchors)
 
-        partials[]
+        print(jacobian)
+
+        partials["violation_distance", "x_turbines"] = jacobian[0]
+        partials["violation_distance", "y_turbines"] = jacobian[1]
+        partials["violation_distance", "x_anchors"] = jacobian[2]
+        partials["violation_distance", "y_anchors"] = jacobian[3]
 
 def mooring_constraint_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray):
     """Mooring constraint calculation in 2 dimensions
@@ -123,13 +131,12 @@ def mooring_constraint_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_anch
 
     # convert inputs
     mooring_points = convert_inputs_x_y_to_xy(x_turbines, y_turbines, x_anchors, y_anchors)
-
-    # calculate minimum
+    # calculate minimum distances between each set of moorings
     distances = calc_mooring_distances(mooring_points)
 
     return distances
 
-mooring_constraint_xy_grad = grad(mooring_constraint_xy)
+mooring_constraint_xy_jac = jacobian(mooring_constraint_xy, argnums=[0,1,2,3])
 
 def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
     """Calculate the minimum distances between each set of mooring lines
@@ -155,7 +162,7 @@ def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
             k += 1
 
     return distances
-calc_mooring_distances = jit(calc_mooring_distances)
+# calc_mooring_distances = jit(calc_mooring_distances)
 
 def convert_inputs_x_y_to_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray) -> np.ndarray:
     """Convert from inputs of x for turbines, y for turbines, x for anchors, and y for anchors to single array for mooring specification
@@ -184,7 +191,7 @@ def convert_inputs_x_y_to_xy(x_turbines: np.ndarray, y_turbines: np.ndarray, x_a
             xy = xy.at[i, j, 1].set(y_anchors[i, j-1])
 
     return xy
-convert_inputs_x_y_to_xy = jit(convert_inputs_x_y_to_xy)
+# convert_inputs_x_y_to_xy = jit(convert_inputs_x_y_to_xy)
 
 def convert_inputs_x_y_z_to_xyz(x_turbines: np.ndarray, y_turbines: np.ndarray, z_turbines: np.ndarray, x_anchors: np.ndarray, y_anchors: np.ndarray, z_anchors: np.ndarray, ) -> np.ndarray:
     """Convert from inputs of x for turbines, y for turbines, z for turbines, x for anchors, y for anchors, and z for anchors to single array for mooring specification
@@ -216,7 +223,7 @@ def convert_inputs_x_y_z_to_xyz(x_turbines: np.ndarray, y_turbines: np.ndarray, 
             xyz = xyz.at[i, j, 2].set(z_anchors[i, j-1])
 
     return xyz
-convert_inputs_x_y_z_to_xyz = jit(convert_inputs_x_y_z_to_xyz)
+# convert_inputs_x_y_z_to_xyz = jit(convert_inputs_x_y_z_to_xyz)
 
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
     """Find the distance from a point to a set of mooring lines for a single floating wind turbine.
