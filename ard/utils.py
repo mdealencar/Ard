@@ -36,7 +36,7 @@ def _distance_lineseg_to_lineseg_coplanar(line_a_start: np.ndarray, line_a_end: 
     return distance
 _distance_lineseg_to_lineseg_coplanar = jit(_distance_lineseg_to_lineseg_coplanar)
 
-def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray, tol=0.0) -> float:
+def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndarray, line_b_start: np.ndarray, line_b_end: np.ndarray, tol=1E-12) -> float:
     """Find the distance between two line segments in 2d or 3d. This method is primarily based on reference [1].
 
     [1] Numerical Recipes: The Art of Scientific Computing by Press, et al. 3rd edition
@@ -141,7 +141,7 @@ def distance_lineseg_to_lineseg_nd(line_a_start: np.ndarray, line_a_end: np.ndar
 
         # find s and t (point along segment where the segments are closest to each other) using eq. 21.4.17 in [1]
         denominator = smooth_norm(jnp.cross(line_b_vector, line_a_vector))**2
-
+        
         inputs1o = [line_a_start, line_a_end, line_b_start, line_b_end, line_a_vector, line_b_vector, denominator]
 
         distance = lax.cond(denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1o)
