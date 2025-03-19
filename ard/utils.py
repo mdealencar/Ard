@@ -5,8 +5,6 @@ import yaml
 import jax.numpy as jnp
 from jax import jit, lax
 
-import jax 
-
 import numpy as np
 
 from wisdem.inputs.validation import load_yaml
