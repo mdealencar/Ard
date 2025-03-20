@@ -1,6 +1,6 @@
 import numpy as np
 import jax.numpy as jnp
-from jax import jit, jacobian
+from jax import jit, jacrev
 from ard.utils import (
     distance_point_to_lineseg_nd,
     smooth_min,
@@ -145,7 +145,7 @@ def mooring_constraint_xy(
     return distances
 
 
-mooring_constraint_xy_jac = jacobian(mooring_constraint_xy, argnums=[0, 1, 2, 3])
+mooring_constraint_xy_jac = jacrev(mooring_constraint_xy, argnums=[0, 1, 2, 3])
 
 
 def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
