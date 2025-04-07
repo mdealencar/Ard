@@ -13,7 +13,10 @@ class TestMooringConstraint3Turbines3Anchors2D:
         yt_in = np.array([10, 10, 10])
         xa_in = np.array([[5, 10, 15], [25, 30, 35], [45, 50, 55]])
         ya_in = np.array([[5, 15, 5], [5, 15, 5], [5, 15, 5]])
-        modeling_options = {"farm": {"N_turbines": 3}, "platform": {"N_anchors": 3, "N_anchor_dimensions": 2}}
+        modeling_options = {
+            "farm": {"N_turbines": 3},
+            "platform": {"N_anchors": 3, "N_anchor_dimensions": 2},
+        }
 
         prob = om.Problem(model=om.Group())
         prob.model.add_subsystem(
@@ -45,7 +48,10 @@ class TestMooringConstraint3Turbines3Anchors3D:
         xa_in = np.array([[5, 10, 15], [25, 30, 35], [45, 50, 55]])
         ya_in = np.array([[5, 15, 5], [5, 15, 5], [5, 15, 5]])
         za_in = np.array([[-5, -5, -5], [-5, -5, -5], [-5, -5, -5]])
-        modeling_options = {"farm": {"N_turbines": 3}, "platform": {"N_anchors": 3, "N_anchor_dimensions": 3}}
+        modeling_options = {
+            "farm": {"N_turbines": 3},
+            "platform": {"N_anchors": 3, "N_anchor_dimensions": 3},
+        }
 
         prob = om.Problem(model=om.Group())
         prob.model.add_subsystem(
@@ -70,13 +76,17 @@ class TestMooringConstraint3Turbines3Anchors3D:
             == pytest.approx(np.array([10.0, 30.0, 10.0]), rel=1e-3)
         )
 
+
 class TestMooringConstraint2Turbines1Anchors2D:
     def setup_method(self):
         xt_in1 = np.array([0, 20])
         yt_in1 = np.array([0, 0])
         xa_in1 = np.array([[-3, 3], [17, 23]])
         ya_in1 = np.array([[0, 0], [0, 0]])
-        modeling_options1 = {"farm": {"N_turbines": 2}, "platform": {"N_anchors": 2, "N_anchor_dimensions": 2}}
+        modeling_options1 = {
+            "farm": {"N_turbines": 2},
+            "platform": {"N_anchors": 2, "N_anchor_dimensions": 2},
+        }
 
         prob1 = om.Problem(model=om.Group())
         prob1.model.add_subsystem(
@@ -141,6 +151,7 @@ class TestMooringConstraint2Turbines1Anchors2D:
             == pytest.approx(self.totals_expected1[("violation_distance", "y_anchors")])
         )
 
+
 class TestMooringConstraint2Turbines1Anchors3D:
     def setup_method(self):
         xt_in1 = np.array([0, 20])
@@ -148,7 +159,10 @@ class TestMooringConstraint2Turbines1Anchors3D:
         xa_in1 = np.array([[-3, 3], [17, 23]])
         ya_in1 = np.array([[0, 0], [0, 0]])
         za_in1 = np.array([[-10, -50], [-25, -10]])
-        modeling_options1 = {"farm": {"N_turbines": 2}, "platform": {"N_anchors": 2, "N_anchor_dimensions": 3}}
+        modeling_options1 = {
+            "farm": {"N_turbines": 2},
+            "platform": {"N_anchors": 2, "N_anchor_dimensions": 3},
+        }
 
         prob1 = om.Problem(model=om.Group())
         prob1.model.add_subsystem(
@@ -172,9 +186,13 @@ class TestMooringConstraint2Turbines1Anchors3D:
         totals_expected1 = {
             ("violation_distance", "x_turbines"): np.array([[-0.48060241, 0.0]]),
             ("violation_distance", "y_turbines"): np.array([[0.0, 0.0]]),
-            ("violation_distance", "x_anchors"): np.array([[0.0, -0.51760243, 0.9982048, 0.0]]),
+            ("violation_distance", "x_anchors"): np.array(
+                [[0.0, -0.51760243, 0.9982048, 0.0]]
+            ),
             ("violation_distance", "y_anchors"): np.array([[0.0, 0.0, 0.0, 0.0]]),
-            ("violation_distance", "z_anchors"): np.array([[0.0, -0.03105615, 0.05989229, 0.0]]),
+            ("violation_distance", "z_anchors"): np.array(
+                [[0.0, -0.03105615, 0.05989229, 0.0]]
+            ),
         }
 
         self.prob1 = prob1
@@ -256,6 +274,7 @@ class TestMooringConstraintXY:
                 "Unexpected AssertionError when checking gradients, gradients may be incorrect"
             )
 
+
 class TestMooringConstraintXYZ:
     def setup_method(self):
         pass
@@ -291,6 +310,7 @@ class TestMooringConstraintXYZ:
             pytest.fail(
                 "Unexpected AssertionError when checking gradients, gradients may be incorrect"
             )
+
 
 class TestCalcMooringDistances:
     def setup_method(self):
