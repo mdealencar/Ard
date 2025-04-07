@@ -37,6 +37,9 @@ class MooringConstraint(om.ExplicitComponent):
     y_anchors : np.ndarray
         a 1D numpy array indicating the y-dimension locations of the mooring
         system anchors, with shape `N_turbines` x `N_anchors`
+    z_anchors (optional) : np.ndarray
+        a 1D numpy array indicating the z-dimension locations of the mooring
+        system anchors, with shape `N_turbines` x `N_anchors`
     """
 
     def initialize(self):
@@ -49,6 +52,7 @@ class MooringConstraint(om.ExplicitComponent):
         # load modeling options
         self.modeling_options = self.options["modeling_options"]
         self.N_turbines = int(self.modeling_options["farm"]["N_turbines"])
+        self.N_anchor_dimensions = int(self.modeling_options["platform"]["N_anchor_dimensions"])
         self.N_anchors = int(self.modeling_options["platform"]["N_anchors"])
         self.N_distances = int((self.N_turbines - 1) * self.N_turbines / 2)
         # MANAGE ADDITIONAL LATENT VARIABLES HERE!!!!!
@@ -64,12 +68,18 @@ class MooringConstraint(om.ExplicitComponent):
             "x_anchors",
             jnp.zeros((self.N_turbines, self.N_anchors)),
             units="km",
-        )  # x location of the mooring platform in km w.r.t. reference coordinates
+        )  # x location of the mooring anchors in km w.r.t. reference coordinates
         self.add_input(
             "y_anchors",
             jnp.zeros((self.N_turbines, self.N_anchors)),
             units="km",
-        )  # y location of the mooring platform in km w.r.t. reference coordinates
+        )  # y location of the mooring anchors in km w.r.t. reference coordinates
+        if self.N_anchor_dimensions == 3:
+            self.add_input(
+                "z_anchors",
+                jnp.zeros((self.N_turbines, self.N_anchors)),
+                units="km",
+            )  # z location of the mooring anchors in km w.r.t. reference coordinates
         # ADD ADDITIONAL (DESIGN VARIABLE) INPUTS HERE!!!!!
 
         self.add_output(
@@ -92,9 +102,15 @@ class MooringConstraint(om.ExplicitComponent):
         y_turbines = inputs["y_turbines"]
         x_anchors = inputs["x_anchors"]
         y_anchors = inputs["y_anchors"]
+        if self.N_anchor_dimensions == 3:
+            z_anchors = inputs["z_anchors"]
 
-        # TODO extend this to allow for 3d, which should just require a version of the mooring_constraint_xy function in 3d
-        distances = mooring_constraint_xy(x_turbines, y_turbines, x_anchors, y_anchors)
+        if self.N_anchor_dimensions == 2:
+            distances = mooring_constraint_xy(x_turbines, y_turbines, x_anchors, y_anchors)
+        elif self.N_anchor_dimensions == 3:
+            distances = mooring_constraint_xyz(x_turbines, y_turbines, x_anchors, y_anchors, z_anchors)
+        else:
+            raise(ValueError("modeling_options['farm'][']"))
 
         # replace the below with the final values
         outputs["violation_distance"] = distances
@@ -106,15 +122,26 @@ class MooringConstraint(om.ExplicitComponent):
         y_turbines = inputs["y_turbines"]
         x_anchors = inputs["x_anchors"]
         y_anchors = inputs["y_anchors"]
+        if self.N_anchor_dimensions == 3:
+            z_anchors = inputs["z_anchors"]
 
-        jacobian = mooring_constraint_xy_jac(
-            x_turbines, y_turbines, x_anchors, y_anchors
-        )
-
+        if self.N_anchor_dimensions == 2:
+            jacobian = mooring_constraint_xy_jac(
+                x_turbines, y_turbines, x_anchors, y_anchors
+            )
+        elif self.N_anchor_dimensions == 3:
+            jacobian = mooring_constraint_xyz_jac(
+                x_turbines, y_turbines, x_anchors, y_anchors, z_anchors
+            )
+        else:
+            raise(ValueError("modeling_options['farm'][']"))
+        
         partials["violation_distance", "x_turbines"] = jacobian[0]
         partials["violation_distance", "y_turbines"] = jacobian[1]
         partials["violation_distance", "x_anchors"] = jacobian[2]
         partials["violation_distance", "y_anchors"] = jacobian[3]
+        if self.N_anchor_dimensions == 3:
+            partials["violation_distance", "z_anchors"] = jacobian[4]
 
 
 def mooring_constraint_xy(
@@ -147,6 +174,38 @@ def mooring_constraint_xy(
 
 mooring_constraint_xy_jac = jacrev(mooring_constraint_xy, argnums=[0, 1, 2, 3])
 
+def mooring_constraint_xyz(
+    x_turbines: np.ndarray,
+    y_turbines: np.ndarray,
+    x_anchors: np.ndarray,
+    y_anchors: np.ndarray,
+    z_anchors: np.ndarray,
+):
+    """Mooring constraint calculation in 3 dimensions. Third dimension is only required for the anchors since the
+    turbine foundations are all assumed to be at sea level.
+
+    Args:
+        x_turbines (np.ndarray): array of turbine x positions
+        y_turbines (np.ndarray): array of turbine y positions
+        x_anchors (np.ndarray): array of anchor x positions
+        y_anchors (np.ndarray): array of anchor y positions
+        z_anchors (np.ndarray): array of anchor z positions
+
+    Returns:
+        np.ndarray: 1D array of distances with length (n_turbines - 1)*n_turbines/2
+    """
+
+    # convert inputs
+    mooring_points = convert_inputs_x_y_z_to_xyz(
+        x_turbines, y_turbines, np.zeros(len(x_turbines)), x_anchors, y_anchors, z_anchors
+    )
+    # calculate minimum distances between each set of moorings
+    distances = calc_mooring_distances(mooring_points)
+
+    return distances
+
+
+mooring_constraint_xyz_jac = jacrev(mooring_constraint_xyz, argnums=[0, 1, 2, 3, 4])
 
 def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
     """Calculate the minimum distances between each set of mooring lines
