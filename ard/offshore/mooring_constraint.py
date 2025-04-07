@@ -118,7 +118,6 @@ class MooringConstraint(om.ExplicitComponent):
         else:
             raise (ValueError("modeling_options['farm'][']"))
 
-        # replace the below with the final values
         outputs["violation_distance"] = distances
 
     def compute_partials(self, inputs, partials, discrete_inputs=None):
