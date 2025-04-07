@@ -15,19 +15,13 @@ import ard.glue.prototype as glue
 import ard.cost.wisdem_wrap as cost_wisdem
 
 
-class TestLCOE_OFB_stack:
+class TestLCOE_LB_stack:
 
     def setup_method(self):
 
         # create the wind query
         wind_rose_wrg = floris.wind_data.WindRoseWRG(
-            Path(
-                Path(ard.__file__).parent,
-                "..",
-                "examples",
-                "data",
-                "wrg_example.wrg",
-            )
+            Path(ard.__file__).parents[1] / "examples" / "data" / "wrg_example.wrg"
         )
         wind_rose_wrg.set_wd_step(90.0)
         wind_rose_wrg.set_wind_speeds(np.array([5.0, 10.0, 15.0, 20.0]))
@@ -35,22 +29,19 @@ class TestLCOE_OFB_stack:
         wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
         # specify the configuration/specification files to use
-        filename_turbine_spec = Path(
-            Path(ard.__file__).parent,
-            "..",
-            "examples",
-            "data",
-            "turbine_spec_IEA-22-284-RWT.yaml",
+        filename_turbine_spec = (
+            Path(ard.__file__).parents[1]
+            / "examples"
+            / "data"
+            / "turbine_spec_IEA-3p4-130-RWT.yaml"
         )  # toolset generalized turbine specification
         data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
         # set up the modeling options
         self.modeling_options = {
             "farm": {"N_turbines": 25},
-            "site_depth": 50.0,
             "turbine": data_turbine_spec,
-            "offshore": True,
-            "floating": False,
+            "offshore": False,
         }
 
         # create the OM problem
@@ -61,8 +52,8 @@ class TestLCOE_OFB_stack:
 
     def test_model(self):
 
-        # setup the latent variables for Orbit and FinanceSE
-        cost_wisdem.Orbit_setup_latents(self.prob, self.modeling_options)
+        # setup the latent variables for LandBOSSE and FinanceSE
+        cost_wisdem.LandBOSSE_setup_latents(self.prob, self.modeling_options)
         cost_wisdem.FinanceSE_setup_latents(self.prob, self.modeling_options)
 
         # set up the working/design variables
@@ -79,7 +70,7 @@ class TestLCOE_OFB_stack:
             "AEP_val": float(self.prob.get_val("AEP_farm", units="GW*h")[0]),
             "CapEx_val": float(self.prob.get_val("tcc.tcc", units="MUSD")[0]),
             "BOS_val": float(
-                self.prob.get_val("orbit.installation_capex", units="MUSD")[0]
+                self.prob.get_val("landbosse.total_capex", units="MUSD")[0]
             ),
             "OpEx_val": float(self.prob.get_val("opex.opex", units="MUSD/yr")[0]),
             "LCOE_val": float(self.prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
@@ -88,14 +79,12 @@ class TestLCOE_OFB_stack:
         # check the data against a pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            Path(
-                Path(ard.__file__).parent,
-                "..",
-                "test",
-                "system",
-                "LCOE_stack",
-                "test_LCOE_OFB_stack_pyrite.npz",
-            ),
+            Path(ard.__file__).parents[1]
+            / "test"
+            / "system"
+            / "ard"
+            / "LCOE_stack"
+            / "test_LCOE_LB_stack_pyrite.npz",
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )

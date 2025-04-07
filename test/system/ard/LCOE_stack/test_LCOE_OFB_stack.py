@@ -15,19 +15,13 @@ import ard.glue.prototype as glue
 import ard.cost.wisdem_wrap as cost_wisdem
 
 
-class TestLCOE_OFL_stack:
+class TestLCOE_OFB_stack:
 
     def setup_method(self):
 
         # create the wind query
         wind_rose_wrg = floris.wind_data.WindRoseWRG(
-            Path(
-                Path(ard.__file__).parent,
-                "..",
-                "examples",
-                "data",
-                "wrg_example.wrg",
-            )
+            Path(ard.__file__).parents[1] / "examples" / "data" / "wrg_example.wrg"
         )
         wind_rose_wrg.set_wd_step(90.0)
         wind_rose_wrg.set_wind_speeds(np.array([5.0, 10.0, 15.0, 20.0]))
@@ -35,12 +29,11 @@ class TestLCOE_OFL_stack:
         wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
         # specify the configuration/specification files to use
-        filename_turbine_spec = Path(
-            Path(ard.__file__).parent,
-            "..",
-            "examples",
-            "data",
-            "turbine_spec_IEA-22-284-RWT.yaml",
+        filename_turbine_spec = (
+            Path(ard.__file__).parents[1]
+            / "examples"
+            / "data"
+            / "turbine_spec_IEA-22-284-RWT.yaml"
         )  # toolset generalized turbine specification
         data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
@@ -50,7 +43,7 @@ class TestLCOE_OFL_stack:
             "site_depth": 50.0,
             "turbine": data_turbine_spec,
             "offshore": True,
-            "floating": True,
+            "floating": False,
         }
 
         # create the OM problem
@@ -88,14 +81,12 @@ class TestLCOE_OFL_stack:
         # check the data against a pyrite file
         ard.test_utils.pyrite_validator(
             test_data,
-            Path(
-                Path(ard.__file__).parent,
-                "..",
-                "test",
-                "system",
-                "LCOE_stack",
-                "test_LCOE_OFL_stack_pyrite.npz",
-            ),
+            Path(ard.__file__).parents[1]
+            / "test"
+            / "system"
+            / "ard"
+            / "LCOE_stack"
+            / "test_LCOE_OFB_stack_pyrite.npz",
             # rewrite=True,  # uncomment to write new pyrite file
             rtol_val=5e-3,
         )
