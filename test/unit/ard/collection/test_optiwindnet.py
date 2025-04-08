@@ -8,16 +8,16 @@ from openmdao.utils.assert_utils import assert_check_partials
 
 import pytest
 
-interarray = pytest.importorskip("interarray")
+optiwindnet = pytest.importorskip("optiwindnet")
 
-from interarray.plotting import gplot
+from optiwindnet.plotting import gplot
 
 import ard.utils
 import ard.test_utils
-import ard.collection.interarray_wrap as ard_inter
+import ard.collection.optiwindnet_wrap as ard_inter
 
 
-class TestInterarrayCollection:
+class TestoptiwindnetCollection:
 
     def setup_method(self):
 
@@ -52,9 +52,9 @@ class TestInterarrayCollection:
 
         # create the OpenMDAO model
         model = om.Group()
-        self.interarray_coll = model.add_subsystem(
-            "interarray_coll",
-            ard_inter.InterarrayCollection(
+        self.optiwindnet_coll = model.add_subsystem(
+            "optiwindnet_coll",
+            ard_inter.optiwindnetCollection(
                 modeling_options=modeling_options,
             ),
         )
@@ -68,23 +68,23 @@ class TestInterarrayCollection:
         """
 
         assert "modeling_options" in [
-            k for k, _ in self.interarray_coll.options.items()
+            k for k, _ in self.optiwindnet_coll.options.items()
         ]
 
-        assert "farm" in self.interarray_coll.options["modeling_options"].keys()
+        assert "farm" in self.optiwindnet_coll.options["modeling_options"].keys()
         assert (
             "N_turbines"
-            in self.interarray_coll.options["modeling_options"]["farm"].keys()
+            in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
         )
         assert (
             "N_substations"
-            in self.interarray_coll.options["modeling_options"]["farm"].keys()
+            in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
         )
 
         # context manager to spike the warning since we aren't running the model yet
         with pytest.warns(Warning) as warning:
             # make sure that the inputs in the component match what we planned
-            input_list = [k for k, v in self.interarray_coll.list_inputs()]
+            input_list = [k for k, v in self.optiwindnet_coll.list_inputs()]
             for var_to_check in [
                 "x_turbines",
                 "y_turbines",
@@ -94,7 +94,7 @@ class TestInterarrayCollection:
                 assert var_to_check in input_list
 
             # make sure that the outputs in the component match what we planned
-            output_list = [k for k, v in self.interarray_coll.list_outputs()]
+            output_list = [k for k, v in self.optiwindnet_coll.list_outputs()]
             for var_to_check in [
                 "length_cables",
                 "load_cables",
@@ -108,30 +108,30 @@ class TestInterarrayCollection:
         Y_turbines = 130.0 * self.farm_spec["yD_farm"]
         X_substations = self.farm_spec["x_substations"]
         Y_substations = self.farm_spec["y_substations"]
-        self.prob.set_val("interarray_coll.x_turbines", X_turbines)
-        self.prob.set_val("interarray_coll.y_turbines", Y_turbines)
-        self.prob.set_val("interarray_coll.x_substations", X_substations)
-        self.prob.set_val("interarray_coll.y_substations", Y_substations)
+        self.prob.set_val("optiwindnet_coll.x_turbines", X_turbines)
+        self.prob.set_val("optiwindnet_coll.y_turbines", Y_turbines)
+        self.prob.set_val("optiwindnet_coll.x_substations", X_substations)
+        self.prob.set_val("optiwindnet_coll.y_substations", Y_substations)
 
-        # run interarray
+        # run optiwindnet
         self.prob.run_model()
 
         # # DEBUG!!!!! viz for verification
-        # gplot(self.interarray_coll.graph)
+        # gplot(self.optiwindnet_coll.graph)
         # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
 
         # collect data to validate
         validation_data = {
             "length_cables": self.prob.get_val(
-                "interarray_coll.length_cables", units="km"
+                "optiwindnet_coll.length_cables", units="km"
             ),
-            "load_cables": self.prob.get_val("interarray_coll.load_cables"),
+            "load_cables": self.prob.get_val("optiwindnet_coll.load_cables"),
         }
 
         # validate data against pyrite file
         ard.test_utils.pyrite_validator(
             validation_data,
-            Path(__file__).parent / "test_interarray_pyrite.npz",
+            Path(__file__).parent / "test_optiwindnet_pyrite.npz",
             rtol_val=5e-3,
             # rewrite=True,  # uncomment to write new pyrite file
         )
@@ -150,9 +150,9 @@ class TestInterarrayCollection:
 
         # create the OpenMDAO model
         model = om.Group()
-        interarray_coll_mini = model.add_subsystem(
-            "interarray_coll",
-            ard_inter.InterarrayCollection(
+        optiwindnet_coll_mini = model.add_subsystem(
+            "optiwindnet_coll",
+            ard_inter.optiwindnetCollection(
                 modeling_options=modeling_options,
             ),
         )
@@ -167,25 +167,25 @@ class TestInterarrayCollection:
         Y_turbines = 7.0 * 130.0 * np.cos(theta_turbines)
         X_substations = np.array([0.0])
         Y_substations = np.array([0.0])
-        prob.set_val("interarray_coll.x_turbines", X_turbines)
-        prob.set_val("interarray_coll.y_turbines", Y_turbines)
-        prob.set_val("interarray_coll.x_substations", X_substations)
-        prob.set_val("interarray_coll.y_substations", Y_substations)
+        prob.set_val("optiwindnet_coll.x_turbines", X_turbines)
+        prob.set_val("optiwindnet_coll.y_turbines", Y_turbines)
+        prob.set_val("optiwindnet_coll.x_substations", X_substations)
+        prob.set_val("optiwindnet_coll.y_substations", Y_substations)
 
-        # run interarray
+        # run optiwindnet
         prob.run_model()
 
         # # DEBUG!!!!! viz for verification
-        # gplot(interarray_coll_mini.graph)
+        # gplot(optiwindnet_coll_mini.graph)
         # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
 
         if False:  # for hand-debugging
             J0 = prob.compute_totals(
-                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+                "optiwindnet_coll.length_cables", "optiwindnet_coll.x_turbines"
             )
             prob.model.approx_totals()
             J0p = prob.compute_totals(
-                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+                "optiwindnet_coll.length_cables", "optiwindnet_coll.x_turbines"
             )
 
             print("J0:")
@@ -213,9 +213,9 @@ class TestInterarrayCollection:
 
         # create the OpenMDAO model
         model = om.Group()
-        interarray_coll_mini = model.add_subsystem(
-            "interarray_coll",
-            ard_inter.InterarrayCollection(
+        optiwindnet_coll_mini = model.add_subsystem(
+            "optiwindnet_coll",
+            ard_inter.optiwindnetCollection(
                 modeling_options=modeling_options,
             ),
         )
@@ -228,25 +228,25 @@ class TestInterarrayCollection:
         Y_turbines = np.log(7.0 * 130.0 * s_turbines)
         X_substations = np.array([-3.5 * 130.0])
         Y_substations = np.array([-3.5 * 130.0])
-        prob.set_val("interarray_coll.x_turbines", X_turbines)
-        prob.set_val("interarray_coll.y_turbines", Y_turbines)
-        prob.set_val("interarray_coll.x_substations", X_substations)
-        prob.set_val("interarray_coll.y_substations", Y_substations)
+        prob.set_val("optiwindnet_coll.x_turbines", X_turbines)
+        prob.set_val("optiwindnet_coll.y_turbines", Y_turbines)
+        prob.set_val("optiwindnet_coll.x_substations", X_substations)
+        prob.set_val("optiwindnet_coll.y_substations", Y_substations)
 
-        # run interarray
+        # run optiwindnet
         prob.run_model()
 
         # # DEBUG!!!!! viz for verification
-        # gplot(interarray_coll_mini.graph)
+        # gplot(optiwindnet_coll_mini.graph)
         # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
 
         if False:  # for hand-debugging
             J0 = prob.compute_totals(
-                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+                "optiwindnet_coll.length_cables", "optiwindnet_coll.x_turbines"
             )
             prob.model.approx_totals()
             J0p = prob.compute_totals(
-                "interarray_coll.length_cables", "interarray_coll.x_turbines"
+                "optiwindnet_coll.length_cables", "optiwindnet_coll.x_turbines"
             )
 
             print("J0:")

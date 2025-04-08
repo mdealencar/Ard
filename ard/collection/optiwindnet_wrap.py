@@ -1,13 +1,13 @@
 import numpy as np
 
-from interarray.importer import load_repository
-from interarray.plotting import gplot
-from interarray.mesh import make_planar_embedding
-from interarray.interarraylib import G_from_S
-from interarray.interarraylib import L_from_site
-from interarray.heuristics import EW_presolver
-from interarray.pathfinding import PathFinder
-from interarray.MILP import pyomo as omo
+from optiwindnet.importer import load_repository
+from optiwindnet.plotting import gplot
+from optiwindnet.mesh import make_planar_embedding
+from optiwindnet.interarraylib import G_from_S
+from optiwindnet.interarraylib import L_from_site
+from optiwindnet.heuristics import EW_presolver
+from optiwindnet.pathfinding import PathFinder
+from optiwindnet.MILP import pyomo as omo
 
 from pyomo import environ as pyo
 from pyomo.contrib.appsi.solvers import Highs
@@ -16,7 +16,7 @@ import ard.collection.templates as templates
 
 import logging
 
-logging.getLogger("interarray").setLevel(logging.INFO)
+logging.getLogger("optiwindnet").setLevel(logging.INFO)
 
 
 # custom length calculation
@@ -35,12 +35,12 @@ def distance_function_deriv(x0, y0, x1, y1):
     )
 
 
-class InterarrayCollection(templates.CollectionTemplate):
+class optiwindnetCollection(templates.CollectionTemplate):
     """
-    Component class for modeling interarray-optimized energy collection systems.
+    Component class for modeling optiwindnet-optimized energy collection systems.
 
     A component class to make a heuristic-based optimized energy collection and
-    management system using interarray! Inherits the interface from
+    management system using optiwindnet! Inherits the interface from
     `templates.CollectionTemplate`.
 
     Options
@@ -96,7 +96,7 @@ class InterarrayCollection(templates.CollectionTemplate):
         name_case = "farm"
         capacity = 8  # maximum load on a chain
 
-        # roll up the coordinates into a form that interarray
+        # roll up the coordinates into a form that optiwindnet
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
         x_min = np.min(XY_turbines[:, 0]) - 0.25 * np.ptp(XY_turbines[:, 0])
         x_max = np.max(XY_turbines[:, 0]) + 0.25 * np.ptp(XY_turbines[:, 0])
