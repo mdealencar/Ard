@@ -1,4 +1,5 @@
 from pathlib import Path
+import pytest
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,6 +20,7 @@ import ard.collection.optiwindnet_wrap as inter
 from optiwindnet.plotting import gplot  # DEBUG!!!!! REMOVE ME
 
 
+@pytest.mark.usefixtures("subtests")
 class TestoptiwindnetLayout:
 
     def setup_method(self):
@@ -82,7 +84,7 @@ class TestoptiwindnetLayout:
         self.prob = om.Problem(self.model)
         self.prob.setup()
 
-    def test_model(self):
+    def test_model(self, subtests):
 
         # set up the working/design variables
         self.prob.set_val("spacing_target", 7.0)
@@ -99,9 +101,11 @@ class TestoptiwindnetLayout:
             * np.ptp(self.prob.get_val("x_turbines", units="km"))
             * np.ptp(self.prob.get_val("y_turbines", units="km"))
         )
-        assert np.isclose(
-            self.prob.get_val("landuse.area_tight"), area_circle, rtol=0.1
-        )
+
+        with subtests.test("land use area"):
+            assert np.isclose(
+                self.prob.get_val("landuse.area_tight"), area_circle, rtol=0.1
+            )
 
         # collect optiwindnet data to validate
         validation_data = {
@@ -116,9 +120,10 @@ class TestoptiwindnetLayout:
         }
 
         # validate data against pyrite file
-        ard.test_utils.pyrite_validator(
-            validation_data,
-            Path(__file__).parent / "test_optiwindnet_pyrite.npz",
-            rtol_val=5e-3,
-            # rewrite=True,  # uncomment to write new pyrite file
-        )
+        with subtests.test("pyrite validator"):
+            ard.test_utils.pyrite_validator(
+                validation_data,
+                Path(__file__).parent / "test_optiwindnet_pyrite.npz",
+                rtol_val=5e-3,
+                # rewrite=True,  # uncomment to write new pyrite file
+            )
