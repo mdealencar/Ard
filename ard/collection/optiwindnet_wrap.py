@@ -8,7 +8,6 @@ from optiwindnet.pathfinding import PathFinder as OWNPathFinder
 from optiwindnet.MILP import pyomo as own_pyomo
 
 from pyomo import environ as pyo
-from pyomo.contrib.appsi.solvers import Highs
 
 import ard.collection.templates as templates
 
@@ -34,8 +33,29 @@ def distance_function_deriv(x0, y0, x1, y1):
 
 
 def optiwindnet_wrapper(
-    XY_turbines, XY_substations, XY_boundaries, name_case, capacity
+    XY_turbines: np.ndarray,
+    XY_substations: np.ndarray,
+    XY_boundaries: np.ndarray,
+    name_case: str,
+    capacity: int,
 ):
+    """Simple wrapper to run OptiWindNet to get a caple layout
+
+    Args:
+        XY_turbines (np.ndarray): x and y positions of turbines (easting and northing)
+        XY_substations (np.ndarray): x and y positions of substations (easting and northing)
+        XY_boundaries (np.ndarray): x and y locations of boundary nodes (easting and northing)
+        name_case (str): what to name the case
+        capacity (int): maximum load on a chain
+
+    Returns:
+        result: pyomo result
+        S: OptiWindNet pyomo solution
+        G: output from OptiWindNet G_from_S function
+        H: output from OptiWindNet PathFinder function
+
+    """
+
     # HIGHS solver
     highs_solver = pyo.SolverFactory("appsi_highs")
     highs_solver.available(), type(highs_solver)
