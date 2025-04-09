@@ -1,13 +1,11 @@
 import numpy as np
 
-from optiwindnet.importer import load_repository
-from optiwindnet.plotting import gplot
-from optiwindnet.mesh import make_planar_embedding
-from optiwindnet.interarraylib import G_from_S
-from optiwindnet.interarraylib import L_from_site
-from optiwindnet.heuristics import EW_presolver
-from optiwindnet.pathfinding import PathFinder
-from optiwindnet.MILP import pyomo as omo
+from optiwindnet.mesh import make_planar_embedding as own_make_planar_embedding
+from optiwindnet.interarraylib import G_from_S as own_G_from_S
+from optiwindnet.interarraylib import L_from_site as own_L_from_site
+from optiwindnet.heuristics import EW_presolver as own_EW_presolver
+from optiwindnet.pathfinding import PathFinder as OWNPathFinder
+from optiwindnet.MILP import pyomo as own_pyomo
 
 from pyomo import environ as pyo
 from pyomo.contrib.appsi.solvers import Highs
@@ -34,6 +32,55 @@ def distance_function_deriv(x0, y0, x1, y1):
         ]
     )
 
+def optiwindnet_wrapper(XY_turbines, XY_substations, XY_boundaries, name_case, capacity):
+    # HIGHS solver
+        highs_solver = pyo.SolverFactory("appsi_highs")
+        highs_solver.available(), type(highs_solver)
+
+        # start the network definition
+        L = own_L_from_site(
+            T=len(XY_turbines),
+            B=len(XY_boundaries),
+            R=len(XY_substations),
+            VertexC=np.vstack([XY_turbines, XY_boundaries, XY_substations]),
+            border=np.arange(len(XY_turbines), len(XY_turbines) + len(XY_boundaries)),
+            name=name_case,
+            handle=name_case,
+        )
+
+        # create a planar embedding for presolve
+        P, A = own_make_planar_embedding(L)
+
+        # presolve
+        S = own_EW_presolver(A, capacity=capacity)
+        G = own_G_from_S(S, A)
+
+        # create minimum length model
+        model = own_pyomo.make_min_length_model(
+            A,
+            capacity,
+            gateXings_constraint=False,
+            branching=True,
+            gates_limit=False,
+        )
+        own_pyomo.warmup_model(model, S)
+
+        # create the solver and solve
+        time_lim_val = 60  #TODO move to be an option probably
+        highs_solver.options.update(
+            dict(
+                time_limit=time_lim_val,
+                mip_rel_gap=0.005,  #TODO ???
+            )
+        )
+        result = highs_solver.solve(model, tee=True)
+
+        # do some postprocessing
+        S = own_pyomo.S_from_solution(model, highs_solver, result)
+        G = own_G_from_S(S, A)
+        H = OWNPathFinder(G, planar=P, A=A).create_detours()
+
+        return result, S, G, H
 
 class optiwindnetCollection(templates.CollectionTemplate):
     """
@@ -94,9 +141,9 @@ class optiwindnetCollection(templates.CollectionTemplate):
         """
 
         name_case = "farm"
-        capacity = 8  # maximum load on a chain
+        capacity = 8  # maximum load on a chain #TODO make the capacity a user input
 
-        # roll up the coordinates into a form that optiwindnet
+        # roll up the coordinates into a form that optiwindnet #TODO consider adjusting the buffer (0.25)
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
         x_min = np.min(XY_turbines[:, 0]) - 0.25 * np.ptp(XY_turbines[:, 0])
         x_max = np.max(XY_turbines[:, 0]) + 0.25 * np.ptp(XY_turbines[:, 0])
@@ -112,52 +159,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         )
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
 
-        # HIGHS solver
-        highs_solver = pyo.SolverFactory("appsi_highs")
-        highs_solver.available(), type(highs_solver)
-
-        # start the network definition
-        L = L_from_site(
-            T=len(XY_turbines),
-            B=len(XY_boundaries),
-            R=len(XY_substations),
-            VertexC=np.vstack([XY_turbines, XY_boundaries, XY_substations]),
-            border=np.arange(len(XY_turbines), len(XY_turbines) + len(XY_boundaries)),
-            name=name_case,
-            handle=name_case,
-        )
-
-        # create a planar embedding for presolve
-        P, A = make_planar_embedding(L)
-
-        # presolve
-        S = EW_presolver(A, capacity=capacity)
-        G = G_from_S(S, A)
-
-        # create minimum length model
-        model = omo.make_min_length_model(
-            A,
-            capacity,
-            gateXings_constraint=False,
-            branching=True,
-            gates_limit=False,
-        )
-        omo.warmup_model(model, S)
-
-        # create the solver and solve
-        time_lim_val = 60  # move to be an option probably
-        highs_solver.options.update(
-            dict(
-                time_limit=time_lim_val,
-                mip_rel_gap=0.005,  # ???
-            )
-        )
-        result = highs_solver.solve(model, tee=True)
-
-        # do some postprocessing
-        S = omo.S_from_solution(model, highs_solver, result)
-        G = G_from_S(S, A)
-        H = PathFinder(G, planar=P, A=A).create_detours()
+        result, S, G, H = optiwindnet_wrapper(XY_turbines, XY_substations, XY_boundaries, name_case, capacity)
 
         # extract the outputs
         lengths = []
@@ -180,7 +182,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         # re-load the key variables back as locals
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
-        print(self.graph)
+        # print(self.graph)
         H = self.graph
         edges = H.edges()
 
@@ -213,10 +215,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
                 if e1 < 0
                 else XY_turbines[e1, :]
             )
-            assert np.isclose(
-                edges[edge]["length"], distance_function(x0, y0, x1, y1)
-            )  # make sure my distance_function matches
-
+            
             # get the derivative function
             dLdx0, dLdy0, dLdx1, dLdy1 = distance_function_deriv(x0, y0, x1, y1)
 
@@ -244,7 +243,15 @@ class optiwindnetCollection(templates.CollectionTemplate):
                 J["total_length_cables", "x_turbines"][0, e1] -= dLdx1
                 J["total_length_cables", "y_turbines"][0, e1] -= dLdy1
             else:
-                raise Exception(
-                    "implementation assumes NetworkX roots can only appear as "
-                    + "first node in an edge! this assumption appears to be false."
-                )
+                J["length_cables", "x_substations"][
+                    idx_edge, self.N_substations + e1
+                ] -= dLdx1
+                J["length_cables", "y_substations"][
+                    idx_edge, self.N_substations + e1
+                ] -= dLdy1
+                J["total_length_cables", "x_substations"][
+                    0, self.N_substations + e1
+                ] -= dLdx1
+                J["total_length_cables", "y_substations"][
+                    0, self.N_substations + e1
+                ] -= dLdy1

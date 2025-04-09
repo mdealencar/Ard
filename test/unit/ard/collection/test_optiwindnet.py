@@ -14,12 +14,12 @@ from optiwindnet.plotting import gplot
 
 import ard.utils
 import ard.test_utils
-import ard.collection.optiwindnet_wrap as ard_inter
+import ard.collection.optiwindnet_wrap as ard_own
 
 @pytest.mark.usefixtures("subtests")
-class TestoptiwindnetCollection():
+class TestOptiWindNetCollection():
 
-    def setup_method(self, subtests):
+    def setup_method(self):
 
         # create the farm layout specification
         self.farm_spec = {}
@@ -54,13 +54,59 @@ class TestoptiwindnetCollection():
         model = om.Group()
         self.optiwindnet_coll = model.add_subsystem(
             "optiwindnet_coll",
-            ard_inter.optiwindnetCollection(
+            ard_own.optiwindnetCollection(
                 modeling_options=modeling_options,
             ),
         )
 
         self.prob = om.Problem(model)
         self.prob.setup()
+
+    def test_distance_function_vs_optiwindnet(self, subtests):
+        
+        name_case = "farm"
+        capacity = 8  # maximum load on a chain #TODO make the capacity a user input
+
+        # roll up the coordinates into a form that optiwindnet
+        XY_turbines = np.vstack([self.farm_spec["xD_farm"], self.farm_spec["yD_farm"]]).T
+        
+        x_min = np.min(XY_turbines[:, 0]) - 0.25 * np.ptp(XY_turbines[:, 0])
+        x_max = np.max(XY_turbines[:, 0]) + 0.25 * np.ptp(XY_turbines[:, 0])
+        y_min = np.min(XY_turbines[:, 1]) - 0.25 * np.ptp(XY_turbines[:, 1])
+        y_max = np.max(XY_turbines[:, 1]) + 0.25 * np.ptp(XY_turbines[:, 1])
+        XY_boundaries = np.array(
+            [
+                [x_max, y_max],
+                [x_min, y_max],
+                [x_min, y_min],
+                [x_max, y_min],
+            ]
+        )
+        XY_substations = np.vstack([self.farm_spec["x_substations"], self.farm_spec["y_substations"]]).T 
+
+        result, S, G, H = ard_own.optiwindnet_wrapper(XY_turbines, XY_substations, XY_boundaries, name_case, capacity)
+
+        # extract the outputs
+        edges = H.edges()
+        self.graph = H
+
+        for idx_edge, edge in enumerate(edges):
+            e0, e1 = edge
+            x0, y0 = (
+                XY_substations[self.N_substations + e0, :]
+                if e0 < 0
+                else XY_turbines[e0, :]
+            )
+            x1, y1 = (
+                XY_substations[self.N_substations + e1, :]
+                if e1 < 0
+                else XY_turbines[e1, :]
+            )
+
+            with subtests.test(f"edge: {idx_edge}"):
+                assert np.isclose(
+                    edges[edge]["length"], ard_own.distance_function(x0, y0, x1, y1)
+                )
 
     def test_modeling(self, subtests):
         """
@@ -83,7 +129,7 @@ class TestoptiwindnetCollection():
                 "N_substations"
                 in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
             )
-
+            
         # context manager to spike the warning since we aren't running the model yet
         with pytest.warns(Warning) as warning:
             # make sure that the inputs in the component match what we planned
@@ -157,7 +203,7 @@ class TestoptiwindnetCollection():
         model = om.Group()
         optiwindnet_coll_mini = model.add_subsystem(
             "optiwindnet_coll",
-            ard_inter.optiwindnetCollection(
+            ard_own.optiwindnetCollection(
                 modeling_options=modeling_options,
             ),
         )
@@ -220,7 +266,7 @@ class TestoptiwindnetCollection():
         model = om.Group()
         optiwindnet_coll_mini = model.add_subsystem(
             "optiwindnet_coll",
-            ard_inter.optiwindnetCollection(
+            ard_own.optiwindnetCollection(
                 modeling_options=modeling_options,
             ),
         )
@@ -242,8 +288,8 @@ class TestoptiwindnetCollection():
         prob.run_model()
 
         # # DEBUG!!!!! viz for verification
-        # gplot(optiwindnet_coll_mini.graph)
-        # plt.savefig("/Users/cfrontin/Downloads/dummy.png")  # DEBUG!!!!!
+        gplot(optiwindnet_coll_mini.graph)
+        plt.savefig("dummy.png")  # DEBUG!!!!!
 
         if False:  # for hand-debugging
             J0 = prob.compute_totals(
