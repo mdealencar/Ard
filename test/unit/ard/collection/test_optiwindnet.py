@@ -16,8 +16,9 @@ import ard.utils
 import ard.test_utils
 import ard.collection.optiwindnet_wrap as ard_own
 
+
 @pytest.mark.usefixtures("subtests")
-class TestOptiWindNetCollection():
+class TestOptiWindNetCollection:
 
     def setup_method(self):
 
@@ -63,13 +64,15 @@ class TestOptiWindNetCollection():
         self.prob.setup()
 
     def test_distance_function_vs_optiwindnet(self, subtests):
-        
+
         name_case = "farm"
         capacity = 8  # maximum load on a chain #TODO make the capacity a user input
 
         # roll up the coordinates into a form that optiwindnet
-        XY_turbines = np.vstack([self.farm_spec["xD_farm"], self.farm_spec["yD_farm"]]).T
-        
+        XY_turbines = np.vstack(
+            [self.farm_spec["xD_farm"], self.farm_spec["yD_farm"]]
+        ).T
+
         x_min = np.min(XY_turbines[:, 0]) - 0.25 * np.ptp(XY_turbines[:, 0])
         x_max = np.max(XY_turbines[:, 0]) + 0.25 * np.ptp(XY_turbines[:, 0])
         y_min = np.min(XY_turbines[:, 1]) - 0.25 * np.ptp(XY_turbines[:, 1])
@@ -82,9 +85,13 @@ class TestOptiWindNetCollection():
                 [x_max, y_min],
             ]
         )
-        XY_substations = np.vstack([self.farm_spec["x_substations"], self.farm_spec["y_substations"]]).T 
+        XY_substations = np.vstack(
+            [self.farm_spec["x_substations"], self.farm_spec["y_substations"]]
+        ).T
 
-        result, S, G, H = ard_own.optiwindnet_wrapper(XY_turbines, XY_substations, XY_boundaries, name_case, capacity)
+        result, S, G, H = ard_own.optiwindnet_wrapper(
+            XY_turbines, XY_substations, XY_boundaries, name_case, capacity
+        )
 
         # extract the outputs
         edges = H.edges()
@@ -117,7 +124,7 @@ class TestOptiWindNetCollection():
             assert "modeling_options" in [
                 k for k, _ in self.optiwindnet_coll.options.items()
             ]
-        with subtests.test("farm"): 
+        with subtests.test("farm"):
             assert "farm" in self.optiwindnet_coll.options["modeling_options"].keys()
         with subtests.test("N_turbines"):
             assert (
@@ -129,7 +136,7 @@ class TestOptiWindNetCollection():
                 "N_substations"
                 in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
             )
-            
+
         # context manager to spike the warning since we aren't running the model yet
         with pytest.warns(Warning) as warning:
             # make sure that the inputs in the component match what we planned

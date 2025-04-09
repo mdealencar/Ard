@@ -32,55 +32,59 @@ def distance_function_deriv(x0, y0, x1, y1):
         ]
     )
 
-def optiwindnet_wrapper(XY_turbines, XY_substations, XY_boundaries, name_case, capacity):
+
+def optiwindnet_wrapper(
+    XY_turbines, XY_substations, XY_boundaries, name_case, capacity
+):
     # HIGHS solver
-        highs_solver = pyo.SolverFactory("appsi_highs")
-        highs_solver.available(), type(highs_solver)
+    highs_solver = pyo.SolverFactory("appsi_highs")
+    highs_solver.available(), type(highs_solver)
 
-        # start the network definition
-        L = own_L_from_site(
-            T=len(XY_turbines),
-            B=len(XY_boundaries),
-            R=len(XY_substations),
-            VertexC=np.vstack([XY_turbines, XY_boundaries, XY_substations]),
-            border=np.arange(len(XY_turbines), len(XY_turbines) + len(XY_boundaries)),
-            name=name_case,
-            handle=name_case,
+    # start the network definition
+    L = own_L_from_site(
+        T=len(XY_turbines),
+        B=len(XY_boundaries),
+        R=len(XY_substations),
+        VertexC=np.vstack([XY_turbines, XY_boundaries, XY_substations]),
+        border=np.arange(len(XY_turbines), len(XY_turbines) + len(XY_boundaries)),
+        name=name_case,
+        handle=name_case,
+    )
+
+    # create a planar embedding for presolve
+    P, A = own_make_planar_embedding(L)
+
+    # presolve
+    S = own_EW_presolver(A, capacity=capacity)
+    G = own_G_from_S(S, A)
+
+    # create minimum length model
+    model = own_pyomo.make_min_length_model(
+        A,
+        capacity,
+        gateXings_constraint=False,
+        branching=True,
+        gates_limit=False,
+    )
+    own_pyomo.warmup_model(model, S)
+
+    # create the solver and solve
+    time_lim_val = 60  # TODO move to be an option probably
+    highs_solver.options.update(
+        dict(
+            time_limit=time_lim_val,
+            mip_rel_gap=0.005,  # TODO ???
         )
+    )
+    result = highs_solver.solve(model, tee=True)
 
-        # create a planar embedding for presolve
-        P, A = own_make_planar_embedding(L)
+    # do some postprocessing
+    S = own_pyomo.S_from_solution(model, highs_solver, result)
+    G = own_G_from_S(S, A)
+    H = OWNPathFinder(G, planar=P, A=A).create_detours()
 
-        # presolve
-        S = own_EW_presolver(A, capacity=capacity)
-        G = own_G_from_S(S, A)
+    return result, S, G, H
 
-        # create minimum length model
-        model = own_pyomo.make_min_length_model(
-            A,
-            capacity,
-            gateXings_constraint=False,
-            branching=True,
-            gates_limit=False,
-        )
-        own_pyomo.warmup_model(model, S)
-
-        # create the solver and solve
-        time_lim_val = 60  #TODO move to be an option probably
-        highs_solver.options.update(
-            dict(
-                time_limit=time_lim_val,
-                mip_rel_gap=0.005,  #TODO ???
-            )
-        )
-        result = highs_solver.solve(model, tee=True)
-
-        # do some postprocessing
-        S = own_pyomo.S_from_solution(model, highs_solver, result)
-        G = own_G_from_S(S, A)
-        H = OWNPathFinder(G, planar=P, A=A).create_detours()
-
-        return result, S, G, H
 
 class optiwindnetCollection(templates.CollectionTemplate):
     """
@@ -159,7 +163,9 @@ class optiwindnetCollection(templates.CollectionTemplate):
         )
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
 
-        result, S, G, H = optiwindnet_wrapper(XY_turbines, XY_substations, XY_boundaries, name_case, capacity)
+        result, S, G, H = optiwindnet_wrapper(
+            XY_turbines, XY_substations, XY_boundaries, name_case, capacity
+        )
 
         # extract the outputs
         lengths = []
@@ -215,7 +221,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
                 if e1 < 0
                 else XY_turbines[e1, :]
             )
-            
+
             # get the derivative function
             dLdx0, dLdy0, dLdx1, dLdy1 = distance_function_deriv(x0, y0, x1, y1)
 
