@@ -16,10 +16,10 @@ import ard.utils
 import ard.test_utils
 import ard.collection.optiwindnet_wrap as ard_inter
 
+@pytest.mark.usefixtures("subtests")
+class TestoptiwindnetCollection():
 
-class TestoptiwindnetCollection:
-
-    def setup_method(self):
+    def setup_method(self, subtests):
 
         # create the farm layout specification
         self.farm_spec = {}
@@ -62,24 +62,27 @@ class TestoptiwindnetCollection:
         self.prob = om.Problem(model)
         self.prob.setup()
 
-    def test_setup(self):
+    def test_modeling(self, subtests):
         """
         make sure the modeling_options has what we need for farmaero
         """
 
-        assert "modeling_options" in [
-            k for k, _ in self.optiwindnet_coll.options.items()
-        ]
-
-        assert "farm" in self.optiwindnet_coll.options["modeling_options"].keys()
-        assert (
-            "N_turbines"
-            in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
-        )
-        assert (
-            "N_substations"
-            in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
-        )
+        with subtests.test("modeling_options"):
+            assert "modeling_options" in [
+                k for k, _ in self.optiwindnet_coll.options.items()
+            ]
+        with subtests.test("farm"): 
+            assert "farm" in self.optiwindnet_coll.options["modeling_options"].keys()
+        with subtests.test("N_turbines"):
+            assert (
+                "N_turbines"
+                in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
+            )
+        with subtests.test("N_substations"):
+            assert (
+                "N_substations"
+                in self.optiwindnet_coll.options["modeling_options"]["farm"].keys()
+            )
 
         # context manager to spike the warning since we aren't running the model yet
         with pytest.warns(Warning) as warning:
@@ -91,7 +94,8 @@ class TestoptiwindnetCollection:
                 "x_substations",
                 "y_substations",
             ]:
-                assert var_to_check in input_list
+                with subtests.test("inputs"):
+                    assert var_to_check in input_list
 
             # make sure that the outputs in the component match what we planned
             output_list = [k for k, v in self.optiwindnet_coll.list_outputs()]
@@ -99,7 +103,8 @@ class TestoptiwindnetCollection:
                 "length_cables",
                 "load_cables",
             ]:
-                assert var_to_check in output_list
+                with subtests.test("outputs"):
+                    assert var_to_check in output_list
 
     def test_compute_pyrite(self):
 

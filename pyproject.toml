@@ -49,6 +49,7 @@ dev = [
   "black[jupyter]",
   "pytest",
   "pytest-cov",
+  "pytest-subtests",
 ]
 docs = [
   "pyxdsm",
