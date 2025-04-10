@@ -50,5 +50,5 @@ def pyrite_validator(
                     f"\t{sum_isclose} values match of {vd_size} total validation values"
                 )
                 print(f"\tto a tolerance of {rtol_val:e}")
-                print(f"data for {k}: {validation_data}")
+                print(f"data for {k}: {validation_data[k]}")
             assert validation_matches
