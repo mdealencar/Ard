@@ -24,7 +24,7 @@ def pyrite_validator(
         # write out a npz file that holds the variables we want to be able to check
         np.savez(
             filename_pyrite,
-            **validation_data,
+            **validation_data
         )
         assert False
     else:
@@ -42,10 +42,13 @@ def pyrite_validator(
             vd_size = np.array(validation_data[k]).size
             # assert all of the values match
             validation_matches = sum_isclose == vd_size
+            # if k == "length_cables":
+            #     import pdb; pdb.set_trace()
             if not validation_matches:
                 print(f"for variable {k}:")
                 print(
                     f"\t{sum_isclose} values match of {vd_size} total validation values"
                 )
                 print(f"\tto a tolerance of {rtol_val:e}")
+                print(f"data for {k}: {validation_data}")
             assert validation_matches
