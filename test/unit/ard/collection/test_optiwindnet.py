@@ -162,9 +162,9 @@ class TestOptiWindNetCollection:
                 with subtests.test("outputs"):
                     assert var_to_check in output_list
 
-    @pytest.mark.skipif(
-        platform.system() == "Linux", reason="Test does not pass on Linux"
-    )
+    # @pytest.mark.skipif(
+    #     platform.system() == "Linux", reason="Test does not pass on Linux"
+    # )
     def test_compute_pyrite(self):
 
         # set in the variables
@@ -200,7 +200,7 @@ class TestOptiWindNetCollection:
             # validate data against pyrite file
             ard.test_utils.pyrite_validator(
                 validation_data,
-                Path(__file__).parent / "test_optiwindnet_pyrite_linux.npz",
+                Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
                 rtol_val=5e-3,
                 # rewrite=True,  # uncomment to write new pyrite file
             )
@@ -218,7 +218,7 @@ class TestOptiWindNetCollection:
             # validate data against pyrite file
             ard.test_utils.pyrite_validator(
                 validation_data,
-                Path(__file__).parent / "test_optiwindnet_pyrite_linux.npz",
+                Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
                 rtol_val=5e-3,
                 # rewrite=True,  # uncomment to write new pyrite file
             )

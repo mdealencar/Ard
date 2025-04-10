@@ -89,7 +89,7 @@ def optiwindnet_wrapper(
     own_pyomo.warmup_model(model, S)
 
     # create the solver and solve
-    time_lim_val = 60  # TODO move to be an option probably
+    time_lim_val = 120  # TODO move to be an option probably
     highs_solver.options.update(
         dict(
             time_limit=time_lim_val,
