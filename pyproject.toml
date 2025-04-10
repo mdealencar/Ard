@@ -41,7 +41,7 @@ dependencies = [
   "marmot-agents",
   "openmdao",
   "shapely",
-  "optiwindnet @ https://github.com/DTUWindEnergy/OptiWindNet.git",
+  "optiwindnet @ git+https://github.com/DTUWindEnergy/OptiWindNet.git",
   "highspy",
 ]
 [project.optional-dependencies]
