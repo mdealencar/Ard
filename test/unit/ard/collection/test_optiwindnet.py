@@ -206,7 +206,7 @@ class TestOptiWindNetCollection:
             # validate data against pyrite file
             ard.test_utils.pyrite_validator(
                 validation_data,
-                Path(__file__).parent / "test_optiwindnet_pyrite_linux.npz",
+                Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
                 rtol_val=5e-3,
                 # rewrite=True,  # uncomment to write new pyrite file
             )
