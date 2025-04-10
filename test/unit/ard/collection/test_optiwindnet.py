@@ -189,8 +189,6 @@ class TestOptiWindNetCollection:
             "load_cables": self.prob.get_val("optiwindnet_coll.load_cables"),
         }
 
-        
-
         os_name = platform.system()
 
         if os_name == "Linux":
