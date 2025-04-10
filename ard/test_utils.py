@@ -22,10 +22,7 @@ def pyrite_validator(
         # this helper function can write a file to hold pyrite-standard data
 
         # write out a npz file that holds the variables we want to be able to check
-        np.savez(
-            filename_pyrite,
-            **validation_data
-        )
+        np.savez(filename_pyrite, **validation_data)
         assert False
     else:
         # ... or it can check to make sure that an existing pyrite file matches the current data
