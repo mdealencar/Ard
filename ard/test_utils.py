@@ -41,11 +41,11 @@ def pyrite_validator(
             validation_matches = sum_isclose == vd_size
             # if k == "length_cables":
             #     import pdb; pdb.set_trace()
-#                 data for length_cables: [0.91       0.91       0.91       0.91       0.91       0.91
-                                        #  0.91       0.91       0.91       0.91       0.64660653 0.91
-                                        #  0.91       0.64660653 0.91       0.57982756 0.91       0.64660653
-                                        #  0.91       0.91       0.91       0.64660653 0.91       0.57982756
-                                        #  0.70710678]
+            #                 data for length_cables: [0.91       0.91       0.91       0.91       0.91       0.91
+            #  0.91       0.91       0.91       0.91       0.64660653 0.91
+            #  0.91       0.64660653 0.91       0.57982756 0.91       0.64660653
+            #  0.91       0.91       0.91       0.64660653 0.91       0.57982756
+            #  0.70710678]
             if not validation_matches:
                 print(f"for variable {k}:")
                 print(

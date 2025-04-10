@@ -190,8 +190,8 @@ class TestOptiWindNetCollection:
         }
 
         os_name = platform.system()
-        
-        if os_name == 'Linux':
+
+        if os_name == "Linux":
             # Run Linux specific tests
             # validate data against pyrite file
             ard.test_utils.pyrite_validator(
@@ -200,7 +200,7 @@ class TestOptiWindNetCollection:
                 rtol_val=5e-3,
                 # rewrite=True,  # uncomment to write new pyrite file
             )
-        elif os_name == 'Darwin':
+        elif os_name == "Darwin":
             # Run macos specific tests
             # validate data against pyrite file
             ard.test_utils.pyrite_validator(
@@ -218,9 +218,8 @@ class TestOptiWindNetCollection:
                 rtol_val=5e-3,
                 # rewrite=True,  # uncomment to write new pyrite file
             )
-        else: 
-            raise(ValueError("Invalid OS for pyrite validation test"))
-
+        else:
+            raise (ValueError("Invalid OS for pyrite validation test"))
 
     def test_compute_partials_mini_pentagon(self):
         """
