@@ -38,7 +38,7 @@ def optiwindnet_wrapper(
     XY_boundaries: np.ndarray,
     name_case: str,
     max_turbines_per_string: int,
-    solver_name: str = "scip",
+    solver_name: str = "appsi_highs",
     solver_options: dict = None,
 ):
     """Simple wrapper to run OptiWindNet to get a caple layout
