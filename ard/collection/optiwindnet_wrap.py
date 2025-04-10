@@ -155,13 +155,12 @@ class optiwindnetCollection(templates.CollectionTemplate):
     def setup_partials(self):
         """Setup of OM component gradients."""
 
-        self.declare_partials("*", "*", method="exact")
+        self.declare_partials(["length_cables", "total_length_cables"], ["x_turbines", "y_turbines", "x_substations", "y_substations"], method="exact")
 
     def compute(self, inputs, outputs):
         """
-        Computation for the OM component.
+        Computation for the OptiWindNet collection system design
 
-        For a template class this is not implemented and raises an error!
         """
 
         name_case = "farm"
@@ -216,18 +215,10 @@ class optiwindnetCollection(templates.CollectionTemplate):
         J["length_cables", "y_turbines"] = 0.0
         J["length_cables", "x_substations"] = 0.0
         J["length_cables", "y_substations"] = 0.0
-        J["load_cables", "x_turbines"] = 0.0
-        J["load_cables", "y_turbines"] = 0.0
-        J["load_cables", "x_substations"] = 0.0
-        J["load_cables", "y_substations"] = 0.0
         J["total_length_cables", "x_turbines"] = 0.0
         J["total_length_cables", "y_turbines"] = 0.0
         J["total_length_cables", "x_substations"] = 0.0
         J["total_length_cables", "y_substations"] = 0.0
-        J["max_load_cables", "x_turbines"] = 0.0
-        J["max_load_cables", "y_turbines"] = 0.0
-        J["max_load_cables", "x_substations"] = 0.0
-        J["max_load_cables", "y_substations"] = 0.0
 
         for idx_edge, edge in enumerate(edges):
             e0, e1 = edge
