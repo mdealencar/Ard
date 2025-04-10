@@ -93,7 +93,7 @@ def optiwindnet_wrapper(
     highs_solver.options.update(
         dict(
             time_limit=time_lim_val,
-            mip_rel_gap=0.0005,  # TODO ???
+            mip_rel_gap=0.00005,  # TODO ???
         )
     )
     result = highs_solver.solve(model, tee=True)
