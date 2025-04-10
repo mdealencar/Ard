@@ -62,8 +62,8 @@ class TestoptiwindnetLayout:
                 "solver_options": dict(
                     time_limit=60,
                     mip_rel_gap=0.005,  # TODO ???
-                )
-            }
+                ),
+            },
         }
 
         # create the OpenMDAO model

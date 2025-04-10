@@ -58,8 +58,8 @@ class TestOptiWindNetCollection:
                 "solver_options": dict(
                     time_limit=60,
                     mip_rel_gap=0.005,  # TODO ???
-                )
-            }
+                ),
+            },
         }
 
         # create the OpenMDAO model
@@ -81,7 +81,7 @@ class TestOptiWindNetCollection:
 
         # roll up the coordinates into a form that optiwindnet
         XY_turbines = np.vstack(
-            [130*self.farm_spec["xD_farm"], 130*self.farm_spec["yD_farm"]]
+            [130 * self.farm_spec["xD_farm"], 130 * self.farm_spec["yD_farm"]]
         ).T
 
         x_min = np.min(XY_turbines[:, 0]) - 0.25 * np.ptp(XY_turbines[:, 0])

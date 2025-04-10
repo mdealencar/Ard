@@ -38,8 +38,8 @@ def optiwindnet_wrapper(
     XY_boundaries: np.ndarray,
     name_case: str,
     max_turbines_per_string: int,
-    solver_name: str="scip",
-    solver_options: dict=None,
+    solver_name: str = "scip",
+    solver_options: dict = None,
 ):
     """Simple wrapper to run OptiWindNet to get a caple layout
 
@@ -100,14 +100,18 @@ def optiwindnet_wrapper(
             )
         elif solver_name == "scip":
             solver_options = {
-                'limits/gap': 0.005,
-                'limits/time': time_lim_val,
-                'display/freq': 0.5,
+                "limits/gap": 0.005,
+                "limits/time": time_lim_val,
+                "display/freq": 0.5,
                 # this is currently useless, as pyomo is not calling the concurrent solver
                 # 'parallel/maxnthreads': 16,
             }
         else:
-            raise(ValueError(f"No default solver options available for pyomo solver {solver_name}"))
+            raise (
+                ValueError(
+                    f"No default solver options available for pyomo solver {solver_name}"
+                )
+            )
 
     solver.options.update(solver_options)
     result = solver.solve(model, tee=True)
@@ -181,7 +185,9 @@ class optiwindnetCollection(templates.CollectionTemplate):
         """
 
         name_case = "farm"
-        max_turbines_per_string = self.modeling_options["collection"]["max_turbines_per_string"]
+        max_turbines_per_string = self.modeling_options["collection"][
+            "max_turbines_per_string"
+        ]
         solver_name = self.modeling_options["collection"]["solver_name"]
         solver_options = self.modeling_options["collection"]["solver_options"]
 
@@ -202,7 +208,13 @@ class optiwindnetCollection(templates.CollectionTemplate):
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
 
         result, S, G, H = optiwindnet_wrapper(
-            XY_turbines, XY_substations, XY_boundaries, name_case, max_turbines_per_string, solver_name, solver_options
+            XY_turbines,
+            XY_substations,
+            XY_boundaries,
+            name_case,
+            max_turbines_per_string,
+            solver_name,
+            solver_options,
         )
 
         # extract the outputs
