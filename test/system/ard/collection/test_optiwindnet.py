@@ -56,6 +56,14 @@ class TestoptiwindnetLayout:
             },
             "turbine": data_turbine_spec,
             "offshore": False,
+            "collection": {
+                "max_turbines_per_string": 8,
+                "solver_name": "appsi_highs",
+                "solver_options": dict(
+                    time_limit=60,
+                    mip_rel_gap=0.005,  # TODO ???
+                )
+            }
         }
 
         # create the OpenMDAO model

@@ -37,7 +37,9 @@ def optiwindnet_wrapper(
     XY_substations: np.ndarray,
     XY_boundaries: np.ndarray,
     name_case: str,
-    capacity: int,
+    max_turbines_per_string: int,
+    solver_name: str="scip",
+    solver_options: dict=None,
 ):
     """Simple wrapper to run OptiWindNet to get a caple layout
 
@@ -46,7 +48,7 @@ def optiwindnet_wrapper(
         XY_substations (np.ndarray): x and y positions of substations (easting and northing)
         XY_boundaries (np.ndarray): x and y locations of boundary nodes (easting and northing)
         name_case (str): what to name the case
-        capacity (int): maximum load on a chain
+        max_turbines_per_string (int): maximum number of turbines per cable string
 
     Returns:
         result: pyomo result
@@ -56,9 +58,9 @@ def optiwindnet_wrapper(
 
     """
 
-    # HIGHS solver
-    highs_solver = pyo.SolverFactory("appsi_highs")
-    highs_solver.available(), type(highs_solver)
+    # initialize solver
+    solver = pyo.SolverFactory(solver_name)
+    solver.available(), type(solver)
 
     # start the network definition
     L = own_L_from_site(
@@ -75,13 +77,13 @@ def optiwindnet_wrapper(
     P, A = own_make_planar_embedding(L)
 
     # presolve
-    S = own_EW_presolver(A, capacity=capacity)
+    S = own_EW_presolver(A, capacity=max_turbines_per_string)
     G = own_G_from_S(S, A)
 
     # create minimum length model
     model = own_pyomo.make_min_length_model(
         A,
-        capacity,
+        max_turbines_per_string,
         gateXings_constraint=False,
         branching=True,
         gates_limit=False,
@@ -89,17 +91,29 @@ def optiwindnet_wrapper(
     own_pyomo.warmup_model(model, S)
 
     # create the solver and solve
-    time_lim_val = 120  # TODO move to be an option probably
-    highs_solver.options.update(
-        dict(
-            time_limit=time_lim_val,
-            mip_rel_gap=0.00005,  # TODO ???
-        )
-    )
-    result = highs_solver.solve(model, tee=True)
+    time_lim_val = 60
+    if solver_options is None:
+        if solver_name == "appsi_highs":
+            solver_options = dict(
+                time_limit=time_lim_val,
+                mip_rel_gap=0.05,  # TODO ???
+            )
+        elif solver_name == "scip":
+            solver_options = {
+                'limits/gap': 0.005,
+                'limits/time': time_lim_val,
+                'display/freq': 0.5,
+                # this is currently useless, as pyomo is not calling the concurrent solver
+                # 'parallel/maxnthreads': 16,
+            }
+        else:
+            raise(ValueError(f"No default solver options available for pyomo solver {solver_name}"))
+
+    solver.options.update(solver_options)
+    result = solver.solve(model, tee=True)
 
     # do some postprocessing
-    S = own_pyomo.S_from_solution(model, highs_solver, result)
+    S = own_pyomo.S_from_solution(model, solver, result)
     G = own_G_from_S(S, A)
     H = OWNPathFinder(G, planar=P, A=A).create_detours()
 
@@ -117,7 +131,6 @@ class optiwindnetCollection(templates.CollectionTemplate):
     Options
     -------
     modeling_options : dict
-        a modeling optinos dictionary
 
     Inputs
     ------
@@ -168,7 +181,9 @@ class optiwindnetCollection(templates.CollectionTemplate):
         """
 
         name_case = "farm"
-        capacity = 8  # maximum load on a chain #TODO make the capacity a user input
+        max_turbines_per_string = self.modeling_options["collection"]["max_turbines_per_string"]
+        solver_name = self.modeling_options["collection"]["solver_name"]
+        solver_options = self.modeling_options["collection"]["solver_options"]
 
         # roll up the coordinates into a form that optiwindnet #TODO consider adjusting the buffer (0.25)
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
@@ -187,7 +202,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
 
         result, S, G, H = optiwindnet_wrapper(
-            XY_turbines, XY_substations, XY_boundaries, name_case, capacity
+            XY_turbines, XY_substations, XY_boundaries, name_case, max_turbines_per_string, solver_name, solver_options
         )
 
         # extract the outputs
