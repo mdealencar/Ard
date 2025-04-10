@@ -155,7 +155,11 @@ class optiwindnetCollection(templates.CollectionTemplate):
     def setup_partials(self):
         """Setup of OM component gradients."""
 
-        self.declare_partials(["length_cables", "total_length_cables"], ["x_turbines", "y_turbines", "x_substations", "y_substations"], method="exact")
+        self.declare_partials(
+            ["length_cables", "total_length_cables"],
+            ["x_turbines", "y_turbines", "x_substations", "y_substations"],
+            method="exact",
+        )
 
     def compute(self, inputs, outputs):
         """
