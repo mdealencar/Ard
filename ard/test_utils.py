@@ -36,21 +36,16 @@ def pyrite_validator(
             sum_isclose = np.sum(
                 np.isclose(np.array(v), validation_data[k], rtol=rtol_val)
             )
-            vd_size = np.array(validation_data[k]).size
+            vd_size = np.array(validation_data[k], dtype=np.float64).size
             # assert all of the values match
             validation_matches = sum_isclose == vd_size
-            # if k == "length_cables":
-            #     import pdb; pdb.set_trace()
-            #                 data for length_cables: [0.91       0.91       0.91       0.91       0.91       0.91
-            #  0.91       0.91       0.91       0.91       0.64660653 0.91
-            #  0.91       0.64660653 0.91       0.57982756 0.91       0.64660653
-            #  0.91       0.91       0.91       0.64660653 0.91       0.57982756
-            #  0.70710678]
+
             if not validation_matches:
                 print(f"for variable {k}:")
                 print(
                     f"\t{sum_isclose} values match of {vd_size} total validation values"
                 )
                 print(f"\tto a tolerance of {rtol_val:e}")
-                print(f"data for {k}: {validation_data[k]}")
+                print(f"saved data for {k}: {v}")
+                print(f"computed data for {k}: {validation_data[k]}")
             assert validation_matches
