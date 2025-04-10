@@ -198,8 +198,8 @@ class optiwindnetCollection(templates.CollectionTemplate):
             loads.append(edges[edge]["load"])
 
         # pack and ship
-        outputs["length_cables"] = np.array(lengths)
-        outputs["load_cables"] = np.array(loads)
+        outputs["length_cables"] = np.array(lengths, dtype=np.float64)
+        outputs["load_cables"] = np.array(loads, dtype=np.float64)
         outputs["total_length_cables"] = np.sum(outputs["length_cables"])
         outputs["max_load_cables"] = np.max(outputs["load_cables"])
 

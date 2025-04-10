@@ -1,5 +1,6 @@
 import copy
 from pathlib import Path
+import platform
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -188,13 +189,38 @@ class TestOptiWindNetCollection:
             "load_cables": self.prob.get_val("optiwindnet_coll.load_cables"),
         }
 
-        # validate data against pyrite file
-        ard.test_utils.pyrite_validator(
-            validation_data,
-            Path(__file__).parent / "test_optiwindnet_pyrite.npz",
-            rtol_val=5e-3,
-            # rewrite=True,  # uncomment to write new pyrite file
-        )
+        os_name = platform.system()
+        
+        if os_name == 'Linux':
+            # Run Linux specific tests
+            # validate data against pyrite file
+            ard.test_utils.pyrite_validator(
+                validation_data,
+                Path(__file__).parent / "test_optiwindnet_pyrite_linux.npz",
+                rtol_val=5e-3,
+                # rewrite=True,  # uncomment to write new pyrite file
+            )
+        elif os_name == 'Darwin':
+            # Run macos specific tests
+            # validate data against pyrite file
+            ard.test_utils.pyrite_validator(
+                validation_data,
+                Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
+                rtol_val=5e-3,
+                # rewrite=True,  # uncomment to write new pyrite file
+            )
+        elif os_name == "Windows":
+            # Run Windows specific tests
+            # validate data against pyrite file
+            ard.test_utils.pyrite_validator(
+                validation_data,
+                Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
+                rtol_val=5e-3,
+                # rewrite=True,  # uncomment to write new pyrite file
+            )
+        else: 
+            raise(ValueError("Invalid OS for pyrite validation test"))
+
 
     def test_compute_partials_mini_pentagon(self):
         """

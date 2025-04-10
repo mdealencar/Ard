@@ -1,5 +1,7 @@
 from pathlib import Path
 import pytest
+# import platform
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,7 +32,7 @@ class TestoptiwindnetLayout:
             Path(ard.__file__).parents[1] / "examples" / "data" / "wrg_example.wrg"
         )
         wind_rose_wrg.set_wd_step(90.0)
-        wind_rose_wrg.set_wind_speeds(np.array([5.0, 10.0, 15.0, 20.0]))
+        wind_rose_wrg.set_wind_speeds(np.array([5.0, 10.0, 15.0, 20.0], dtype=np.float64))
         wind_rose = wind_rose_wrg.get_wind_rose_at_point(0.0, 0.0)
         wind_query = wq.WindQuery.from_FLORIS_WindData(wind_rose)
 
@@ -119,11 +121,39 @@ class TestoptiwindnetLayout:
             "max_load_cables": self.prob.get_val("optiwindnet_coll.max_load_cables"),
         }
 
-        # validate data against pyrite file
         with subtests.test("pyrite validator"):
-            ard.test_utils.pyrite_validator(
-                validation_data,
-                Path(__file__).parent / "test_optiwindnet_pyrite.npz",
-                rtol_val=5e-3,
-                # rewrite=True,  # uncomment to write new pyrite file
-            )
+                ard.test_utils.pyrite_validator(
+                    validation_data,
+                    Path(__file__).parent / "test_optiwindnet_pyrite.npz",
+                    rtol_val=5e-3,
+                    # rewrite=True,  # uncomment to write new pyrite file
+                )
+
+        # os_name = platform.system()
+        
+        # if os_name == 'Linux':
+        #     # Run Linux specific tests
+        #     # validate data against pyrite file
+            
+        # elif os_name == 'Darwin':
+        #     # Run macos specific tests
+        #     # validate data against pyrite file
+        #     with subtests.test("pyrite validator"):
+        #         ard.test_utils.pyrite_validator(
+        #             validation_data,
+        #             Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
+        #             rtol_val=5e-3,
+        #             # rewrite=True,  # uncomment to write new pyrite file
+        #         )
+        # elif os_name == "Windows":
+        #     # Run Windows specific tests
+        #     # validate data against pyrite file
+        #     with subtests.test("pyrite validator"):
+        #         ard.test_utils.pyrite_validator(
+        #             validation_data,
+        #             Path(__file__).parent / "test_optiwindnet_pyrite_macos.npz",
+        #             rtol_val=5e-3,
+        #             # rewrite=True,  # uncomment to write new pyrite file
+        #         )
+        # else: 
+        #     raise(ValueError("Invalid OS for pyrite validation test"))
