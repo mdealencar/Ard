@@ -1,11 +1,10 @@
 import numpy as np
 import jax.numpy as jnp
-from jax import jit, jacrev
-from ard.utils import (
-    distance_point_to_lineseg_nd,
-    smooth_min,
-    distance_lineseg_to_lineseg_nd,
-)
+import jax.jit
+import jax.jacrev
+import ard.utils.distance_point_to_lineseg_nd
+import ard.utils.smooth_min
+import ard.utils.distance_lineseg_to_lineseg_nd
 import openmdao.api as om
 
 
@@ -177,7 +176,7 @@ def mooring_constraint_xy(
     return distances
 
 
-mooring_constraint_xy_jac = jacrev(mooring_constraint_xy, argnums=[0, 1, 2, 3])
+mooring_constraint_xy_jac = jax.jacrev(mooring_constraint_xy, argnums=[0, 1, 2, 3])
 
 
 def mooring_constraint_xyz(
@@ -216,7 +215,7 @@ def mooring_constraint_xyz(
     return distances
 
 
-mooring_constraint_xyz_jac = jacrev(mooring_constraint_xyz, argnums=[0, 1, 2, 3, 4])
+mooring_constraint_xyz_jac = jax.jacrev(mooring_constraint_xyz, argnums=[0, 1, 2, 3, 4])
 
 
 def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
@@ -247,7 +246,7 @@ def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
     return distances
 
 
-# calc_mooring_distances = jit(calc_mooring_distances)
+# calc_mooring_distances = jax.jit(calc_mooring_distances)
 
 
 def convert_inputs_x_y_to_xy(
@@ -284,7 +283,7 @@ def convert_inputs_x_y_to_xy(
     return xy
 
 
-# convert_inputs_x_y_to_xy = jit(convert_inputs_x_y_to_xy)
+# convert_inputs_x_y_to_xy = jax.jit(convert_inputs_x_y_to_xy)
 
 
 def convert_inputs_x_y_z_to_xyz(
@@ -326,7 +325,7 @@ def convert_inputs_x_y_z_to_xyz(
     return xyz
 
 
-# convert_inputs_x_y_z_to_xyz = jit(convert_inputs_x_y_z_to_xyz)
+# convert_inputs_x_y_z_to_xyz = jax.jit(convert_inputs_x_y_z_to_xyz)
 
 
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
@@ -347,17 +346,17 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     p_center = P_mooring[0]
     distance_moorings = jnp.array(
         [
-            distance_point_to_lineseg_nd(
+            ard.utils.distance_lineseg_to_lineseg_nd(
                 point, jnp.array(p_center), jnp.array(p_anchor)
             )
             for p_anchor in P_mooring[1:]
         ]
     )
 
-    return smooth_min(distance_moorings)
+    return ard.utils.smooth_min(distance_moorings)
 
 
-distance_point_to_mooring = jit(distance_point_to_mooring)
+distance_point_to_mooring = jax.jit(distance_point_to_mooring)
 
 
 def distance_mooring_to_mooring(
@@ -381,7 +380,7 @@ def distance_mooring_to_mooring(
     distance_moorings_b = jnp.array(
         [
             [
-                distance_lineseg_to_lineseg_nd(
+                ard.utils.distance_lineseg_to_lineseg_nd(
                     p_center_A, point_anchor_A, p_center_B, point_anchor_B
                 )
                 for point_anchor_B in P_mooring_B[1:]
@@ -390,7 +389,7 @@ def distance_mooring_to_mooring(
         ]
     )
 
-    return smooth_min(jnp.array([smooth_min(d) for d in distance_moorings_b]))
+    return ard.utils.smooth_min(jnp.array([ard.utils.smooth_min(d) for d in distance_moorings_b]))
 
 
-distance_mooring_to_mooring = jit(distance_mooring_to_mooring)
+distance_mooring_to_mooring = jax.jit(distance_mooring_to_mooring)

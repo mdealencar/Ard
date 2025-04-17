@@ -1,7 +1,8 @@
 import pytest
 import numpy as np
-from jax import grad, jacobian
-from jax.test_util import check_grads
+import jax.grad
+import jax.jacobian
+import jax.test_util.check_grads
 import jax.numpy as jnp
 import ard.offshore.mooring_constraint as mc
 import openmdao.api as om
@@ -300,7 +301,7 @@ class TestMooringConstraintXYZ:
         za_in = np.array([[-5, -4, -3], [-6, -7, -8], [-9, -10, -11]], dtype=float)
 
         try:
-            check_grads(
+            jax.check_grads(
                 mc.mooring_constraint_xyz,
                 (xt_in, yt_in, xa_in, ya_in, za_in),
                 order=1,
@@ -341,7 +342,7 @@ class TestCalcMooringDistances:
         mooring_points = jnp.array([[P_moorings_A, P_moorings_B, P_moorings_C]])
 
         try:
-            check_grads(
+            jax.check_grads(
                 mc.calc_mooring_distances, (mooring_points), order=1, modes="fwd"
             )
         except AssertionError:
@@ -353,7 +354,7 @@ class TestCalcMooringDistances:
 class TestConvertInputs_X_Y_To_XY:
 
     def setup_method(self):
-        self.distance_point_to_mooring_grad = grad(mc.convert_inputs_x_y_to_xy, [0])
+        self.distance_point_to_mooring_grad = jax.grad(mc.convert_inputs_x_y_to_xy, [0])
         pass
 
     def test_convert_inputs_x_y_to_xy(self):
@@ -383,7 +384,7 @@ class TestConvertInputs_X_Y_To_XY:
         ya_in = jnp.array([[5, 50, 500], [6, 60, 600]], dtype=float)
 
         try:
-            check_grads(
+            jax.check_grads(
                 mc.convert_inputs_x_y_to_xy, (xt_in, yt_in, xa_in, ya_in), order=1
             )
         except AssertionError:
@@ -395,7 +396,7 @@ class TestConvertInputs_X_Y_To_XY:
 class TestConvertInputs_X_Y_Z_To_XYZ:
 
     def setup_method(self):
-        self.distance_point_to_mooring_grad = grad(mc.convert_inputs_x_y_z_to_xyz, [0])
+        self.distance_point_to_mooring_grad = jax.grad(mc.convert_inputs_x_y_z_to_xyz, [0])
         pass
 
     def test_convert_inputs_x_y_z_to_xyz(self):
@@ -431,7 +432,7 @@ class TestConvertInputs_X_Y_Z_To_XYZ:
         za_in = jnp.array([[8, 80, 800], [9, 90, 900]], dtype=float)
 
         try:
-            check_grads(
+            jax.check_grads(
                 mc.convert_inputs_x_y_z_to_xyz,
                 (xt_in, yt_in, zt_in, xa_in, ya_in, za_in),
                 order=1,
@@ -444,7 +445,7 @@ class TestConvertInputs_X_Y_Z_To_XYZ:
 
 class TestDistancePointToMooring:
     def setup_method(self):
-        self.distance_point_to_mooring_grad = grad(mc.distance_point_to_mooring, [0])
+        self.distance_point_to_mooring_grad = jax.grad(mc.distance_point_to_mooring, [0])
         pass
 
     def test_distance_point_to_mooring_2d_near_end(self):
@@ -534,10 +535,10 @@ class TestDistancePointToMooring:
 
 class TestDistanceMooringToMooring:
     def setup_method(self):
-        self.distance_mooring_to_mooring_grad = grad(
+        self.distance_mooring_to_mooring_grad = jax.grad(
             mc.distance_mooring_to_mooring, [0]
         )
-        self.distance_mooring_to_mooring_jac = jacobian(
+        self.distance_mooring_to_mooring_jac = jax.jacobian(
             mc.distance_mooring_to_mooring, [0]
         )
         pass
@@ -642,7 +643,7 @@ class TestDistanceMooringToMooring:
             np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [-1.0, 0.0]])
         )
         try:
-            check_grads(
+            jax.check_grads(
                 mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1
             )
         except AssertionError:
@@ -702,7 +703,7 @@ class TestDistanceMooringToMooring:
         )
 
         try:
-            check_grads(
+            jax.check_grads(
                 mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1
             )
         except AssertionError:
