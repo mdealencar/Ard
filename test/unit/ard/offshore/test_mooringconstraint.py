@@ -6,6 +6,7 @@ import ard.offshore.mooring_constraint as mc
 import openmdao.api as om
 from jax.test_util import check_grads
 
+
 class TestMooringConstraint3Turbines3Anchors2D:
     def setup_method(self):
         xt_in = np.array([10, 30, 50])
@@ -394,7 +395,9 @@ class TestConvertInputs_X_Y_To_XY:
 class TestConvertInputs_X_Y_Z_To_XYZ:
 
     def setup_method(self):
-        self.distance_point_to_mooring_grad = jax.grad(mc.convert_inputs_x_y_z_to_xyz, [0])
+        self.distance_point_to_mooring_grad = jax.grad(
+            mc.convert_inputs_x_y_z_to_xyz, [0]
+        )
         pass
 
     def test_convert_inputs_x_y_z_to_xyz(self):
@@ -443,7 +446,9 @@ class TestConvertInputs_X_Y_Z_To_XYZ:
 
 class TestDistancePointToMooring:
     def setup_method(self):
-        self.distance_point_to_mooring_grad = jax.grad(mc.distance_point_to_mooring, [0])
+        self.distance_point_to_mooring_grad = jax.grad(
+            mc.distance_point_to_mooring, [0]
+        )
         pass
 
     def test_distance_point_to_mooring_2d_near_end(self):

@@ -191,7 +191,9 @@ def distance_lineseg_to_lineseg_nd(
             denominator,
         ]
 
-        distance = jax.lax.cond(denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1o)
+        distance = jax.lax.cond(
+            denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1o
+        )
 
         return distance
 

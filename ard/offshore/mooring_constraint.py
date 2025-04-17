@@ -386,7 +386,9 @@ def distance_mooring_to_mooring(
         ]
     )
 
-    return ard.utils.smooth_min(jnp.array([ard.utils.smooth_min(d) for d in distance_moorings_b]))
+    return ard.utils.smooth_min(
+        jnp.array([ard.utils.smooth_min(d) for d in distance_moorings_b])
+    )
 
 
 distance_mooring_to_mooring = jax.jit(distance_mooring_to_mooring)
