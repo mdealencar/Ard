@@ -1,10 +1,7 @@
 import numpy as np
 import jax.numpy as jnp
-import jax.jit
-import jax.jacrev
-import ard.utils.distance_point_to_lineseg_nd
-import ard.utils.smooth_min
-import ard.utils.distance_lineseg_to_lineseg_nd
+import jax
+import ard
 import openmdao.api as om
 
 
@@ -346,7 +343,7 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     p_center = P_mooring[0]
     distance_moorings = jnp.array(
         [
-            ard.utils.distance_lineseg_to_lineseg_nd(
+            ard.utils.distance_point_to_lineseg_nd(
                 point, jnp.array(p_center), jnp.array(p_anchor)
             )
             for p_anchor in P_mooring[1:]

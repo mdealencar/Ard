@@ -3,8 +3,7 @@ from os import PathLike
 from pathlib import Path
 import yaml
 import jax.numpy as jnp
-import jax.jit
-import jax.lax
+import jax
 
 import numpy as np
 
@@ -82,7 +81,7 @@ def distance_lineseg_to_lineseg_nd(
 
     def a_is_not_point(inputs0i) -> float:
         line_b_vector = inputs0i[5]
-        return lax.cond(
+        return jax.lax.cond(
             jnp.all(line_b_vector == 0.0), b_is_point, a_and_b_are_lines, inputs0i
         )
 

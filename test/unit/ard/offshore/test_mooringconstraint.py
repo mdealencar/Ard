@@ -1,12 +1,10 @@
 import pytest
 import numpy as np
-import jax.grad
-import jax.jacobian
-import jax.test_util.check_grads
+import jax
 import jax.numpy as jnp
 import ard.offshore.mooring_constraint as mc
 import openmdao.api as om
-
+from jax.test_util import check_grads
 
 class TestMooringConstraint3Turbines3Anchors2D:
     def setup_method(self):
@@ -301,7 +299,7 @@ class TestMooringConstraintXYZ:
         za_in = np.array([[-5, -4, -3], [-6, -7, -8], [-9, -10, -11]], dtype=float)
 
         try:
-            jax.check_grads(
+            check_grads(
                 mc.mooring_constraint_xyz,
                 (xt_in, yt_in, xa_in, ya_in, za_in),
                 order=1,
@@ -342,7 +340,7 @@ class TestCalcMooringDistances:
         mooring_points = jnp.array([[P_moorings_A, P_moorings_B, P_moorings_C]])
 
         try:
-            jax.check_grads(
+            check_grads(
                 mc.calc_mooring_distances, (mooring_points), order=1, modes="fwd"
             )
         except AssertionError:
@@ -384,7 +382,7 @@ class TestConvertInputs_X_Y_To_XY:
         ya_in = jnp.array([[5, 50, 500], [6, 60, 600]], dtype=float)
 
         try:
-            jax.check_grads(
+            check_grads(
                 mc.convert_inputs_x_y_to_xy, (xt_in, yt_in, xa_in, ya_in), order=1
             )
         except AssertionError:
@@ -432,7 +430,7 @@ class TestConvertInputs_X_Y_Z_To_XYZ:
         za_in = jnp.array([[8, 80, 800], [9, 90, 900]], dtype=float)
 
         try:
-            jax.check_grads(
+            check_grads(
                 mc.convert_inputs_x_y_z_to_xyz,
                 (xt_in, yt_in, zt_in, xa_in, ya_in, za_in),
                 order=1,
@@ -643,7 +641,7 @@ class TestDistanceMooringToMooring:
             np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [-1.0, 0.0]])
         )
         try:
-            jax.check_grads(
+            check_grads(
                 mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1
             )
         except AssertionError:
@@ -703,7 +701,7 @@ class TestDistanceMooringToMooring:
         )
 
         try:
-            jax.check_grads(
+            check_grads(
                 mc.distance_mooring_to_mooring, (P_moorings_A, P_moorings_B), order=1
             )
         except AssertionError:

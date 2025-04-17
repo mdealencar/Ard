@@ -1,8 +1,6 @@
 import pytest
 import numpy as np
-import jax.grad
-import jax.jacobian
-import jax.test_util.check_grads
+import jax
 import jax.numpy as jnp
 import ard.utils as utils
 
@@ -142,7 +140,7 @@ class TestGetClosestPoint:
         assert np.all(tr_dp == np.array([[0, 0, 0], [0, 0, 0], [0, 0, 1]]))
 
         try:
-            jax.check_grads(
+            jax.test_util.check_grads(
                 utils.get_closest_point,
                 (test_point, test_start, test_end, line_vector),
                 order=1,
@@ -289,7 +287,7 @@ class TestPointToLineSeg:
         assert np.all(tr_dp == np.array([1, 0, 0]))
 
         try:
-            jax.check_grads(
+            jax.test_util.check_grads(
                 utils.distance_point_to_lineseg_nd,
                 (test_point, test_start, test_end),
                 order=1,
@@ -362,7 +360,7 @@ class TestSmoothMaxMin:
         assert test_result == pytest.approx([0, 0, 1, 0], rel=1e-6)
 
         try:
-            jax.check_grads(utils.smooth_max, ([test_list]), order=1)
+            jax.test_util.check_grads(utils.smooth_max, ([test_list]), order=1)
         except AssertionError:
             pytest.fail(
                 "Unexpected AssertionError when checking gradients, gradients may be incorrect"
@@ -598,7 +596,7 @@ class TestLineSegToLineSeg:
         )
 
         try:
-            jax.check_grads(
+            jax.test_util.check_grads(
                 utils.distance_lineseg_to_lineseg_nd,
                 (line_a[0], line_a[1], line_b[0], line_b[1]),
                 order=1,
@@ -835,7 +833,7 @@ class TestLineSegToLineSeg:
         assert np.all(test_result == np.array([-0.5, 0, 0], dtype=float))
 
         try:
-            jax.check_grads(
+            jax.test_util.check_grads(
                 utils.distance_lineseg_to_lineseg_nd,
                 (line_a[0], line_a[1], line_b[0], line_b[1]),
                 order=1,
