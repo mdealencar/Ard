@@ -41,12 +41,15 @@ dependencies = [
   "marmot-agents",
   "openmdao",
   "shapely",
+  "optiwindnet",
+  "highspy",
 ]
 [project.optional-dependencies]
 dev = [
   "black[jupyter]",
   "pytest",
   "pytest-cov",
+  "pytest-subtests",
 ]
 docs = [
   "pyxdsm",
