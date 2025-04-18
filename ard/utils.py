@@ -3,7 +3,7 @@ from os import PathLike
 from pathlib import Path
 import yaml
 import jax.numpy as jnp
-from jax import jit, lax
+import jax
 
 import numpy as np
 
@@ -42,7 +42,7 @@ def _distance_lineseg_to_lineseg_coplanar(
     return distance
 
 
-_distance_lineseg_to_lineseg_coplanar = jit(_distance_lineseg_to_lineseg_coplanar)
+_distance_lineseg_to_lineseg_coplanar = jax.jit(_distance_lineseg_to_lineseg_coplanar)
 
 
 def distance_lineseg_to_lineseg_nd(
@@ -81,7 +81,7 @@ def distance_lineseg_to_lineseg_nd(
 
     def a_is_not_point(inputs0i) -> float:
         line_b_vector = inputs0i[5]
-        return lax.cond(
+        return jax.lax.cond(
             jnp.all(line_b_vector == 0.0), b_is_point, a_and_b_are_lines, inputs0i
         )
 
@@ -139,13 +139,13 @@ def distance_lineseg_to_lineseg_nd(
 
             def st_lt_1(inputs23i) -> np.ndarray:
                 st = inputs23i[3]
-                return lax.cond(st < 0, st_lt_0, st_gt_0_lt_1, inputs23i)
+                return jax.lax.cond(st < 0, st_lt_0, st_gt_0_lt_1, inputs23i)
 
             # get closest point on lines a and b to each other
             inputs2o = [line_a_start, line_a_end, line_a_vector, s]
-            closest_point_line_a = lax.cond(s > 1, st_gt_1, st_lt_1, inputs2o)
+            closest_point_line_a = jax.lax.cond(s > 1, st_gt_1, st_lt_1, inputs2o)
             inputs3o = [line_b_start, line_b_end, line_b_vector, t]
-            closest_point_line_b = lax.cond(t > 1, st_gt_1, st_lt_1, inputs3o)
+            closest_point_line_b = jax.lax.cond(t > 1, st_gt_1, st_lt_1, inputs3o)
 
             # the distance between the line segments is the distance between the closest points (in many cases)
             parametric_distance = smooth_norm(
@@ -191,7 +191,9 @@ def distance_lineseg_to_lineseg_nd(
             denominator,
         ]
 
-        distance = lax.cond(denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1o)
+        distance = jax.lax.cond(
+            denominator <= tol, denom_lt_tol, denom_gt_tol, inputs1o
+        )
 
         return distance
 
@@ -214,14 +216,14 @@ def distance_lineseg_to_lineseg_nd(
         line_b_vector,
     ]
 
-    distance = lax.cond(
+    distance = jax.lax.cond(
         jnp.all(line_a_vector == 0.0), a_is_point, a_is_not_point, inputs0o
     )
 
     return distance
 
 
-distance_lineseg_to_lineseg_nd = jit(distance_lineseg_to_lineseg_nd)
+distance_lineseg_to_lineseg_nd = jax.jit(distance_lineseg_to_lineseg_nd)
 
 
 def distance_point_to_lineseg_nd(
@@ -261,7 +263,7 @@ def distance_point_to_lineseg_nd(
     segment_vector = segment_end - segment_start
 
     # if the segment is a point, then get the distance to that point
-    distance = lax.cond(
+    distance = jax.lax.cond(
         jnp.all(segment_vector == 0),
         if_point_to_point,
         if_point_to_line_seg,
@@ -271,7 +273,7 @@ def distance_point_to_lineseg_nd(
     return distance
 
 
-distance_point_to_lineseg_nd = jit(distance_point_to_lineseg_nd)
+distance_point_to_lineseg_nd = jax.jit(distance_point_to_lineseg_nd)
 
 
 def get_closest_point(
@@ -311,7 +313,7 @@ def get_closest_point(
 
     def gt_0(inputs) -> np.ndarray:
         projection = inputs[0]
-        return lax.cond(projection > 1, gt_1, lt_1_gt_0, inputs)
+        return jax.lax.cond(projection > 1, gt_1, lt_1_gt_0, inputs)
 
     def lt_1_gt_0(inputs) -> np.ndarray:
         projection = inputs[0]
@@ -319,7 +321,7 @@ def get_closest_point(
         segment_vector = inputs[3]
         return jnp.array(segment_start + projection * segment_vector, dtype=float)
 
-    return lax.cond(
+    return jax.lax.cond(
         projection < 0,
         lt_0,
         gt_0,
@@ -327,7 +329,7 @@ def get_closest_point(
     )
 
 
-get_closest_point = jit(get_closest_point)
+get_closest_point = jax.jit(get_closest_point)
 
 
 def smooth_max(x: jnp.ndarray, s: float = 1000.0) -> float:
@@ -366,7 +368,7 @@ def smooth_max(x: jnp.ndarray, s: float = 1000.0) -> float:
     return r
 
 
-smooth_max = jit(smooth_max)
+smooth_max = jax.jit(smooth_max)
 
 
 def smooth_min(x: np.ndarray, s: float = 1000.0) -> float:
@@ -385,7 +387,7 @@ def smooth_min(x: np.ndarray, s: float = 1000.0) -> float:
     return -smooth_max(x=-x, s=s)
 
 
-smooth_min = jit(smooth_min)
+smooth_min = jax.jit(smooth_min)
 
 
 def smooth_norm(vec: np.ndarray, buf: float = 1e-12) -> float:
@@ -404,7 +406,7 @@ def smooth_norm(vec: np.ndarray, buf: float = 1e-12) -> float:
     return jnp.sqrt(buf**2 + jnp.sum(vec**2))
 
 
-smooth_norm = jit(smooth_norm)
+smooth_norm = jax.jit(smooth_norm)
 
 
 def load_turbine_spec(

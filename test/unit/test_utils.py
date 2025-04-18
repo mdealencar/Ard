@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
-from jax import grad, jacobian
-from jax.test_util import check_grads
+import jax
 import jax.numpy as jnp
 import ard.utils as utils
 
@@ -13,7 +12,7 @@ class TestUtils:
 
 class TestGetClosestPoint:
     def setup_method(self):
-        self.get_closest_point_jac = jacobian(utils.get_closest_point, [0])
+        self.get_closest_point_jac = jax.jacobian(utils.get_closest_point, [0])
         pass
 
     def test_get_closest_point_45_deg_with_end(self):
@@ -141,7 +140,7 @@ class TestGetClosestPoint:
         assert np.all(tr_dp == np.array([[0, 0, 0], [0, 0, 0], [0, 0, 1]]))
 
         try:
-            check_grads(
+            jax.test_util.check_grads(
                 utils.get_closest_point,
                 (test_point, test_start, test_end, line_vector),
                 order=1,
@@ -154,7 +153,7 @@ class TestGetClosestPoint:
 
 class TestPointToLineSeg:
     def setup_method(self):
-        self.distance_point_to_lineseg_nd_grad = grad(
+        self.distance_point_to_lineseg_nd_grad = jax.grad(
             utils.distance_point_to_lineseg_nd, [0]
         )
         pass
@@ -288,7 +287,7 @@ class TestPointToLineSeg:
         assert np.all(tr_dp == np.array([1, 0, 0]))
 
         try:
-            check_grads(
+            jax.test_util.check_grads(
                 utils.distance_point_to_lineseg_nd,
                 (test_point, test_start, test_end),
                 order=1,
@@ -301,8 +300,8 @@ class TestPointToLineSeg:
 
 class TestSmoothMaxMin:
     def setup_method(self):
-        self.smooth_max_grad = grad(utils.smooth_max)
-        self.smooth_min_grad = grad(utils.smooth_min)
+        self.smooth_max_grad = jax.grad(utils.smooth_max)
+        self.smooth_min_grad = jax.grad(utils.smooth_min)
         pass
 
     def test_smooth_max_close(self):
@@ -361,7 +360,7 @@ class TestSmoothMaxMin:
         assert test_result == pytest.approx([0, 0, 1, 0], rel=1e-6)
 
         try:
-            check_grads(utils.smooth_max, ([test_list]), order=1)
+            jax.test_util.check_grads(utils.smooth_max, ([test_list]), order=1)
         except AssertionError:
             pytest.fail(
                 "Unexpected AssertionError when checking gradients, gradients may be incorrect"
@@ -381,7 +380,7 @@ class TestSmoothMaxMin:
 
 class TestLineSegToLineSeg:
     def setup_method(self):
-        self.distance_lineseg_to_lineseg_nd_grad = grad(
+        self.distance_lineseg_to_lineseg_nd_grad = jax.grad(
             utils.distance_lineseg_to_lineseg_nd, [0]
         )
         pass
@@ -597,7 +596,7 @@ class TestLineSegToLineSeg:
         )
 
         try:
-            check_grads(
+            jax.test_util.check_grads(
                 utils.distance_lineseg_to_lineseg_nd,
                 (line_a[0], line_a[1], line_b[0], line_b[1]),
                 order=1,
@@ -834,7 +833,7 @@ class TestLineSegToLineSeg:
         assert np.all(test_result == np.array([-0.5, 0, 0], dtype=float))
 
         try:
-            check_grads(
+            jax.test_util.check_grads(
                 utils.distance_lineseg_to_lineseg_nd,
                 (line_a[0], line_a[1], line_b[0], line_b[1]),
                 order=1,
@@ -847,8 +846,8 @@ class TestLineSegToLineSeg:
 
 class TestSmoothNorm:
     def setup_method(self):
-        self.smooth_norm_grad = grad(utils.smooth_norm, [0])
-        self.norm_grad = grad(jnp.linalg.norm, [0])
+        self.smooth_norm_grad = jax.grad(utils.smooth_norm, [0])
+        self.norm_grad = jax.grad(jnp.linalg.norm, [0])
         pass
 
     def test_smooth_norm_large_values(self):

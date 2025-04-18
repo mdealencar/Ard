@@ -1,10 +1,10 @@
 import pytest
 import numpy as np
-from jax import grad, jacobian
-from jax.test_util import check_grads
+import jax
 import jax.numpy as jnp
 import ard.offshore.mooring_constraint as mc
 import openmdao.api as om
+from jax.test_util import check_grads
 
 
 class TestMooringConstraint3Turbines3Anchors2D:
@@ -353,7 +353,7 @@ class TestCalcMooringDistances:
 class TestConvertInputs_X_Y_To_XY:
 
     def setup_method(self):
-        self.distance_point_to_mooring_grad = grad(mc.convert_inputs_x_y_to_xy, [0])
+        self.distance_point_to_mooring_grad = jax.grad(mc.convert_inputs_x_y_to_xy, [0])
         pass
 
     def test_convert_inputs_x_y_to_xy(self):
@@ -395,7 +395,9 @@ class TestConvertInputs_X_Y_To_XY:
 class TestConvertInputs_X_Y_Z_To_XYZ:
 
     def setup_method(self):
-        self.distance_point_to_mooring_grad = grad(mc.convert_inputs_x_y_z_to_xyz, [0])
+        self.distance_point_to_mooring_grad = jax.grad(
+            mc.convert_inputs_x_y_z_to_xyz, [0]
+        )
         pass
 
     def test_convert_inputs_x_y_z_to_xyz(self):
@@ -444,7 +446,9 @@ class TestConvertInputs_X_Y_Z_To_XYZ:
 
 class TestDistancePointToMooring:
     def setup_method(self):
-        self.distance_point_to_mooring_grad = grad(mc.distance_point_to_mooring, [0])
+        self.distance_point_to_mooring_grad = jax.grad(
+            mc.distance_point_to_mooring, [0]
+        )
         pass
 
     def test_distance_point_to_mooring_2d_near_end(self):
@@ -534,10 +538,10 @@ class TestDistancePointToMooring:
 
 class TestDistanceMooringToMooring:
     def setup_method(self):
-        self.distance_mooring_to_mooring_grad = grad(
+        self.distance_mooring_to_mooring_grad = jax.grad(
             mc.distance_mooring_to_mooring, [0]
         )
-        self.distance_mooring_to_mooring_jac = jacobian(
+        self.distance_mooring_to_mooring_jac = jax.jacobian(
             mc.distance_mooring_to_mooring, [0]
         )
         pass
