@@ -4,7 +4,10 @@ import openmdao.api as om
 
 import math
 
-def generate_anchor_points(center: np.ndarray, length: float, rotation_deg: float, N: int) -> np.ndarray:
+
+def generate_anchor_points(
+    center: np.ndarray, length: float, rotation_deg: float, N: int
+) -> np.ndarray:
     """Generates anchor points equally spaced around the platform
 
     Args:
@@ -26,12 +29,20 @@ def generate_anchor_points(center: np.ndarray, length: float, rotation_deg: floa
         angle_rad = math.radians(angle_deg)
         x = cx + length * math.cos(angle_rad)
         y = cy + length * math.sin(angle_rad)
-        lines[i, 0] = x 
+        lines[i, 0] = x
         lines[i, 1] = y
 
     return lines
 
-def simple_mooring_design(phi_platform: np.ndarray, x_turbines: np.ndarray, y_turbines: np.ndarray, length: float, N_turbines: int, N_anchors: int) -> tuple[np.ndarray]:
+
+def simple_mooring_design(
+    phi_platform: np.ndarray,
+    x_turbines: np.ndarray,
+    y_turbines: np.ndarray,
+    length: float,
+    N_turbines: int,
+    N_anchors: int,
+) -> tuple[np.ndarray]:
     """_summary_
 
     Args:
@@ -46,7 +57,6 @@ def simple_mooring_design(phi_platform: np.ndarray, x_turbines: np.ndarray, y_tu
         tuple[np.ndarray]: x locations of anchors, y locations of anchors, each array of shape N_turbines by N_anchors
     """
 
-
     x_anchors = np.zeros([N_turbines, N_anchors])
     y_anchors = np.zeros_like(x_anchors)
 
@@ -55,7 +65,9 @@ def simple_mooring_design(phi_platform: np.ndarray, x_turbines: np.ndarray, y_tu
         # Example usage:
         center = (x, y)
 
-        anchors = generate_anchor_points(center=center, length=length, rotation_deg=phi_platform[i], N=N_anchors)
+        anchors = generate_anchor_points(
+            center=center, length=length, rotation_deg=phi_platform[i], N=N_anchors
+        )
 
         for j in range(N_anchors):
             x_anchors[i, j] = anchors[j, 0]
@@ -150,7 +162,9 @@ class MooringDesign(om.ExplicitComponent):
         self.modeling_options = self.options["modeling_options"]
         self.N_turbines = self.modeling_options["farm"]["N_turbines"]
         self.N_anchors = self.modeling_options["platform"]["N_anchors"]
-        self.min_mooring_line_length = self.modeling_options["platform"]["min_mooring_line_length"]
+        self.min_mooring_line_length = self.modeling_options["platform"][
+            "min_mooring_line_length"
+        ]
 
         # get the number of wind conditions (for thrust measurements)
         if self.options["wind_query"] is not None:
@@ -200,7 +214,14 @@ class MooringDesign(om.ExplicitComponent):
         y_turbines = inputs["y_turbines"]
         # thrust_turbines = inputs["thrust_turbines"]  #
 
-        x_anchors, y_anchors =  simple_mooring_design(phi_platform=phi_platform, x_turbines=x_turbines, y_turbines=y_turbines, length=self.min_mooring_line_length, N_turbines=self.N_turbines, N_anchors=self.N_anchors)
+        x_anchors, y_anchors = simple_mooring_design(
+            phi_platform=phi_platform,
+            x_turbines=x_turbines,
+            y_turbines=y_turbines,
+            length=self.min_mooring_line_length,
+            N_turbines=self.N_turbines,
+            N_anchors=self.N_anchors,
+        )
 
         # replace the below with the final anchor locations...
         outputs["x_anchors"] = x_anchors

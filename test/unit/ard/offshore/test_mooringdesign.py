@@ -6,6 +6,7 @@ import ard.offshore.mooring_design as md
 import openmdao.api as om
 from jax.test_util import check_grads
 
+
 @pytest.mark.usefixtures("subtests")
 class TestMooringDesignSimpleFunctions:
 
@@ -17,7 +18,12 @@ class TestMooringDesignSimpleFunctions:
 
     def test_generate_anchor_points(self, subtests):
 
-        lines = md.generate_anchor_points(center=self.center, length=self.length, rotation_deg=self.rotation_deg[0], N=self.N)
+        lines = md.generate_anchor_points(
+            center=self.center,
+            length=self.length,
+            rotation_deg=self.rotation_deg[0],
+            N=self.N,
+        )
 
         with subtests.test("anchor 0"):
             assert np.allclose(lines[0], np.array([20.0, 5.0]))
@@ -29,35 +35,40 @@ class TestMooringDesignSimpleFunctions:
             assert np.allclose(lines[3], np.array([10.0, -5.0]))
 
     def test_simple_mooring_design_1_turbine(self, subtests):
-        
-        x_anchors, y_anchors = md.simple_mooring_design(phi_platform=self.rotation_deg, 
-                                                        x_turbines=np.array([self.center[0]]), 
-                                                        y_turbines=np.array([self.center[1]]), 
-                                                        length=self.length, 
-                                                        N_turbines=1, 
-                                                        N_anchors=self.N)
+
+        x_anchors, y_anchors = md.simple_mooring_design(
+            phi_platform=self.rotation_deg,
+            x_turbines=np.array([self.center[0]]),
+            y_turbines=np.array([self.center[1]]),
+            length=self.length,
+            N_turbines=1,
+            N_anchors=self.N,
+        )
 
         with subtests.test("anchor 0"):
             assert np.allclose(x_anchors, np.array([20.0, 10.0, 0.0, 10.0]))
         with subtests.test("anchor 1"):
             assert np.allclose(y_anchors, np.array([5.0, 15.0, 5.0, -5.0]))
 
-    
     def test_simple_mooring_design_2_turbines(self, subtests):
-        
-        x_anchors, y_anchors = md.simple_mooring_design(phi_platform=np.array([self.rotation_deg[0], self.rotation_deg[0]]),
-                                                        x_turbines=np.array([self.center[0], self.center[0]+2*self.length]), 
-                                                        y_turbines=np.array([self.center[1], self.center[1]]), 
-                                                        length=self.length, 
-                                                        N_turbines=2, 
-                                                        N_anchors=self.N)
+
+        x_anchors, y_anchors = md.simple_mooring_design(
+            phi_platform=np.array([self.rotation_deg[0], self.rotation_deg[0]]),
+            x_turbines=np.array([self.center[0], self.center[0] + 2 * self.length]),
+            y_turbines=np.array([self.center[1], self.center[1]]),
+            length=self.length,
+            N_turbines=2,
+            N_anchors=self.N,
+        )
 
         with subtests.test("x anchors"):
-            assert np.allclose(x_anchors, np.array([[20.0, 10.0, 0.0, 10.0],
-                                                    [40.0, 30.0, 20.0, 30.0]]))
+            assert np.allclose(
+                x_anchors, np.array([[20.0, 10.0, 0.0, 10.0], [40.0, 30.0, 20.0, 30.0]])
+            )
         with subtests.test("y anchors"):
-            assert np.allclose(y_anchors, np.array([[5.0, 15.0, 5.0, -5.0],
-                                                    [5.0, 15.0, 5.0, -5.0]]))
+            assert np.allclose(
+                y_anchors, np.array([[5.0, 15.0, 5.0, -5.0], [5.0, 15.0, 5.0, -5.0]])
+            )
 
 
 class TestMooringDesignSimple3Turbines3Anchors2D:
@@ -68,13 +79,19 @@ class TestMooringDesignSimple3Turbines3Anchors2D:
 
         modeling_options = {
             "farm": {"N_turbines": 2},
-            "platform": {"N_anchors": 4, "N_anchor_dimensions": 2, "min_mooring_line_length": 10},
+            "platform": {
+                "N_anchors": 4,
+                "N_anchor_dimensions": 2,
+                "min_mooring_line_length": 10,
+            },
         }
 
         prob = om.Problem(model=om.Group())
         prob.model.add_subsystem(
             "md",
-            md.MooringDesign(modeling_options=modeling_options, wind_query=None, bathymetry_data=None),
+            md.MooringDesign(
+                modeling_options=modeling_options, wind_query=None, bathymetry_data=None
+            ),
             promotes=["*"],
         )
 
@@ -86,11 +103,8 @@ class TestMooringDesignSimple3Turbines3Anchors2D:
 
         self.prob0 = prob
 
-
     def test_mooring_design_component_output(self):
         assert np.allclose(
-                            self.prob0["x_anchors"],
-                                np.array([[20.0, 10.0, 0.0, 10.0],
-                                        [40.0, 30.0, 20.0, 30.0]])
-                          )
-
+            self.prob0["x_anchors"],
+            np.array([[20.0, 10.0, 0.0, 10.0], [40.0, 30.0, 20.0, 30.0]]),
+        )
