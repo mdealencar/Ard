@@ -73,7 +73,10 @@ class CollectionTemplate(om.ExplicitComponent):
         self.add_output("total_length_cables", 0.0, units="m")
         self.add_discrete_output("max_load_cables", 0.0)
 
-    def compute(self, inputs, outputs):
+    def compute(
+        self, inputs, outputs,
+        discrete_inputs=None, discrete_outputs=None,
+    ):
         """
         Computation for the OM component.
 

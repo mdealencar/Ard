@@ -15,9 +15,6 @@ import logging
 
 logging.getLogger("optiwindnet").setLevel(logging.CRITICAL)
 
-from optiwindnet.plotting import gplot  # DEBUG!!!!! REMOVE ME
-import matplotlib.pyplot as plt  # DEBUG!!!!!
-
 
 # custom length calculation
 def distance_function(x0, y0, x1, y1):
