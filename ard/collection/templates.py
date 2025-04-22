@@ -67,15 +67,19 @@ class CollectionTemplate(om.ExplicitComponent):
 
         # set up outputs for the collection system
         self.add_discrete_output(
-            "length_cables", np.zeros((self.N_turbines,)), # units="m",
+            "length_cables",
+            np.zeros((self.N_turbines,)),  # units="m",
         )
         self.add_discrete_output("load_cables", np.zeros((self.N_turbines,)))
         self.add_output("total_length_cables", 0.0, units="m")
         self.add_discrete_output("max_load_cables", 0.0)
 
     def compute(
-        self, inputs, outputs,
-        discrete_inputs=None, discrete_outputs=None,
+        self,
+        inputs,
+        outputs,
+        discrete_inputs=None,
+        discrete_outputs=None,
     ):
         """
         Computation for the OM component.

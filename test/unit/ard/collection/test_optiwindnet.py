@@ -175,7 +175,9 @@ class TestOptiWindNetCollection:
                 assert var_to_check in output_list
 
             # make sure that the outputs in the component match what we planned
-            discrete_output_list = [k for k, v in self.optiwindnet_coll._discrete_outputs.items()]
+            discrete_output_list = [
+                k for k, v in self.optiwindnet_coll._discrete_outputs.items()
+            ]
             for var_to_check in [
                 "length_cables",
                 "load_cables",
@@ -208,7 +210,8 @@ class TestOptiWindNetCollection:
 
         # collect data to validate
         validation_data = {
-            "length_cables": self.prob.get_val("optiwindnet_coll.length_cables")/1.0e3,
+            "length_cables": self.prob.get_val("optiwindnet_coll.length_cables")
+            / 1.0e3,
             "load_cables": self.prob.get_val("optiwindnet_coll.load_cables"),
         }
 

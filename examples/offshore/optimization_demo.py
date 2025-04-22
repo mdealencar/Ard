@@ -296,5 +296,6 @@ pp.pprint(test_data)
 print("\n\n")
 
 import optiwindnet
+
 optiwindnet.plotting.gplot(prob.model.optiwindnet_coll.graph)
 plt.show()
