@@ -41,7 +41,7 @@ def optiwindnet_wrapper(
     solver_name: str = "appsi_highs",
     solver_options: dict = None,
 ):
-    """Simple wrapper to run OptiWindNet to get a caple layout
+    """Simple wrapper to run OptiWindNet to get a cable layout
 
     Args:
         XY_turbines (np.ndarray): x and y positions of turbines (easting and northing)
@@ -187,7 +187,6 @@ class optiwindnetCollection(templates.CollectionTemplate):
     ):
         """
         Computation for the OptiWindNet collection system design
-
         """
 
         name_case = "farm"

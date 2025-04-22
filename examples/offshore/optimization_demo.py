@@ -1,17 +1,20 @@
 from pathlib import Path
 
-import numpy as np
-
 import pprint as pp
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 import floris
 import openmdao.api as om
 
 from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
+import optiwindnet.plotting
 import ard
 import ard.glue.prototype as glue
 
+import logging  # DEBUG!!!!!
 
 # layout type
 layout_type = "gridfarm"
@@ -234,6 +237,7 @@ test_data = {
     "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
     "OpEx_val": float(prob.get_val("opex.opex", units="MUSD/yr")[0]),
     "LCOE_val": float(prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
+    "area_tight": float(prob.get_val("landuse.area_tight", units="km**2")[0]),
     "coll_length": float(
         prob.get_val("optiwindnet_coll.total_length_cables", units="km")[0]
     ),
@@ -252,7 +256,7 @@ prob.model.add_design_var("spacing_primary", lower=5.0, upper=10.0)
 prob.model.add_design_var("spacing_secondary", lower=5.0, upper=10.0)
 prob.model.add_design_var("angle_orientation", lower=-180.0, upper=180.0)
 prob.model.add_design_var("angle_skew", lower=-75.0, upper=75.0)
-prob.model.add_constraint("AEP_farm", lower=600.0)
+prob.model.add_constraint("landuse.area_tight", units="km**2", lower=8.0)
 prob.model.add_objective("optiwindnet_coll.total_length_cables")
 
 # set up the problem
@@ -281,6 +285,7 @@ test_data = {
     "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
     "OpEx_val": float(prob.get_val("opex.opex", units="MUSD/yr")[0]),
     "LCOE_val": float(prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
+    "area_tight": float(prob.get_val("landuse.area_tight", units="km**2")[0]),
     "coll_length": float(
         prob.get_val("optiwindnet_coll.total_length_cables", units="km")[0]
     ),
@@ -289,3 +294,7 @@ test_data = {
 print("\n\nRESULTS:\n")
 pp.pprint(test_data)
 print("\n\n")
+
+import optiwindnet
+optiwindnet.plotting.gplot(prob.model.optiwindnet_coll.graph)
+plt.show()
