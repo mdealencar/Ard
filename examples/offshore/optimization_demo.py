@@ -280,7 +280,7 @@ print("\n\nRESULTS:\n")
 pp.pprint(test_data)
 print("\n\n")
 
-if False:
+if True:
     # now set up an optimization driver
 
     prob.driver = om.ScipyOptimizeDriver()
