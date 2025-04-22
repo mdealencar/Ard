@@ -337,8 +337,8 @@ class TestOptiWindNetCollection:
         prob.run_model()
 
         # # DEBUG!!!!! viz for verification
-        gplot(optiwindnet_coll_mini.graph)
-        plt.savefig("dummy.png")  # DEBUG!!!!!
+        # gplot(optiwindnet_coll_mini.graph)
+        # plt.savefig("dummy.png")  # DEBUG!!!!!
 
         if False:  # for hand-debugging
             J0 = prob.compute_totals(

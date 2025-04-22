@@ -13,7 +13,10 @@ import ard.collection.templates as templates
 
 import logging
 
-logging.getLogger("optiwindnet").setLevel(logging.INFO)
+logging.getLogger("optiwindnet").setLevel(logging.CRITICAL)
+
+from optiwindnet.plotting import gplot  # DEBUG!!!!! REMOVE ME
+import matplotlib.pyplot as plt  # DEBUG!!!!!
 
 
 # custom length calculation
@@ -173,12 +176,18 @@ class optiwindnetCollection(templates.CollectionTemplate):
         """Setup of OM component gradients."""
 
         self.declare_partials(
-            ["length_cables", "total_length_cables"],
+            ["total_length_cables"],
             ["x_turbines", "y_turbines", "x_substations", "y_substations"],
             method="exact",
         )
 
-    def compute(self, inputs, outputs):
+    def compute(
+        self,
+        inputs,
+        outputs,
+        discrete_inputs=None,
+        discrete_outputs=None,
+    ):
         """
         Computation for the OptiWindNet collection system design
 
@@ -228,12 +237,12 @@ class optiwindnetCollection(templates.CollectionTemplate):
             loads.append(edges[edge]["load"])
 
         # pack and ship
-        outputs["length_cables"] = np.array(lengths, dtype=np.float64)
-        outputs["load_cables"] = np.array(loads, dtype=np.float64)
-        outputs["total_length_cables"] = np.sum(outputs["length_cables"])
-        outputs["max_load_cables"] = np.max(outputs["load_cables"])
+        discrete_outputs["length_cables"] = np.array(lengths, dtype=np.float64)
+        discrete_outputs["load_cables"] = np.array(loads, dtype=np.float64)
+        outputs["total_length_cables"] = np.sum(discrete_outputs["length_cables"])
+        discrete_outputs["max_load_cables"] = np.max(discrete_outputs["load_cables"])
 
-    def compute_partials(self, inputs, J):
+    def compute_partials(self, inputs, J, discrete_inputs=None):
 
         # re-load the key variables back as locals
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
@@ -242,10 +251,10 @@ class optiwindnetCollection(templates.CollectionTemplate):
         H = self.graph
         edges = H.edges()
 
-        J["length_cables", "x_turbines"] = 0.0
-        J["length_cables", "y_turbines"] = 0.0
-        J["length_cables", "x_substations"] = 0.0
-        J["length_cables", "y_substations"] = 0.0
+        # J["length_cables", "x_turbines"] = 0.0
+        # J["length_cables", "y_turbines"] = 0.0
+        # J["length_cables", "x_substations"] = 0.0
+        # J["length_cables", "y_substations"] = 0.0
         J["total_length_cables", "x_turbines"] = 0.0
         J["total_length_cables", "y_turbines"] = 0.0
         J["total_length_cables", "x_substations"] = 0.0
@@ -268,17 +277,17 @@ class optiwindnetCollection(templates.CollectionTemplate):
             dLdx0, dLdy0, dLdx1, dLdy1 = distance_function_deriv(x0, y0, x1, y1)
 
             if e0 >= 0:
-                J["length_cables", "x_turbines"][idx_edge, e0] -= dLdx0
-                J["length_cables", "y_turbines"][idx_edge, e0] -= dLdy0
+                # J["length_cables", "x_turbines"][idx_edge, e0] -= dLdx0
+                # J["length_cables", "y_turbines"][idx_edge, e0] -= dLdy0
                 J["total_length_cables", "x_turbines"][0, e0] -= dLdx0
                 J["total_length_cables", "y_turbines"][0, e0] -= dLdy0
             else:
-                J["length_cables", "x_substations"][
-                    idx_edge, self.N_substations + e0
-                ] -= dLdx0
-                J["length_cables", "y_substations"][
-                    idx_edge, self.N_substations + e0
-                ] -= dLdy0
+                # J["length_cables", "x_substations"][
+                #     idx_edge, self.N_substations + e0
+                # ] -= dLdx0
+                # J["length_cables", "y_substations"][
+                #     idx_edge, self.N_substations + e0
+                # ] -= dLdy0
                 J["total_length_cables", "x_substations"][
                     0, self.N_substations + e0
                 ] -= dLdx0
@@ -286,17 +295,17 @@ class optiwindnetCollection(templates.CollectionTemplate):
                     0, self.N_substations + e0
                 ] -= dLdy0
             if e1 >= 0:
-                J["length_cables", "x_turbines"][idx_edge, e1] -= dLdx1
-                J["length_cables", "y_turbines"][idx_edge, e1] -= dLdy1
+                # J["length_cables", "x_turbines"][idx_edge, e1] -= dLdx1
+                # J["length_cables", "y_turbines"][idx_edge, e1] -= dLdy1
                 J["total_length_cables", "x_turbines"][0, e1] -= dLdx1
                 J["total_length_cables", "y_turbines"][0, e1] -= dLdy1
             else:
-                J["length_cables", "x_substations"][
-                    idx_edge, self.N_substations + e1
-                ] -= dLdx1
-                J["length_cables", "y_substations"][
-                    idx_edge, self.N_substations + e1
-                ] -= dLdy1
+                # J["length_cables", "x_substations"][
+                #     idx_edge, self.N_substations + e1
+                # ] -= dLdx1
+                # J["length_cables", "y_substations"][
+                #     idx_edge, self.N_substations + e1
+                # ] -= dLdy1
                 J["total_length_cables", "x_substations"][
                     0, self.N_substations + e1
                 ] -= dLdx1
