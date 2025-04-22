@@ -49,7 +49,7 @@ prob = glue.create_setup_OM_problem(
 if False:  # set true to run one-shot analysis
 
     # setup the latent variables for Orbit and FinanceSE
-    cost_wisdem.Orbit_setup_latents(prob, modeling_options)
+    cost_wisdem.ORBIT_setup_latents(prob, modeling_options)
     cost_wisdem.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables
@@ -108,7 +108,7 @@ else:
     prob.setup()
 
     # setup the latent variables for Orbit and FinanceSE
-    cost_wisdem.Orbit_setup_latents(prob, modeling_options)
+    cost_wisdem.ORBIT_setup_latents(prob, modeling_options)
     cost_wisdem.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables

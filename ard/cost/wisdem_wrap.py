@@ -302,7 +302,7 @@ def LandBOSSE_setup_latents(prob, modeling_options):
     )
 
 
-def Orbit_setup_latents(prob, modeling_options):
+def ORBIT_setup_latents(prob, modeling_options):
     """
     A function to set up the Orbit latent variables using modeling options.
 

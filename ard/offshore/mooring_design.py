@@ -210,8 +210,8 @@ class MooringDesign(om.ExplicitComponent):
 
         # unpack the working variables
         phi_platform = inputs["phi_platform"]
-        x_turbines = inputs["x_turbines"]
-        y_turbines = inputs["y_turbines"]
+        x_turbines = inputs["x_turbines"]*1.0e3  # convert to meters
+        y_turbines = inputs["y_turbines"]*1.0e3  # convert to meters
         # thrust_turbines = inputs["thrust_turbines"]  #
 
         x_anchors, y_anchors = simple_mooring_design(

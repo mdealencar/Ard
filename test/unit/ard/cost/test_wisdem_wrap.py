@@ -131,7 +131,7 @@ class TestOrbit:
         self.prob.setup()
 
         # setup the latent variables for Orbit and FinanceSE
-        wcost.Orbit_setup_latents(self.prob, self.modeling_options)
+        wcost.ORBIT_setup_latents(self.prob, self.modeling_options)
         # wcost.FinanceSE_setup_latents(self.prob, self.modeling_options)
 
     def test_baseline_farm(self):
