@@ -13,8 +13,6 @@ import ard
 import ard.glue.prototype as glue
 
 
-
-
 # layout type
 layout_type = "gridfarm"
 
@@ -42,8 +40,6 @@ modeling_options = {
     "turbine": data_turbine_spec,
     "offshore": False,
 }
-
-
 
 
 # create the OpenMDAO model
@@ -212,9 +208,7 @@ prob.run_model()
 test_data = {
     "AEP_val": float(prob.get_val("AEP_farm", units="GW*h")[0]),
     "CapEx_val": float(prob.get_val("tcc.tcc", units="MUSD")[0]),
-    "BOS_val": float(
-        prob.get_val("landbosse.total_capex", units="MUSD")[0]
-    ),
+    "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
     "OpEx_val": float(prob.get_val("opex.opex", units="MUSD/yr")[0]),
     "LCOE_val": float(prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
 }

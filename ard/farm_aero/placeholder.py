@@ -94,11 +94,13 @@ class PlaceholderBatchPower(templates.BatchFarmPowerTemplate):
 
         # the following should be set
         outputs["power_farm"] = (
-          self.N_turbines*self.modeling_options["turbine"]["nameplate"]["power_rated"]*np.ones((self.N_wind_conditions,))
+            self.N_turbines
+            * self.modeling_options["turbine"]["nameplate"]["power_rated"]
+            * np.ones((self.N_wind_conditions,))
         )
-        outputs["power_turbines"] = (
-          self.modeling_options["turbine"]["nameplate"]["power_rated"]*np.ones((self.N_turbines, self.N_wind_conditions))
-        )
+        outputs["power_turbines"] = self.modeling_options["turbine"]["nameplate"][
+            "power_rated"
+        ] * np.ones((self.N_turbines, self.N_wind_conditions))
         outputs["thrust_turbines"] = np.zeros((self.N_turbines, self.N_wind_conditions))
 
 
@@ -161,12 +163,22 @@ class PlaceholderAEP(templates.FarmAEPTemplate):
     def compute(self, inputs, outputs):
 
         # the following should be set
-        outputs["AEP_farm"] = self.N_turbines*self.modeling_options["turbine"]["nameplate"]["power_rated"]*1.0e6*8760.0
+        outputs["AEP_farm"] = (
+            self.N_turbines
+            * self.modeling_options["turbine"]["nameplate"]["power_rated"]
+            * 1.0e6
+            * 8760.0
+        )
         outputs["power_farm"] = (
-          self.N_turbines*self.modeling_options["turbine"]["nameplate"]["power_rated"]*1.0e6*np.ones((self.N_wind_conditions,))
+            self.N_turbines
+            * self.modeling_options["turbine"]["nameplate"]["power_rated"]
+            * 1.0e6
+            * np.ones((self.N_wind_conditions,))
         )
         outputs["power_turbines"] = (
-          self.modeling_options["turbine"]["nameplate"]["power_rated"]*1.0e6*np.ones((self.N_turbines, self.N_wind_conditions))
+            self.modeling_options["turbine"]["nameplate"]["power_rated"]
+            * 1.0e6
+            * np.ones((self.N_turbines, self.N_wind_conditions))
         )
         outputs["thrust_turbines"] = np.zeros((self.N_turbines, self.N_wind_conditions))
 
