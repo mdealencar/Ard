@@ -217,7 +217,7 @@ class MooringDesign(om.ExplicitComponent):
             phi_platform=phi_platform,
             x_turbines=x_turbines,
             y_turbines=y_turbines,
-            length=self.min_mooring_line_length_m*1E-3, # convert to km
+            length=self.min_mooring_line_length_m * 1e-3,  # convert to km
             N_turbines=self.N_turbines,
             N_anchors=self.N_anchors,
         )

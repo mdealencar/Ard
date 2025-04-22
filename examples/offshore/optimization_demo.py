@@ -347,8 +347,8 @@ if False:
 optiwindnet.plotting.gplot(prob.model.optiwindnet_coll.graph)
 for idx in range(modeling_options["farm"]["N_turbines"]):
     plt.plot(
-        prob.get_val("mooring_design.x_anchors")[idx,:],
-        prob.get_val("mooring_design.y_anchors")[idx,:],
+        prob.get_val("mooring_design.x_anchors")[idx, :],
+        prob.get_val("mooring_design.y_anchors")[idx, :],
         ".w",
     )
 plt.show()
