@@ -38,9 +38,20 @@ data_turbine_spec = ard.utils.load_turbine_spec(filename_turbine_spec)
 
 # set up the modeling options
 modeling_options = {
-    "farm": {"N_turbines": 25},
+    "farm": {
+      "N_turbines": 25,
+      "N_substations": 1,
+    },
     "turbine": data_turbine_spec,
     "offshore": False,
+    "collection": {
+        "max_turbines_per_string": 8,
+        "solver_name": "appsi_highs",
+        "solver_options": dict(
+            time_limit=60,
+            mip_rel_gap=0.005,  # TODO ???
+        ),
+    },
 }
 
 
@@ -129,6 +140,15 @@ elif layout_type == "sunflower":
 else:
     raise KeyError("you shouldn't be able to get here.")
 
+model.add_subsystem(  # collection component
+  "optiwindnet_coll",
+  ard.collection.optiwindnetCollection(
+    modeling_options=modeling_options,
+  ),
+)
+model.connect("layout2aep.x_turbines", "optiwindnet_coll.x_turbines")
+model.connect("layout2aep.y_turbines", "optiwindnet_coll.y_turbines")
+
 model.add_subsystem(  # turbine capital costs component
     "tcc",
     ard.cost.wisdem_wrap.TurbineCapitalCosts(),
@@ -205,6 +225,9 @@ prob.set_val("spacing_secondary", 7.0)
 prob.set_val("angle_orientation", 0.0)
 prob.set_val("angle_skew", 0.0)
 
+prob.set_val("optiwindnet_coll.x_substations", [100.0])
+prob.set_val("optiwindnet_coll.y_substations", [100.0])
+
 # run the model
 prob.run_model()
 
@@ -217,6 +240,9 @@ test_data = {
     ),
     "OpEx_val": float(prob.get_val("opex.opex", units="MUSD/yr")[0]),
     "LCOE_val": float(prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
+    "coll_length": float(
+      prob.get_val("optiwindnet_coll.total_length_cables", units="km")[0]
+    ),
 }
 
 print("\n\nRESULTS:\n")
