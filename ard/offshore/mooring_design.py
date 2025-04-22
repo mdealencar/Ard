@@ -62,7 +62,6 @@ def simple_mooring_design(
 
     for i, (x, y) in enumerate(zip(x_turbines, y_turbines)):
 
-        # Example usage:
         center = (x, y)
 
         anchors = generate_anchor_points(
@@ -162,8 +161,8 @@ class MooringDesign(om.ExplicitComponent):
         self.modeling_options = self.options["modeling_options"]
         self.N_turbines = self.modeling_options["farm"]["N_turbines"]
         self.N_anchors = self.modeling_options["platform"]["N_anchors"]
-        self.min_mooring_line_length = self.modeling_options["platform"][
-            "min_mooring_line_length"
+        self.min_mooring_line_length_m = self.modeling_options["platform"][
+            "min_mooring_line_length_m"
         ]
 
         # get the number of wind conditions (for thrust measurements)
@@ -210,15 +209,15 @@ class MooringDesign(om.ExplicitComponent):
 
         # unpack the working variables
         phi_platform = inputs["phi_platform"]
-        x_turbines = inputs["x_turbines"]*1.0e3  # convert to meters
-        y_turbines = inputs["y_turbines"]*1.0e3  # convert to meters
+        x_turbines = inputs["x_turbines"]
+        y_turbines = inputs["y_turbines"]
         # thrust_turbines = inputs["thrust_turbines"]  #
 
         x_anchors, y_anchors = simple_mooring_design(
             phi_platform=phi_platform,
             x_turbines=x_turbines,
             y_turbines=y_turbines,
-            length=self.min_mooring_line_length,
+            length=self.min_mooring_line_length_m*1E-3, # convert to km
             N_turbines=self.N_turbines,
             N_anchors=self.N_anchors,
         )

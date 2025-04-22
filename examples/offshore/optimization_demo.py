@@ -48,7 +48,7 @@ modeling_options = {
     "floating": True,
     "platform": {
         "N_anchors": 3,
-        "min_mooring_line_length": 500.0,
+        "min_mooring_line_length_m": 500.0,
         "N_anchor_dimensions": 2,
     },
     "site_depth": 50.0,
