@@ -14,8 +14,6 @@ import optiwindnet.plotting
 import ard
 import ard.glue.prototype as glue
 
-import logging  # DEBUG!!!!!
-
 # layout type
 layout_type = "gridfarm"
 
@@ -271,9 +269,9 @@ test_data = {
     "coll_length": float(
         prob.get_val("optiwindnet_coll.total_length_cables", units="km")[0]
     ),
-    "violation_distance": np.min(
+    "violation_distance": float(np.min(
         prob.get_val("mooring_constraint.violation_distance", units="km")
-    ),
+    )),
 }
 
 print("\n\nRESULTS:\n")
@@ -290,7 +288,8 @@ if True:
     prob.model.add_design_var("spacing_secondary", lower=3.0, upper=10.0)
     prob.model.add_design_var("angle_orientation", lower=-180.0, upper=180.0)
     prob.model.add_design_var("angle_skew", lower=-75.0, upper=75.0)
-    # prob.model.add_constraint("landuse.area_tight", units="km**2", lower=50.0)
+    prob.model.add_design_var("phi_platform", lower=-30.0, upper=30.0)
+    prob.model.add_constraint("mooring_constraint.violation_distance", units="m", lower=50.0)
     # prob.model.add_constraint("landuse.area_tight", units="km**2", lower=50.0)
     prob.model.add_objective("optiwindnet_coll.total_length_cables")
 
@@ -334,10 +333,13 @@ if True:
         "coll_length": float(
             prob.get_val("optiwindnet_coll.total_length_cables", units="km")[0]
         ),
-        "violation_distance": np.min(
+        "violation_distance": float(np.min(
             prob.get_val("mooring_constraint.violation_distance", units="km")
-        ),
+        )),
     }
+
+    # clean up the recorder
+    prob.cleanup()
 
     # print the results
     print("\n\nRESULTS (opt):\n")
@@ -347,8 +349,8 @@ if True:
 optiwindnet.plotting.gplot(prob.model.optiwindnet_coll.graph)
 for idx in range(modeling_options["farm"]["N_turbines"]):
     plt.plot(
-        prob.get_val("mooring_design.x_anchors")[idx, :],
-        prob.get_val("mooring_design.y_anchors")[idx, :],
+        prob.get_val("mooring_design.x_anchors", units="m")[idx, :],
+        prob.get_val("mooring_design.y_anchors", units="m")[idx, :],
         ".w",
     )
 plt.show()
