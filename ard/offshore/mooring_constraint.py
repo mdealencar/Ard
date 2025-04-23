@@ -171,8 +171,7 @@ def mooring_constraint_xy(
     distances = calc_mooring_distances(mooring_points)
 
     return distances
-
-
+mooring_constraint_xy = jax.jit(mooring_constraint_xy)
 mooring_constraint_xy_jac = jax.jacrev(mooring_constraint_xy, argnums=[0, 1, 2, 3])
 
 
@@ -210,8 +209,7 @@ def mooring_constraint_xyz(
     distances = calc_mooring_distances(mooring_points)
 
     return distances
-
-
+mooring_constraint_xyz = jax.jit(mooring_constraint_xyz)
 mooring_constraint_xyz_jac = jax.jacrev(mooring_constraint_xyz, argnums=[0, 1, 2, 3, 4])
 
 
@@ -226,25 +224,18 @@ def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
     """
 
     n_turbines = mooring_points.shape[0]
-    n_distances = int((n_turbines - 1) * n_turbines / 2)
 
-    distances = jnp.zeros(n_distances)
+    # Create pairwise indices for all unique turbine pairs
+    i_indices, j_indices = jnp.triu_indices(n_turbines, k=1)
 
-    k = 0
-    for i in range(0, mooring_points.shape[0] - 1):
-        for j in range(mooring_points.shape[0]):
-            if j <= i:
-                continue
-            else:
-                distances = distances.at[k].set(
-                    distance_mooring_to_mooring(mooring_points[i], mooring_points[j])
-                )
-                k += 1
+    # Extract the corresponding mooring points for each pair
+    mooring_A = mooring_points[i_indices]
+    mooring_B = mooring_points[j_indices]
+
+    # Compute distances for all pairs using `distance_mooring_to_mooring`
+    distances = jax.vmap(distance_mooring_to_mooring)(mooring_A, mooring_B)
 
     return distances
-
-
-# calc_mooring_distances = jax.jit(calc_mooring_distances)
 
 
 def convert_inputs_x_y_to_xy(
@@ -266,22 +257,16 @@ def convert_inputs_x_y_to_xy(
         np.ndarray: all input information combined into a single array of shape (n_turbines, n_anchors+1, 2)
     """
 
-    n_turbines = len(x_turbines)
-    n_anchors = x_anchors.shape[1]
+    # Stack turbine positions and anchor positions directly
+    turbine_positions = jnp.stack([x_turbines, y_turbines], axis=-1)[:, None, :]
+    anchor_positions = jnp.stack([x_anchors, y_anchors], axis=-1)
 
-    xy = jnp.zeros((n_turbines, n_anchors + 1, 2))
+    # Concatenate turbine positions with anchor positions
+    xy = jnp.concatenate([turbine_positions, anchor_positions], axis=1)
 
-    for i in jnp.arange(0, n_turbines):
-        xy = xy.at[i, 0, 0].set(x_turbines[i])
-        xy = xy.at[i, 0, 1].set(y_turbines[i])
-        for j in jnp.arange(1, n_anchors + 1):
-            xy = xy.at[i, j, 0].set(x_anchors[i, j - 1])
-            xy = xy.at[i, j, 1].set(y_anchors[i, j - 1])
 
     return xy
-
-
-# convert_inputs_x_y_to_xy = jax.jit(convert_inputs_x_y_to_xy)
+convert_inputs_x_y_to_xy = jax.jit(convert_inputs_x_y_to_xy)
 
 
 def convert_inputs_x_y_z_to_xyz(
@@ -306,24 +291,16 @@ def convert_inputs_x_y_z_to_xyz(
     Returns:
         np.ndarray: all input information combined into a single array of shape (n_turbines, n_anchors+1, 3)
     """
-    n_turbines = len(x_turbines)
-    n_anchors = x_anchors.shape[1]
 
-    xyz = jnp.zeros((n_turbines, n_anchors + 1, 3))
+    # Stack turbine positions and anchor positions directly
+    turbine_positions = jnp.stack([x_turbines, y_turbines, z_turbines], axis=-1)[:, None, :]
+    anchor_positions = jnp.stack([x_anchors, y_anchors, z_anchors], axis=-1)
 
-    for i in jnp.arange(0, n_turbines):
-        xyz = xyz.at[i, 0, 0].set(x_turbines[i])
-        xyz = xyz.at[i, 0, 1].set(y_turbines[i])
-        xyz = xyz.at[i, 0, 2].set(z_turbines[i])
-        for j in jnp.arange(1, n_anchors + 1):
-            xyz = xyz.at[i, j, 0].set(x_anchors[i, j - 1])
-            xyz = xyz.at[i, j, 1].set(y_anchors[i, j - 1])
-            xyz = xyz.at[i, j, 2].set(z_anchors[i, j - 1])
+    # Concatenate turbine positions with anchor positions
+    xyz = jnp.concatenate([turbine_positions, anchor_positions], axis=1)
 
     return xyz
-
-
-# convert_inputs_x_y_z_to_xyz = jax.jit(convert_inputs_x_y_z_to_xyz)
+convert_inputs_x_y_z_to_xyz = jax.jit(convert_inputs_x_y_z_to_xyz)
 
 
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
@@ -342,19 +319,15 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     """
 
     p_center = P_mooring[0]
-    distance_moorings = jnp.array(
-        [
-            ard.utils.distance_point_to_lineseg_nd(
-                point, jnp.array(p_center), jnp.array(p_anchor)
-            )
-            for p_anchor in P_mooring[1:]
-        ]
-    )
+    anchors = P_mooring[1:]
 
-    return ard.utils.smooth_min(distance_moorings)
+    distances = jax.vmap(
+        ard.utils.distance_point_to_lineseg_nd,
+        in_axes=(None, None, 0),
+    )(point, p_center, anchors)
 
 
-distance_point_to_mooring = jax.jit(distance_point_to_mooring)
+    return ard.utils.smooth_min(distances)
 
 
 def distance_mooring_to_mooring(
@@ -375,21 +348,21 @@ def distance_mooring_to_mooring(
 
     p_center_A = P_mooring_A[0]
     p_center_B = P_mooring_B[0]
-    distance_moorings_b = jnp.array(
-        [
-            [
-                ard.utils.distance_lineseg_to_lineseg_nd(
-                    p_center_A, point_anchor_A, p_center_B, point_anchor_B
-                )
-                for point_anchor_B in P_mooring_B[1:]
-            ]
-            for point_anchor_A in P_mooring_A[1:]
-        ]
-    )
+    anchors_A = P_mooring_A[1:]
+    anchors_B = P_mooring_B[1:]
 
-    return ard.utils.smooth_min(
-        jnp.array([ard.utils.smooth_min(d) for d in distance_moorings_b])
-    )
+    # Vectorize the computation of distances between all pairs of line segments
+    def compute_segment_distance(anchor_A, anchor_B):
+        return ard.utils.distance_lineseg_to_lineseg_nd(
+            p_center_A, anchor_A, p_center_B, anchor_B
+        )
 
+    # Use vmap to compute distances for all combinations of anchors
+    distances = jax.vmap(
+        lambda anchor_A: jax.vmap(
+            lambda anchor_B: compute_segment_distance(anchor_A, anchor_B)
+        )(anchors_B)
+    )(anchors_A)
 
-distance_mooring_to_mooring = jax.jit(distance_mooring_to_mooring)
+    # Find the smooth minimum distance
+    return ard.utils.smooth_min(distances.flatten())
