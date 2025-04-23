@@ -82,7 +82,7 @@ class TestMooringDesignSimple3Turbines3Anchors2D:
             "platform": {
                 "N_anchors": 4,
                 "N_anchor_dimensions": 2,
-                "min_mooring_line_length": 10,
+                "min_mooring_line_length_m": 10000,
             },
         }
 

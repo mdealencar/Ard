@@ -40,6 +40,7 @@ def optiwindnet_wrapper(
     max_turbines_per_string: int,
     solver_name: str = "appsi_highs",
     solver_options: dict = None,
+    verbose: bool = False,
 ):
     """Simple wrapper to run OptiWindNet to get a cable layout
 
@@ -47,15 +48,17 @@ def optiwindnet_wrapper(
         XY_turbines (np.ndarray): x and y positions of turbines (easting and northing)
         XY_substations (np.ndarray): x and y positions of substations (easting and northing)
         XY_boundaries (np.ndarray): x and y locations of boundary nodes (easting and northing)
-        name_case (str): what to name the case
+        name_case (str):  what to name the case
         max_turbines_per_string (int): maximum number of turbines per cable string
+        solver_name (str, optional): which solver to use in pyomo. Defaults to "appsi_highs".
+        solver_options (dict, optional): pyomo solver options. Defaults to None.
+        verbose (bool, optional): whether to print information. Defaults to False.
 
     Returns:
         result: pyomo result
         S: OptiWindNet pyomo solution
         G: output from OptiWindNet G_from_S function
         H: output from OptiWindNet PathFinder function
-
     """
 
     # initialize solver
@@ -114,7 +117,7 @@ def optiwindnet_wrapper(
             )
 
     solver.options.update(solver_options)
-    result = solver.solve(model, tee=True)
+    result = solver.solve(model, tee=verbose)
 
     # do some postprocessing
     S = own_pyomo.S_from_solution(model, solver, result)

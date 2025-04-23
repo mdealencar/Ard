@@ -48,7 +48,7 @@ modeling_options = {
     "floating": True,
     "platform": {
         "N_anchors": 3,
-        "min_mooring_line_length": 500.0,
+        "min_mooring_line_length_m": 500.0,
         "N_anchor_dimensions": 2,
     },
     "site_depth": 50.0,
@@ -280,7 +280,7 @@ print("\n\nRESULTS:\n")
 pp.pprint(test_data)
 print("\n\n")
 
-if False:
+if True:
     # now set up an optimization driver
 
     prob.driver = om.ScipyOptimizeDriver()
@@ -340,15 +340,15 @@ if False:
     }
 
     # print the results
-    print("\n\nRESULTS:\n")
+    print("\n\nRESULTS (opt):\n")
     pp.pprint(test_data)
     print("\n\n")
 
 optiwindnet.plotting.gplot(prob.model.optiwindnet_coll.graph)
 for idx in range(modeling_options["farm"]["N_turbines"]):
     plt.plot(
-        prob.get_val("mooring_design.x_anchors")[idx,:],
-        prob.get_val("mooring_design.y_anchors")[idx,:],
+        prob.get_val("mooring_design.x_anchors")[idx, :],
+        prob.get_val("mooring_design.y_anchors")[idx, :],
         ".w",
     )
 plt.show()
