@@ -271,9 +271,6 @@ def convert_inputs_x_y_to_xy(
     return xy
 
 
-convert_inputs_x_y_to_xy = jax.jit(convert_inputs_x_y_to_xy)
-
-
 def convert_inputs_x_y_z_to_xyz(
     x_turbines: np.ndarray,
     y_turbines: np.ndarray,
@@ -307,9 +304,6 @@ def convert_inputs_x_y_z_to_xyz(
     xyz = jnp.concatenate([turbine_positions, anchor_positions], axis=1)
 
     return xyz
-
-
-convert_inputs_x_y_z_to_xyz = jax.jit(convert_inputs_x_y_z_to_xyz)
 
 
 def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float:
