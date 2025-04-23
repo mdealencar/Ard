@@ -405,8 +405,10 @@ def smooth_norm(vec: np.ndarray, buf: float = 1e-12) -> float:
     """
     return jnp.sqrt(buf**2 + jnp.sum(vec**2))
 
+
 smooth_norm = jax.jit(smooth_norm)
 smooth_norm_vec = jax.jit(jax.vmap(smooth_norm))
+
 
 def load_turbine_spec(
     filename_turbine_spec: PathLike,

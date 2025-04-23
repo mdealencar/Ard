@@ -243,6 +243,7 @@ def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
 
     return distances
 
+
 # calc_mooring_distances = jax.jit(calc_mooring_distances)
 
 
