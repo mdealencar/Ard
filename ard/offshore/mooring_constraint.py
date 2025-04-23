@@ -233,15 +233,15 @@ def calc_mooring_distances(mooring_points: np.ndarray) -> np.ndarray:
     k = 0
     for i in range(0, mooring_points.shape[0] - 1):
         for j in range(mooring_points.shape[0]):
-            if i == j:
+            if j <= i:
                 continue
-            distances = distances.at[k].set(
-                distance_mooring_to_mooring(mooring_points[i], mooring_points[j])
-            )
-            k += 1
+            else:
+                distances = distances.at[k].set(
+                    distance_mooring_to_mooring(mooring_points[i], mooring_points[j])
+                )
+                k += 1
 
     return distances
-
 
 # calc_mooring_distances = jax.jit(calc_mooring_distances)
 
