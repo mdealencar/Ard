@@ -171,6 +171,8 @@ def mooring_constraint_xy(
     distances = calc_mooring_distances(mooring_points)
 
     return distances
+
+
 mooring_constraint_xy = jax.jit(mooring_constraint_xy)
 mooring_constraint_xy_jac = jax.jacrev(mooring_constraint_xy, argnums=[0, 1, 2, 3])
 
@@ -209,6 +211,8 @@ def mooring_constraint_xyz(
     distances = calc_mooring_distances(mooring_points)
 
     return distances
+
+
 mooring_constraint_xyz = jax.jit(mooring_constraint_xyz)
 mooring_constraint_xyz_jac = jax.jacrev(mooring_constraint_xyz, argnums=[0, 1, 2, 3, 4])
 
@@ -264,8 +268,9 @@ def convert_inputs_x_y_to_xy(
     # Concatenate turbine positions with anchor positions
     xy = jnp.concatenate([turbine_positions, anchor_positions], axis=1)
 
-
     return xy
+
+
 convert_inputs_x_y_to_xy = jax.jit(convert_inputs_x_y_to_xy)
 
 
@@ -293,13 +298,17 @@ def convert_inputs_x_y_z_to_xyz(
     """
 
     # Stack turbine positions and anchor positions directly
-    turbine_positions = jnp.stack([x_turbines, y_turbines, z_turbines], axis=-1)[:, None, :]
+    turbine_positions = jnp.stack([x_turbines, y_turbines, z_turbines], axis=-1)[
+        :, None, :
+    ]
     anchor_positions = jnp.stack([x_anchors, y_anchors, z_anchors], axis=-1)
 
     # Concatenate turbine positions with anchor positions
     xyz = jnp.concatenate([turbine_positions, anchor_positions], axis=1)
 
     return xyz
+
+
 convert_inputs_x_y_z_to_xyz = jax.jit(convert_inputs_x_y_z_to_xyz)
 
 
@@ -325,7 +334,6 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
         ard.utils.distance_point_to_lineseg_nd,
         in_axes=(None, None, 0),
     )(point, p_center, anchors)
-
 
     return ard.utils.smooth_min(distances)
 
