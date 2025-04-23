@@ -62,8 +62,8 @@ class CollectionTemplate(om.ExplicitComponent):
         # set up inputs for farm layout
         self.add_input("x_turbines", np.zeros((self.N_turbines,)), units="m")
         self.add_input("y_turbines", np.zeros((self.N_turbines,)), units="m")
-        self.add_input("x_substations", np.zeros((self.N_substations,)))
-        self.add_input("y_substations", np.zeros((self.N_substations,)))
+        self.add_input("x_substations", np.zeros((self.N_substations,)), units="m")
+        self.add_input("y_substations", np.zeros((self.N_substations,)), units="m")
 
         # set up outputs for the collection system
         self.add_discrete_output(
