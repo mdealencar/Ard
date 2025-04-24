@@ -1,8 +1,10 @@
 import numpy as np
-import jax.numpy as jnp
 import jax
-import ard.utils
+import jax.numpy as jnp
+
 import openmdao.api as om
+
+import ard.utils
 
 
 class MooringConstraint(om.ExplicitComponent):

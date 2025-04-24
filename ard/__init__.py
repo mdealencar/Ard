@@ -1,9 +1,7 @@
 from . import collection
-from . import cost
-from . import farm_aero
-from . import glue
 from . import layout
 from . import offshore
-from . import viz
+
+from . import test_utils
 from . import utils
 from . import wind_query
