@@ -175,7 +175,7 @@ model.connect("layout2aep.y_turbines", "mooring_constraint.y_turbines")
 model.connect("mooring_design.x_anchors", "mooring_constraint.x_anchors")
 model.connect("mooring_design.y_anchors", "mooring_constraint.y_anchors")
 
-model.add_subsystem(  # regulatory constraints for mooring
+model.add_subsystem(  # constraints for turbine proximity
     "spacing_constraint",
     ard.layout.spacing.TurbineSpacing(
         modeling_options=modeling_options,
