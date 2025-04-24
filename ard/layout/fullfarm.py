@@ -4,10 +4,10 @@ import openmdao.api as om
 from shapely import length
 import shapely.geometry as sg
 
-from .templates import LanduseTemplate
+import ard.layout.templates as templates
 
 
-class FullFarmLanduse(LanduseTemplate):
+class FullFarmLanduse(templates.LanduseTemplate):
     """
     Landuse class for full Cartesian grid farm layout.
 
