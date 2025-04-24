@@ -12,6 +12,7 @@ import openmdao.api as om
 
 from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 
+import ard
 import ard.test_utils
 import ard.utils
 import ard.wind_query as wq

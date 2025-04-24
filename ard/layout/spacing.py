@@ -1,7 +1,7 @@
 import numpy as np
 import jax.numpy as jnp
 import jax
-import ard
+import ard.utils
 import openmdao.api as om
 
 
@@ -99,7 +99,5 @@ def calculate_turbine_spacing(
     return spacing_distance
 
 
-calculate_turbine_spacing_jit = jax.jit(calculate_turbine_spacing)
-calculate_turbine_spacing_jac = jax.jacrev(
-    calculate_turbine_spacing_jit, argnums=[0, 1]
-)
+calculate_turbine_spacing = jax.jit(calculate_turbine_spacing)
+calculate_turbine_spacing_jac = jax.jacrev(calculate_turbine_spacing, argnums=[0, 1])
