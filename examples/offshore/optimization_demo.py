@@ -13,6 +13,7 @@ from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 import optiwindnet.plotting
 import ard
 import ard.glue.prototype as glue
+import ard.layout.spacing
 
 # layout type
 layout_type = "gridfarm"
@@ -174,6 +175,15 @@ model.connect("layout2aep.y_turbines", "mooring_constraint.y_turbines")
 model.connect("mooring_design.x_anchors", "mooring_constraint.x_anchors")
 model.connect("mooring_design.y_anchors", "mooring_constraint.y_anchors")
 
+model.add_subsystem(  # regulatory constraints for mooring
+    "spacing_constraint",
+    ard.layout.spacing.TurbineSpacing(
+        modeling_options=modeling_options,
+    ),
+)
+model.connect("layout2aep.x_turbines", "spacing_constraint.x_turbines")
+model.connect("layout2aep.y_turbines", "spacing_constraint.y_turbines")
+
 model.add_subsystem(  # turbine capital costs component
     "tcc",
     ard.cost.wisdem_wrap.TurbineCapitalCosts(),
@@ -292,6 +302,9 @@ if True:
     prob.model.add_constraint(
         "mooring_constraint.violation_distance", units="m", lower=50.0
     )
+    prob.model.add_constraint(
+        "spacing_constraint.turbine_spacing", units="m", lower=284.0 * 3.0
+    )
     # prob.model.add_constraint("landuse.area_tight", units="km**2", lower=50.0)
     prob.model.add_objective("optiwindnet_coll.total_length_cables")
 
@@ -337,6 +350,9 @@ if True:
         ),
         "violation_distance": float(
             np.min(prob.get_val("mooring_constraint.violation_distance", units="km"))
+        ),
+        "turbine_spacing": float(
+            np.min(prob.get_val("spacing_constraint.turbine_spacing", units="km"))
         ),
     }
 

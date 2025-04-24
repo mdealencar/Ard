@@ -398,7 +398,7 @@ def smooth_norm(vec: np.ndarray, buf: float = 1e-12) -> float:
 
     Args:
         vec (np.ndarray): input vector to be normed
-        buf (float, optional): buffer value included in the sum of squares part of the norm. Defaults to 1E-6.
+        buf (float, optional): buffer value included in the sum of squares part of the norm. Defaults to 1E-12.
 
     Returns:
         (float): normed result
@@ -407,6 +407,7 @@ def smooth_norm(vec: np.ndarray, buf: float = 1e-12) -> float:
 
 
 smooth_norm = jax.jit(smooth_norm)
+smooth_norm_vec = jax.jit(jax.vmap(smooth_norm))
 
 
 def load_turbine_spec(
