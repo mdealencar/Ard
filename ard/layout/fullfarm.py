@@ -7,6 +7,7 @@ import shapely.geometry as sg
 import ard.layout.templates
 
 class FullFarmLanduse(ard.layout.templates.LanduseTemplate):
+
     """
     Landuse class for full Cartesian grid farm layout.
 
