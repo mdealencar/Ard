@@ -13,6 +13,7 @@ from wisdem.optimization_drivers.nlopt_driver import NLoptDriver
 import optiwindnet.plotting
 import ard
 import ard.glue.prototype as glue
+import ard.layout.spacing
 
 # layout type
 layout_type = "gridfarm"
