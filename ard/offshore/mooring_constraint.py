@@ -328,7 +328,7 @@ def distance_point_to_mooring(point: np.ndarray, P_mooring: np.ndarray) -> float
     anchors = P_mooring[1:]
 
     distances = jax.vmap(
-        ard.utils.mathematics.distance_point_to_lineseg_nd,
+        ard.utils.geometry.distance_point_to_lineseg_nd,
         in_axes=(None, None, 0),
     )(point, p_center, anchors)
 
