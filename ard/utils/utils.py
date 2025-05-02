@@ -9,6 +9,125 @@ import numpy as np
 
 from wisdem.inputs.validation import load_yaml
 
+def point_on_line(p: np.ndarray, v1: np.ndarray, v2: np.ndarray, tol=1e-6):
+    """
+    Determine if a point lies on a line segment.
+
+    Given a line determined by two points (v1 and v2), determine if the point (p) lies on the line
+    between those points within a given tolerance.
+
+    Args:
+        p (np.ndarray): Point of interest (2D vector).
+        v1 (np.ndarray): First vertex of the line (2D vector).
+        v2 (np.ndarray): Second vertex of the line (2D vector).
+        tol (float): Tolerance for determining co-linearity.
+
+    Returns:
+        bool: True if the point lies on the line, False otherwise.
+    """
+
+    d = distance_point_to_lineseg_nd(p, v1, v2)
+
+    return jnp.isclose(d, 0.0, atol=tol / 2.0)
+
+def point_in_polygon(
+    point: np.ndarray,
+    vertices: np.ndarray,
+    normals: np.ndarray = None,
+    s: float = 700,
+    shift: float = 1e-10,
+    return_distance: bool = True,
+):
+    """
+    Determine the signed distance from a point to a polygon.
+
+    Given a polygon defined by a set of vertices, determine the signed distance from the point
+    to the polygon. Returns the negative (-) distance if the point is inside or on the polygon,
+    and positive (+) otherwise. If `return_distance` is False, returns -1 if the point is inside
+    or on the boundary, and 1 otherwise. This implementation based on FLOWFarm.jl 
+    (https://github.com/byuflowlab/FLOWFarm.jl)
+
+    Args:
+        point (np.ndarray): Point of interest (2D vector).
+        vertices (np.ndarray): Vertices of the polygon (Nx2 array).
+        normals (np.ndarray, optional): Normals of the polygon edges. If not provided, they will
+            be calculated.
+        s (float, optional): Smoothing factor for the smoothmax function. Defaults to 700.
+        shift (float, optional): Small shift to handle edge cases. Defaults to 1e-10.
+        return_distance (bool, optional): Whether to return the signed distance or just
+            inside/outside status. Defaults to True.
+
+    Returns:
+        float: Signed distance or inside/outside status.
+    """
+
+    if return_distance and isinstance(point[0], int):
+        raise ValueError("Point coordinates must be floats, not integers.")
+
+    nvertices = vertices.shape[0]
+    intersection_counter = 0
+    turbine_to_face_distance = np.zeros(nvertices)
+
+    # Add the first vertex to the end to close the polygon loop
+    vertices = np.vstack([vertices, vertices[0]])
+
+    # Flags for point status
+    onvertex = False
+    onedge = False
+
+    # Check if the point is on a vertex or edge
+    for i in range(nvertices):
+        if np.allclose(point, vertices[i], atol=shift / 2.0):
+            onvertex = True
+            break
+        elif point_on_line(point, vertices[i], vertices[i + 1], tol=shift / 2.0):
+            onedge = True
+            break
+
+    # Iterate through each boundary edge
+    for j in range(nvertices):
+        # Check if the x-coordinate of the point is between the x-coordinates of the edge
+        if (
+            (vertices[j, 0] <= point[0] < vertices[j + 1, 0])
+            or (vertices[j, 0] >= point[0] > vertices[j + 1, 0])
+        ):
+            # Calculate the y-coordinate of the edge at the x-coordinate of the point
+            y = (
+                (vertices[j + 1, 1] - vertices[j, 1])
+                / (vertices[j + 1, 0] - vertices[j, 0])
+                * (point[0] - vertices[j, 0])
+                + vertices[j, 1]
+            )
+            if point[1] < y:
+                intersection_counter += 1
+
+        if return_distance:
+            # Calculate the vector from the point to the second vertex of the edge
+            turbine_to_second_facepoint = vertices[j + 1] - point
+
+            # Calculate the vector defining the edge
+            boundary_vector = vertices[j + 1] - vertices[j]
+
+            # Check if perpendicular distance is the shortest
+            if (
+                np.dot(boundary_vector, -turbine_to_second_facepoint) > 0
+                and np.dot(boundary_vector, turbine_to_second_facepoint) > 0
+            ):
+                d = np.dot(turbine_to_second_facepoint, normals[j])
+                turbine_to_face_distance[j] = abs(d + shift if onedge or onvertex else d)
+            elif np.dot(boundary_vector, -turbine_to_second_facepoint) < 0:
+                turbine_to_face_distance[j] = np.linalg.norm(turbine_to_second_facepoint)
+            else:
+                turbine_to_face_distance[j] = np.linalg.norm(turbine_to_second_facepoint)
+
+    if return_distance:
+        c = -smooth_max(-turbine_to_face_distance, s=s)
+        if intersection_counter % 2 == 1 or onvertex or onedge:
+            c = -c
+    else:
+        c = -1 if intersection_counter % 2 == 1 or onvertex or onedge else 1
+
+    return c
 
 def _distance_lineseg_to_lineseg_coplanar(
     line_a_start: np.ndarray,
