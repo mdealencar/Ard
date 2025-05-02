@@ -3,6 +3,7 @@ import jax.numpy as jnp
 import jax
 from ard.utils.mathematics import smooth_min, smooth_norm
 
+
 def _distance_lineseg_to_lineseg_coplanar(
     line_a_start: np.ndarray,
     line_a_end: np.ndarray,
