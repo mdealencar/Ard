@@ -34,19 +34,22 @@ classifiers = [
 ]
 dependencies = [
   "numpy",
-  # "floris>=4.2.1",
-  "floris @ git+https://github.com/rafmudaf/floris.git@defaults_init#egg=floris",
-  "wisdem==3.17.0",
+  # "floris>=4.3",
+  "floris @ git+https://github.com/nrel/floris.git@develop#egg=floris",
+  "wisdem==3.18.1",
   "NLopt",
   "marmot-agents",
   "openmdao",
   "shapely",
+  "optiwindnet",
+  "highspy",
 ]
 [project.optional-dependencies]
 dev = [
-  "black",
+  "black[jupyter]",
   "pytest",
   "pytest-cov",
+  "pytest-subtests",
 ]
 docs = [
   "pyxdsm",
