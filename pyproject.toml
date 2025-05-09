@@ -36,7 +36,7 @@ dependencies = [
   "numpy",
   # "floris>=4.3",
   "floris @ git+https://github.com/nrel/floris.git@develop#egg=floris",
-  "wisdem==3.17.0",
+  "wisdem==3.18.1",
   "NLopt",
   "marmot-agents",
   "openmdao",
