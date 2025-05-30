@@ -246,7 +246,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         # re-load the key variables back as locals
         XY_turbines = np.vstack([inputs["x_turbines"], inputs["y_turbines"]]).T
         XY_substations = np.vstack([inputs["x_substations"], inputs["y_substations"]]).T
-        
+
         H = self.graph
         edges = H.edges()
 
