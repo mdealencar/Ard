@@ -48,10 +48,6 @@ class PlaceholderBatchPower(templates.BatchFarmPowerTemplate):
         super().initialize()  # run super class script first!
 
     def setup(self):
-        """Setup of OM component."""
-        super().setup()  # run super class script first!
-
-    def setup(self):
         super().setup()
 
         # unpack wind query object
