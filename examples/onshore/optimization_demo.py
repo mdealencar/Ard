@@ -14,8 +14,7 @@ import ard.layout.spacing
 import ard.layout.gridfarm
 import ard.farm_aero
 import ard.utils.io
-from ard.cost.approximate_turbine_spacing import LandBOSSEWithSpacingApproximations
-
+from ard.cost.wisdem_wrap import LandBOSSEWithSpacingApproximations
 
 def run_example():
 
@@ -36,7 +35,7 @@ def run_example():
         Path(ard.__file__).parents[1]
         / "examples"
         / "data"
-        / "turbine_spec_IEA-22-284-RWT.yaml"
+        / "turbine_spec_IEA-3p4-130-RWT.yaml"
     )  # toolset generalized turbine specification
     data_turbine_spec = ard.utils.io.load_turbine_spec(filename_turbine_spec)
 
@@ -209,7 +208,7 @@ def run_example():
     prob = om.Problem(model)
     prob.setup()
 
-    # ard.cost.wisdem_wrap.LandBOSSE_setup_latents(prob, modeling_options)
+    ard.cost.wisdem_wrap.LandBOSSE_setup_latents(prob, modeling_options)
     ard.cost.wisdem_wrap.FinanceSE_setup_latents(prob, modeling_options)
 
     # set up the working/design variables
@@ -223,12 +222,13 @@ def run_example():
     # run the model
     prob.run_model()
 
+    om.n2(prob)
+
     # collapse the test result data
     test_data = {
         "AEP_val": float(prob.get_val("AEP_farm", units="GW*h")[0]),
         "CapEx_val": float(prob.get_val("tcc.tcc", units="MUSD")[0]),
         "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
-        # "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
         "OpEx_val": float(prob.get_val("opex.opex", units="MUSD/yr")[0]),
         "LCOE_val": float(prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
         "area_tight": float(prob.get_val("landuse.area_tight", units="km**2")[0]),
@@ -273,7 +273,7 @@ def run_example():
         # set up the problem
         prob.setup()
 
-        # ard.cost.wisdem_wrap.LandBOSSE_setup_latents(prob, modeling_options)
+        ard.cost.wisdem_wrap.LandBOSSE_setup_latents(prob, modeling_options)
         ard.cost.wisdem_wrap.FinanceSE_setup_latents(prob, modeling_options)
 
         # set up the working/design variables initial conditions
@@ -293,7 +293,6 @@ def run_example():
             "AEP_val": float(prob.get_val("AEP_farm", units="GW*h")[0]),
             "CapEx_val": float(prob.get_val("tcc.tcc", units="MUSD")[0]),
             "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
-            # "BOS_val": float(prob.get_val("landbosse.total_capex", units="MUSD")[0]),
             "OpEx_val": float(prob.get_val("opex.opex", units="MUSD/yr")[0]),
             "LCOE_val": float(prob.get_val("financese.lcoe", units="USD/MW/h")[0]),
             "area_tight": float(prob.get_val("landuse.area_tight", units="km**2")[0]),
