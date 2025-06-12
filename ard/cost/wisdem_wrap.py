@@ -389,17 +389,21 @@ def LandBOSSE_setup_latents(prob, modeling_options):
         a modeling options dictionary
     """
     # Define the mapping between OpenMDAO variable names and modeling_options keys
-    offshore_keys = [
+    offshore_fixed_keys = [
                     "monopile_mass",
                     "monopile_cost",
+    ]
+    offshore_floating_keys = [
                     "num_mooring_lines",
                     "mooring_line_mass",
                     "mooring_line_diameter",
                     "mooring_line_length",
                     "anchor_mass",
                     "floating_substructure_cost",
-                ]
-    if np.any(key in modeling_options["turbine"] for key in offshore_keys):
+    ]
+    if any(key in modeling_options["turbine"]["costs"] for key in offshore_fixed_keys):
+
+        import pdb; pdb.set_trace()
         variable_mapping = {
             "num_turbines": modeling_options["farm"]["N_turbines"],
             "turbine_rating_MW": modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
@@ -425,6 +429,31 @@ def LandBOSSE_setup_latents(prob, modeling_options):
             # Offshore keys
             "monopile_mass": modeling_options["turbine"]["costs"]["monopile_mass"],
             "monopile_cost": modeling_options["turbine"]["costs"]["monopile_cost"],
+        }
+    if any(key in modeling_options["turbine"]["costs"] for key in offshore_floating_keys):
+        variable_mapping = {
+            "num_turbines": modeling_options["farm"]["N_turbines"],
+            "turbine_rating_MW": modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
+            "hub_height_meters": modeling_options["turbine"]["geometry"]["height_hub"],
+
+            # "wind_shear_exponent": modeling_options["turbine"]["costs"]["wind_shear_exponent"],
+            "rotor_diameter_m": modeling_options["turbine"]["geometry"]["diameter_rotor"],
+            "number_of_blades": modeling_options["turbine"]["geometry"]["num_blades"],
+            # "rated_thrust_N": modeling_options["turbine"]["costs"]["rated_thrust_N"],
+            # "gust_velocity_m_per_s": modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
+            # "blade_surface_area": modeling_options["turbine"]["costs"]["blade_surface_area"],
+            "tower_mass": modeling_options["turbine"]["costs"]["tower_mass"],
+            "nacelle_mass": modeling_options["turbine"]["costs"]["nacelle_mass"],
+            # "hub_mass": modeling_options["turbine"]["costs"]["hub_mass"],
+            "blade_mass": modeling_options["turbine"]["costs"]["blade_mass"],
+            # "foundation_height": modeling_options["turbine"]["costs"]["foundation_height"],
+            "commissioning_cost_kW": modeling_options["turbine"]["costs"]["commissioning_cost_kW"],
+            "decommissioning_cost_kW": modeling_options["turbine"]["costs"]["decommissioning_cost_kW"],
+            # "trench_len_to_substation_km": modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
+            # "distance_to_interconnect_mi": modeling_options["turbine"]["costs"]["distance_to_interconnect_mi"],
+            # "interconnect_voltage_kV": modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
+
+            # Offshore keys
             "num_mooring_lines": modeling_options["turbine"]["costs"]["num_mooring_lines"],
             "mooring_line_mass": modeling_options["turbine"]["costs"]["mooring_line_mass"],
             "mooring_line_diameter": modeling_options["turbine"]["costs"]["mooring_line_diameter"],
