@@ -260,7 +260,7 @@ class OperatingExpenses(om.ExplicitComponent):
         outputs["opex"] = n_turbine * opex_per_kW * t_rating
 
 
-def LandBOSSE_setup_latents(prob, modeling_options):
+def LandBOSSE_setup_latents(prob, modeling_options: dict) -> None:
     """
     A function to set up the LandBOSSE latent variables using modeling options.
 
@@ -272,11 +272,13 @@ def LandBOSSE_setup_latents(prob, modeling_options):
     modeling_options : dict
         a modeling options dictionary
     """
+
     # Define the mapping between OpenMDAO variable names and modeling_options keys
     offshore_fixed_keys = [
         "monopile_mass",
         "monopile_cost",
     ]
+
     offshore_floating_keys = [
         "num_mooring_lines",
         "mooring_line_mass",
@@ -285,43 +287,33 @@ def LandBOSSE_setup_latents(prob, modeling_options):
         "anchor_mass",
         "floating_substructure_cost",
     ]
+
     if any(key in modeling_options["turbine"]["costs"] for key in offshore_fixed_keys):
 
-        import pdb
-
-        pdb.set_trace()
         variable_mapping = {
             "num_turbines": modeling_options["farm"]["N_turbines"],
             "turbine_rating_MW": modeling_options["turbine"]["nameplate"]["power_rated"]
             * 1.0e3,
             "hub_height_meters": modeling_options["turbine"]["geometry"]["height_hub"],
-            # "wind_shear_exponent": modeling_options["turbine"]["costs"]["wind_shear_exponent"],
             "rotor_diameter_m": modeling_options["turbine"]["geometry"][
                 "diameter_rotor"
             ],
             "number_of_blades": modeling_options["turbine"]["geometry"]["num_blades"],
-            # "rated_thrust_N": modeling_options["turbine"]["costs"]["rated_thrust_N"],
-            # "gust_velocity_m_per_s": modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
-            # "blade_surface_area": modeling_options["turbine"]["costs"]["blade_surface_area"],
             "tower_mass": modeling_options["turbine"]["costs"]["tower_mass"],
             "nacelle_mass": modeling_options["turbine"]["costs"]["nacelle_mass"],
-            # "hub_mass": modeling_options["turbine"]["costs"]["hub_mass"],
             "blade_mass": modeling_options["turbine"]["costs"]["blade_mass"],
-            # "foundation_height": modeling_options["turbine"]["costs"]["foundation_height"],
             "commissioning_cost_kW": modeling_options["turbine"]["costs"][
                 "commissioning_cost_kW"
             ],
             "decommissioning_cost_kW": modeling_options["turbine"]["costs"][
                 "decommissioning_cost_kW"
             ],
-            # "trench_len_to_substation_km": modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
-            # "distance_to_interconnect_mi": modeling_options["turbine"]["costs"]["distance_to_interconnect_mi"],
-            # "interconnect_voltage_kV": modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
-            # Offshore keys
+            # Offshore fixed-specific keys
             "monopile_mass": modeling_options["turbine"]["costs"]["monopile_mass"],
             "monopile_cost": modeling_options["turbine"]["costs"]["monopile_cost"],
         }
-    if any(
+
+    elif any(
         key in modeling_options["turbine"]["costs"] for key in offshore_floating_keys
     ):
         variable_mapping = {
@@ -334,24 +326,16 @@ def LandBOSSE_setup_latents(prob, modeling_options):
                 "diameter_rotor"
             ],
             "number_of_blades": modeling_options["turbine"]["geometry"]["num_blades"],
-            # "rated_thrust_N": modeling_options["turbine"]["costs"]["rated_thrust_N"],
-            # "gust_velocity_m_per_s": modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
-            # "blade_surface_area": modeling_options["turbine"]["costs"]["blade_surface_area"],
             "tower_mass": modeling_options["turbine"]["costs"]["tower_mass"],
             "nacelle_mass": modeling_options["turbine"]["costs"]["nacelle_mass"],
-            # "hub_mass": modeling_options["turbine"]["costs"]["hub_mass"],
             "blade_mass": modeling_options["turbine"]["costs"]["blade_mass"],
-            # "foundation_height": modeling_options["turbine"]["costs"]["foundation_height"],
             "commissioning_cost_kW": modeling_options["turbine"]["costs"][
                 "commissioning_cost_kW"
             ],
             "decommissioning_cost_kW": modeling_options["turbine"]["costs"][
                 "decommissioning_cost_kW"
             ],
-            # "trench_len_to_substation_km": modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
-            # "distance_to_interconnect_mi": modeling_options["turbine"]["costs"]["distance_to_interconnect_mi"],
-            # "interconnect_voltage_kV": modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
-            # Offshore keys
+            # Offshore floating-specific keys
             "num_mooring_lines": modeling_options["turbine"]["costs"][
                 "num_mooring_lines"
             ],
@@ -370,6 +354,8 @@ def LandBOSSE_setup_latents(prob, modeling_options):
             ],
         }
     else:
+        # this is the standard mapping for using LandBOSSE, since typically ORIBIT should
+        # be used for BOS costs for offshore systems.
         variable_mapping = {
             "num_turbines": modeling_options["farm"]["N_turbines"],
             "turbine_rating_MW": modeling_options["turbine"]["nameplate"]["power_rated"]
@@ -413,25 +399,9 @@ def LandBOSSE_setup_latents(prob, modeling_options):
             ],
         }
 
-    # get a map from the component variables to the promotion variables
-    comp2promotion_map = {
-        v[0]: v[-1]["prom_name"]
-        for v in prob.model.list_vars(val=False, out_stream=None)
-    }
+    set_values(prob, variable_map=variable_mapping)
 
-    for full_name in comp2promotion_map:
-        prom_name = comp2promotion_map[full_name]
-        core_name = prom_name.split(".")[-1]
-        if core_name in variable_mapping:
-            try:
-                prob.set_val(prom_name, variable_mapping[core_name])
-            except:
-                print(
-                    f"{core_name} not provided in turbine input, using WISDEM default"
-                )
-
-
-def ORBIT_setup_latents(prob, modeling_options):
+def ORBIT_setup_latents(prob, modeling_options: dict)->None:
     """
     A function to set up the ORBIT latent variables using modeling options.
 
@@ -506,7 +476,7 @@ def ORBIT_setup_latents(prob, modeling_options):
         "boem_review_cost": modeling_options["turbine"]["costs"]["boem_review_cost"],
     }
 
-    # Add floating-specific keys if applicable
+    # Add floating-foundation specific keys if applicable
     if modeling_options["floating"]:
         variable_mapping.update(
             {
@@ -534,6 +504,7 @@ def ORBIT_setup_latents(prob, modeling_options):
                 ],
             }
         )
+    # Add fixed-foundation (mooring) specific keys if applicable
     else:
         variable_mapping.update(
             {
@@ -553,24 +524,7 @@ def ORBIT_setup_latents(prob, modeling_options):
                 ],
             }
         )
-
-    # Get a map from the component variables to the promotion variables
-    comp2promotion_map = {
-        v[0].split(".")[-1]: v[-1]["prom_name"]
-        for v in prob.model.list_vars(val=False, out_stream=None)
-    }
-
-    # Iterate over the mapping and set values in the OpenMDAO problem
-    for full_name in comp2promotion_map:
-        prom_name = comp2promotion_map[full_name]
-        core_name = prom_name.split(".")[-1]
-        if core_name in variable_mapping:
-            try:
-                prob.set_val(prom_name, variable_mapping[core_name])
-            except:
-                print(
-                    f"{core_name} not provided in turbine input, using WISDEM default"
-                )
+    # TODO include jacket-type foundation
     # # if jacket
     # prob.set_val(
     #     comp2promotion_map["orbit.orbit.jacket_r_foot"],
@@ -591,6 +545,8 @@ def ORBIT_setup_latents(prob, modeling_options):
     #     comp2promotion_map["orbit.orbit.transition_piece_cost"],
     #     modeling_options["turbine"]["costs"]["transition_piece_cost"])
 
+    set_values(prob, variable_map=variable_mapping)
+    
 
 def FinanceSE_setup_latents(prob, modeling_options):
     """
@@ -614,19 +570,41 @@ def FinanceSE_setup_latents(prob, modeling_options):
         "opex_per_kW": modeling_options["turbine"]["costs"]["opex_per_kW"],
     }
 
+    set_values(prob, variable_map=variable_mapping)
+
+def set_values(prob, variable_map: dict)->None:
+    """
+    Set values in an OpenMDAO problem based on a mapping of variable names to values.
+
+    This function dynamically maps core variable names to their promoted names in the 
+    OpenMDAO problem and sets their values using the provided `variable_map`.
+
+    Parameters
+    ----------
+    prob : openmdao.api.Problem
+        The OpenMDAO problem instance where the variables are to be set.
+    variable_map : dict
+        A dictionary mapping core variable names (keys) to their corresponding values 
+        (values) that need to be set in the OpenMDAO problem.
+
+    Returns
+    -------
+    None
+    """
+
     # Get a map from the component variables to the promotion variables
-    comp2promotion_map = {
+    promotion_map = {
         v[0].split(".")[-1]: v[-1]["prom_name"]
         for v in prob.model.list_vars(val=False, out_stream=None)
     }
 
     # Iterate over the mapping and set values in the OpenMDAO problem
-    for full_name in comp2promotion_map:
-        prom_name = comp2promotion_map[full_name]
+    for full_name in promotion_map:
+        prom_name = promotion_map[full_name]
         core_name = prom_name.split(".")[-1]
-        if core_name in variable_mapping:
+        if core_name in promotion_map:
             try:
-                prob.set_val(prom_name, variable_mapping[core_name])
+                prob.set_val(prom_name, variable_map[core_name])
             except:
                 print(
                     f"{core_name} not provided in turbine input, using WISDEM default"
