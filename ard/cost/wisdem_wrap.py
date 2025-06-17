@@ -8,124 +8,6 @@ from wisdem.orbit.api.wisdem import Orbit as Orbit_orig
 
 from ard.cost.approximate_turbine_spacing import SpacingApproximations
 
-class LandBOSSEArdGroup(om.Group):
-    
-    def initialize(self):
-        self.options.declare("modeling_options", types=dict)
-
-    def setup(self):
-        # Add a tower section height variable. The default value of 30 m is for transportable tower sections.
-        """Setup the group and connect inputs to modeling options."""
-        # import pdb; pdb.set_trace()
-        modeling_options = self.options["modeling_options"]
-
-        # # Add new entries at the top
-        # import pdb; pdb.set_trace()
-        # if "N_turbines" in modeling_options["farm"]:
-        #     self.set_input_defaults(
-        #         "num_turbines",
-        #         int(modeling_options["farm"]["N_turbines"]),
-        #     )
-
-        # self.set_input_defaults(
-        #     "turbine_rating_MW",
-        #     modeling_options["turbine"]["nameplate"]["power_rated"] * 1.0e3,
-        #     units="kW",
-        # )
-        # self.set_input_defaults(
-        #     "hub_height_meters",
-        #     modeling_options["turbine"]["geometry"]["height_hub"],
-        #     units="m",
-        # )
-        # # self.set_input_defaults(
-        # #     "wind_shear_exponent",
-        # #     modeling_options["turbine"]["costs"]["wind_shear_exponent"],
-        # # )
-        # self.set_input_defaults(
-        #     "rotor_diameter_m",
-        #     modeling_options["turbine"]["geometry"]["diameter_rotor"],
-        #     units="m",
-        # )
-        # # self.set_input_defaults(
-        # #     "number_of_blades",
-        # #     modeling_options["turbine"]["geometry"]["num_blades"],
-        # # )
-        # # self.set_input_defaults(
-        # #     "rated_thrust_N",
-        # #     modeling_options["turbine"]["costs"]["rated_thrust_N"],
-        # #     units="N",
-        # # )
-        # # self.set_input_defaults(
-        # #     "gust_velocity_m_per_s",
-        # #     modeling_options["turbine"]["costs"]["gust_velocity_m_per_s"],
-        # #     units="m/s",
-        # # )
-        # # self.set_input_defaults(
-        # #     "blade_surface_area",
-        # #     modeling_options["turbine"]["costs"]["blade_surface_area"],
-        # #     units="m**2",
-        # # )
-        # self.set_input_defaults(
-        #     "tower_mass",
-        #     modeling_options["turbine"]["costs"]["tower_mass"],
-        #     units="kg",
-        # )
-        # self.set_input_defaults(
-        #     "nacelle_mass",
-        #     modeling_options["turbine"]["costs"]["nacelle_mass"],
-        #     units="kg",
-        # )
-        # # self.set_input_defaults(
-        # #     "hub_mass",
-        # #     modeling_options["turbine"]["costs"]["hub_mass"],
-        # #     units="kg",
-        # # )
-        # self.set_input_defaults(
-        #     "blade_mass",
-        #     modeling_options["turbine"]["costs"]["blade_mass"],
-        #     units="kg",
-        # )
-        # # self.set_input_defaults(
-        # #     "foundation_height",
-        # #     modeling_options["turbine"]["costs"]["foundation_height"],
-        # #     units="m",
-        # # )
-        # self.set_input_defaults(
-        #     "commissioning_cost_kW",
-        #     modeling_options["turbine"]["costs"]["commissioning_cost_kW"],
-        #     units="USD/kW",
-        # )
-        # self.set_input_defaults(
-        #     "decommissioning_cost_kW",
-        #     modeling_options["turbine"]["costs"]["decommissioning_cost_kW"],
-        #     units="USD/kW",
-        # )
-        # self.set_input_defaults(
-        #     "trench_len_to_substation_km",
-        #     modeling_options["turbine"]["costs"]["trench_len_to_substation_km"],
-        #     units="km",
-        # )
-        # self.set_input_defaults(
-        #     "interconnect_voltage_kV",
-        #     modeling_options["turbine"]["costs"]["interconnect_voltage_kV"],
-        #     units="kV",
-        # )
-
-        # Existing entries
-        # self.set_input_defaults("tower_section_length_m", 30.0, units="m")
-        # self.set_input_defaults("blade_drag_coefficient", use_default_component_data)  # Unitless
-        # self.set_input_defaults("blade_lever_arm", use_default_component_data, units="m")
-        # self.set_input_defaults("blade_install_cycle_time", use_default_component_data, units="h")
-        # self.set_input_defaults("blade_offload_hook_height", use_default_component_data, units="m")
-        # self.set_input_defaults("blade_offload_cycle_time", use_default_component_data, units="h")
-        # self.set_input_defaults("blade_drag_multiplier", use_default_component_data)  # Unitless
-        # self.set_input_defaults("blade_surface_area", use_default_component_data, units="m**2")
-
-        # self.set_input_defaults("turbine_spacing_rotor_diameters", 4)
-        # self.set_input_defaults("row_spacing_rotor_diameters", 10)
-
-        self.add_subsystem("landbosse_ard_comp", LandBOSSEArdComp(), promotes=["*"])
-
 class LandBOSSEWithSpacingApproximations(om.Group):
     """
     OpenMDAO group that connects the SpacingApproximations component to the LandBOSSE component.
@@ -152,7 +34,7 @@ class LandBOSSEWithSpacingApproximations(om.Group):
         # Add the LandBOSSE component
         self.add_subsystem(
             "landbosse",
-            LandBOSSEArdGroup(modeling_options=self.options["modeling_options"]),
+            LandBOSSEArdComp(),
             promotes_inputs=[
                 "*",
                 (
