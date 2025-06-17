@@ -401,7 +401,8 @@ def LandBOSSE_setup_latents(prob, modeling_options: dict) -> None:
 
     set_values(prob, variable_map=variable_mapping)
 
-def ORBIT_setup_latents(prob, modeling_options: dict)->None:
+
+def ORBIT_setup_latents(prob, modeling_options: dict) -> None:
     """
     A function to set up the ORBIT latent variables using modeling options.
 
@@ -546,7 +547,7 @@ def ORBIT_setup_latents(prob, modeling_options: dict)->None:
     #     modeling_options["turbine"]["costs"]["transition_piece_cost"])
 
     set_values(prob, variable_map=variable_mapping)
-    
+
 
 def FinanceSE_setup_latents(prob, modeling_options):
     """
@@ -572,11 +573,12 @@ def FinanceSE_setup_latents(prob, modeling_options):
 
     set_values(prob, variable_map=variable_mapping)
 
-def set_values(prob, variable_map: dict)->None:
+
+def set_values(prob, variable_map: dict) -> None:
     """
     Set values in an OpenMDAO problem based on a mapping of variable names to values.
 
-    This function dynamically maps core variable names to their promoted names in the 
+    This function dynamically maps core variable names to their promoted names in the
     OpenMDAO problem and sets their values using the provided `variable_map`.
 
     Parameters
@@ -584,7 +586,7 @@ def set_values(prob, variable_map: dict)->None:
     prob : openmdao.api.Problem
         The OpenMDAO problem instance where the variables are to be set.
     variable_map : dict
-        A dictionary mapping core variable names (keys) to their corresponding values 
+        A dictionary mapping core variable names (keys) to their corresponding values
         (values) that need to be set in the OpenMDAO problem.
 
     Returns
