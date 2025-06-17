@@ -35,7 +35,6 @@ jobs:
 
     - name: Run unit tests with coverage
       run: |
-        set NUMBA_DISABLE_JIT=1
         pytest --cov=ard --cov-fail-under=80 test/unit
 
     # - name: Upload coverage report
