@@ -33,7 +33,7 @@ classifiers = [
   # "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "numpy~=2.0",
+  "numpy<=2.3",
   "floris>=4.3",
   "wisdem==3.18.1",
   "NLopt",
