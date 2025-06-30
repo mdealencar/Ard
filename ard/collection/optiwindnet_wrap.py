@@ -5,7 +5,7 @@ from optiwindnet.interarraylib import L_from_site
 from optiwindnet.heuristics import EW_presolver
 from optiwindnet.MILP import solver_factory, ModelOptions
 
-from . import templates 
+from . import templates
 
 
 def optiwindnet_wrapper(
@@ -113,7 +113,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         ]
         solver_name = self.modeling_options["collection"]["solver_name"]
 
-        # get a graph representing the updated location 
+        # get a graph representing the updated location
         L = L_from_site(**self.site_from_inputs(inputs))
 
         # create planar embedding and set of available links
@@ -125,13 +125,13 @@ class optiwindnetCollection(templates.CollectionTemplate):
         # do the branch-and-bound MILP search
         solver = solver_factory(solver_name)
         solver.set_problem(
-            P, A, max_turbines_per_string,
+            P,
+            A,
+            max_turbines_per_string,
             ModelOptions(**self.modeling_options["collection"]["model_options"]),
-            warmstart=S_warm
+            warmstart=S_warm,
         )
-        result = solver.solve(
-            **self.modeling_options["collection"]["solver_options"]
-        )
+        result = solver.solve(**self.modeling_options["collection"]["solver_options"])
         S, G = solver.get_solution()
 
         # extract the outputs
@@ -158,7 +158,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         G = self.graph
         T = G.graph["T"]
         R = G.graph["R"]
-        VertexC = G.graph["VertexC"]        
+        VertexC = G.graph["VertexC"]
         gradients = np.zeros_like(VertexC)
 
         fnT = G.graph.get("fnT")
@@ -169,7 +169,7 @@ class optiwindnetCollection(templates.CollectionTemplate):
         vec = VertexC[_u] - VertexC[_v]
         norm = np.hypot(*vec.T)
         # suppress the contributions of zero-length edges
-        norm[np.isclose(norm, 0.)] = 1.
+        norm[np.isclose(norm, 0.0)] = 1.0
         vec /= norm[:, None]
 
         np.add.at(gradients, _u, vec)
@@ -209,7 +209,6 @@ class optiwindnetCollection(templates.CollectionTemplate):
         if B > 0:
             VertexC[T:-R, 0] = inputs["x_borders"]
             VertexC[T:-R, 1] = inputs["y_borders"]
-            site['B'] = B
-            site['border'] = np.arange(T, T + B)
+            site["B"] = B
+            site["border"] = np.arange(T, T + B)
         return site
-

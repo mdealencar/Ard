@@ -57,8 +57,8 @@ class TestOptiWindNetCollection:
                 "model_options": dict(
                     topology="branched",
                     feeder_route="segmented",
-                    feeder_limit="unlimited"
-                ),    
+                    feeder_limit="unlimited",
+                ),
                 "solver_name": "highs",
                 "solver_options": dict(
                     time_limit=60,

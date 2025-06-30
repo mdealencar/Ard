@@ -51,10 +51,8 @@ modeling_options = {
     "collection": {
         "max_turbines_per_string": 8,
         "model_options": dict(
-            topology="branched",
-            feeder_route="segmented",
-            feeder_limit="unlimited"
-        ),    
+            topology="branched", feeder_route="segmented", feeder_limit="unlimited"
+        ),
         "solver_name": "highs",
         "solver_options": dict(
             time_limit=10,

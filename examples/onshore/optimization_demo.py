@@ -33,7 +33,7 @@ def run_example():
 
     # specify the configuration/specification files to use
     filename_turbine_spec = (
-        Path(__file__).parents[1] / "data" /  "turbine_spec_IEA-3p4-130-RWT.yaml"
+        Path(__file__).parents[1] / "data" / "turbine_spec_IEA-3p4-130-RWT.yaml"
     )  # toolset generalized turbine specification
     data_turbine_spec = ard.utils.io.load_turbine_spec(filename_turbine_spec)
 
@@ -47,10 +47,8 @@ def run_example():
         "collection": {
             "max_turbines_per_string": 8,
             "model_options": dict(
-                topology="branched",
-                feeder_route="segmented",
-                feeder_limit="unlimited"
-            ),    
+                topology="branched", feeder_route="segmented", feeder_limit="unlimited"
+            ),
             "solver_name": "highs",
             "solver_options": dict(
                 time_limit=10,
