@@ -204,14 +204,17 @@ class optiwindnetCollection(templates.CollectionTemplate):
         VertexC[:T, 1] = inputs["y_turbines"]
         VertexC[-R:, 0] = inputs["x_substations"]
         VertexC[-R:, 1] = inputs["y_substations"]
-        if B > 0:
-            VertexC[T:-R, 0] = inputs["x_borders"]
-            VertexC[T:-R, 1] = inputs["y_borders"]
-        return dict(
+        site = dict(
             T=T,
             R=R,
             name=name_case,
             handle=name_case,
             VertexC=VertexC,
         )
+        if B > 0:
+            VertexC[T:-R, 0] = inputs["x_borders"]
+            VertexC[T:-R, 1] = inputs["y_borders"]
+            site['B'] = B
+            site['border'] = np.arange(T, T + B)
+        return site
 
