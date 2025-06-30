@@ -124,7 +124,6 @@ class optiwindnetCollection(templates.CollectionTemplate):
 
         # do the branch-and-bound MILP search
         solver = solver_factory(solver_name)
-        # TODO: the ModelOptions() args should come from self.modelling_options
         solver.set_problem(
             P, A, max_turbines_per_string,
             ModelOptions(**self.modeling_options["collection"]["model_options"]),
@@ -159,10 +158,6 @@ class optiwindnetCollection(templates.CollectionTemplate):
         G = self.graph
         T = G.graph["T"]
         R = G.graph["R"]
-        # ATTENTION: if ModelOptions(feeder_route="segmented"), then the
-        # number of coordinates in VertexC may be greater than R + T + B
-        # the growth happens in the middle, between the end of B and -R, so
-        # the final extraction of gradients must get only the array head/tail
         VertexC = G.graph["VertexC"]        
         gradients = np.zeros_like(VertexC)
 
