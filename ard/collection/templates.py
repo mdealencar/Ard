@@ -40,11 +40,11 @@ class CollectionTemplate(om.ExplicitComponent):
     -------
     length_cables : np.ndarray
         a (variable-length) 1D numpy array that holds the lengths of each of the cables necessary
-        to collect energy generated, with length `N_turbines`
+        to collect energy generated
     load_cables : np.ndarray
         a (variable-length) 1D numpy array that holds the load integer (i.e. total number of
-        turbines) collected up to each cable, with length `N_turbines`
-    max_load_cables : np.ndarray
+        turbines) collected up to each cable
+    max_load_cables : int
         the maximum cable capacity required by the system
     """
 
@@ -68,6 +68,7 @@ class CollectionTemplate(om.ExplicitComponent):
         # set up outputs for the collection system
         self.add_discrete_output(
             "length_cables",
+            # TODO: This is wrong. The number of cable segments may be greater.
             np.zeros((self.N_turbines,)),  # units="m",
         )
         self.add_discrete_output("load_cables", np.zeros((self.N_turbines,)))
