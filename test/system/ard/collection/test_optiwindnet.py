@@ -58,7 +58,12 @@ class TestoptiwindnetLayout:
             "offshore": False,
             "collection": {
                 "max_turbines_per_string": 8,
-                "solver_name": "appsi_highs",
+                "model_options": dict(
+                    topology="branched",
+                    feeder_route="segmented",
+                    feeder_limit="unlimited"
+                ),    
+                "solver_name": "highs",
                 "solver_options": dict(
                     time_limit=60,
                     mip_rel_gap=0.005,  # TODO ???
