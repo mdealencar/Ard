@@ -43,6 +43,7 @@ dependencies = [
   "shapely",
   "jax",
   "optiwindnet[test]==0.0.3",
+  "statsmodels@git+https://github.com/statsmodels/statsmodels.git@main",
   "highspy",
 ]
 [project.optional-dependencies]
