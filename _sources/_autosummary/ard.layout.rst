@@ -10,6 +10,11 @@
    :toctree:
    :recursive:
 
+   boundary
+   exclusions
    fullfarm
    gridfarm
+   spacing
+   sunflower
    templates
+   viewshed

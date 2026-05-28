@@ -10,4 +10,7 @@
    :toctree:
    :recursive:
 
+   house_style
+   layout
    plot_layout
+   utils

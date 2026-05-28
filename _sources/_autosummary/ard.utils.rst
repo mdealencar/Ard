@@ -4,10 +4,15 @@
 .. automodule:: ard.utils
 
    
-   .. rubric:: Functions
+.. rubric:: Modules
 
-   .. autosummary::
-   
-      create_FLORIS_turbine
-      load_turbine_spec
-   
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   core
+   geometry
+   io
+   logging
+   mathematics
+   test_utils
